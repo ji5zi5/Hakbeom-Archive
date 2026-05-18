@@ -124,18 +124,43 @@
 - `E`: 감정 이펙트/오버레이/효과음
 - `OVERLAY`, `MOOD`: 화면 오버레이
 
-SCG 예시:
+### 캐릭터 위치 `pos` / `position`
+
+캐릭터는 5개 프리셋 구역에 세운다. 시나리오에서는 `pos` 또는 `position`을 쓸 수 있고, 값이 없으면 중앙인 `3`으로 처리된다. 실제 좌표는 `src/components/BAVisualNovel.jsx`의 `POSITION_PRESETS`가 원본이다.
+
+| 값 | 위치 감각 | 현재 프리셋 | 주 용도 |
+| --- | --- | --- | --- |
+| `1` | 왼쪽 바깥쪽 | `x: -54, y: 14` | 좌측 퇴장/멀리 선 인물 |
+| `2` | 왼쪽 | `x: 150, y: 8` | 2인 구도 왼쪽 |
+| `3` | 중앙 | `x: 363, y: 2` | 기본 단독 등장 |
+| `4` | 오른쪽 | `x: 568, y: 8` | 2인 구도 오른쪽/이동 |
+| `5` | 오른쪽 바깥쪽 | `x: 772, y: 14` | 우측 퇴장/멀리 선 인물 |
+
+처음 등장시킬 때는 `src`와 `pos`를 같이 넣는다.
 
 ```js
 {
   type: 'SCG',
   id: 'hyeongyeom',
+  name: '현겸',
   action: 'enter',
   pos: 3,
   src: '/assets/character/hyungyeom.png',
   expression: 'normal',
   transition: 'enter-right'
 }
+```
+
+이미 등장한 캐릭터를 움직일 때는 같은 `id`로 `action: 'move'`와 새 `pos`만 넣으면 된다.
+
+```js
+{ type: 'SCG', id: 'hyeongyeom', action: 'move', pos: 4, motion: 'straight' }
+```
+
+표정만 바꿀 때는 `pos` 없이 같은 `id`에 `action: 'update'`를 쓴다.
+
+```js
+{ type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'smile' }
 ```
 
 ## 작성 후 체크리스트

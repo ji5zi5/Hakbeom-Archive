@@ -121,6 +121,7 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 
 - `STAGE`는 1129×524 기준이다. stage 비율을 바꾸면 CSS contain sizing과 screenshot helper도 같이 확인한다.
 - 상단 `AUTO/MENU`, quick menu path, 선택지 row 위치는 reference 이미지에 맞춘 값이라 임의로 크게 바꾸지 않는다.
+- 캐릭터 5구역 위치는 `docs/scenario-authoring.md`의 `pos`/`position` 표를 따른다. 프리셋 좌표 자체를 바꾸면 기존 시나리오 구도가 전부 달라질 수 있다.
 - 레이아웃 변경 후에는 `npm test`, `npm run build` 외에 브라우저 확인이나 캡처를 한다.
 - asset path는 `/assets/...`로 시작해야 한다.
 
