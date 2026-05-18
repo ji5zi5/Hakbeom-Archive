@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.deps/
+
+# Build output
+dist/
+.vite/
+
+# Local environment
+.env
+.env.*
+*.local
+
+# OMX/runtime state
+.omx/
+
+# Test/browser artifacts
+playwright-report/
+test-results/
+coverage/
+
+# OS/editor noise
+.DS_Store
+*.swp
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local visual/reference uploads kept outside source assets
+/image*.png
+/hyungyeom.png
