@@ -18,6 +18,11 @@ npm run dev
 ## 확인 주소
 
 ```txt
+챕터/폰 프리뷰:
+Day 1 카드:    http://localhost:5173/?id=day1-chapter-card
+폰 답장:        http://localhost:5173/?id=phone-evening-message
+Day 2 카드:    http://localhost:5173/?id=day2-chapter-card
+
 대화창:        http://localhost:5173/?mode=dialogue
 중앙 배너:     http://localhost:5173/?mode=banner
 선택창:        http://localhost:5173/?mode=choice
@@ -76,6 +81,11 @@ Esc           : 메뉴/모달 닫기
 - 캐릭터 모션 클래스: bounce, shake, nod, enter-left, enter-right
 - 감정 이펙트: exclamation, question, heart, anger, sweat, chatter, ellipsis, blush, sigh
 - 선택지별 next id 이동
+- BGM/ambient directive state와 BGM 볼륨 config
+- Day/chapter 전환 카드
+- Save/load 슬롯 카드: 챕터, 대사 미리보기, 호감도, 썸네일
+- 현겸 expression profile fallback
+- Phone/SNS 채팅 말풍선, 읽음, 입력중 표시
 - 선택/클릭/확인 SE 연결용 sounds prop
 ```
 
@@ -140,7 +150,7 @@ export const scenario = [
 />
 ```
 
-각 시나리오 라인에 `se: '/assets/se/exclamation.mp3'`처럼 넣으면 그 줄에 진입할 때 재생됩니다.
+각 시나리오 라인에 `se: '/assets/se/exclamation.mp3'`처럼 넣으면 그 줄에 진입할 때 재생됩니다. BGM/ambient는 `directives`에 `{ type: 'BGM', cue: 'bgmRain' }`, `{ type: 'AMBIENT', id: 'ambientRain', cue: 'ambientRain' }` 형태로 넣습니다.
 
 ## 폰트 적용
 

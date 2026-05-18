@@ -28,9 +28,14 @@ src/main.jsx                     React entry
 src/App.jsx                      episodeInfo/scenario를 BAVisualNovel에 연결
 src/components/BAVisualNovel.jsx React UI, SVG scene, modal/controller glue
 src/data/scenario.js             실제 시나리오와 episodeInfo
-src/data/routeConfig.js          호감도, 갤러리, 회상 설정
+src/data/routeConfig.js          호감도, 챕터, 갤러리, 회상 설정
+src/data/characterProfiles.js    캐릭터별 expression asset fallback
 src/engine/vnEngine.js           진행, skip, ending, replay path 계산
-src/engine/directorEngine.js     BCG/SCG/SE/E/MOOD directive 적용
+src/engine/directorEngine.js     BCG/SCG/SE/E/MOOD/audio directive 적용
+src/engine/audioEngine.js        BGM/ambient cue 정규화와 audio state 계산
+src/engine/chapterEngine.js      chapter/day card 표시 조건 계산
+src/engine/saveSummary.js        save slot 카드용 요약 metadata 생성
+src/engine/phoneEngine.js        phone/SNS timeline 정규화
 src/engine/saveCodec.js          save payload 생성/정규화
 src/engine/scenarioValidator.js  시나리오 graph/DSL 검증
 src/utils/vnState.js             호감도/flags/read/gallery/recollection 상태 helper
@@ -45,11 +50,11 @@ public/assets/                   런타임 asset
 
 | 하고 싶은 일 | 주로 수정할 곳 | 같이 확인할 곳 |
 | --- | --- | --- |
-| 대사/선택지/엔딩 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
+| 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
 | 호감도/갤러리/회상 조건 변경 | `src/data/routeConfig.js` | `src/utils/vnState.js`, validator tests |
 | 분기/스킵/엔딩/replay 동작 변경 | `src/engine/vnEngine.js` | semantic tests 추가 |
-| BCG/SCG/SE/E 연출 명령 변경 | `src/engine/directorEngine.js` | scenario directive docs/tests |
-| save/load 구조 변경 | `src/engine/saveCodec.js` | save migration/정규화 tests |
+| BCG/SCG/SE/E/BGM/AMBIENT 연출 명령 변경 | `src/engine/directorEngine.js`, `src/engine/audioEngine.js` | scenario directive docs/tests |
+| save/load 구조 변경 | `src/engine/saveCodec.js`, `src/engine/saveSummary.js` | save migration/정규화 tests |
 | UI 배치/SVG/모달 변경 | `src/components/BAVisualNovel.jsx`, `src/styles.css` | screenshot capture, layout contract tests |
 | 텍스트 줄바꿈 변경 | `src/utils/vnText.js` | Korean dialogue wrapping tests |
 | 키보드/접근성 변경 | `src/utils/accessibility.js`, component handlers | keyboard behavior tests |
@@ -67,6 +72,15 @@ public/assets/                   런타임 asset
 - 반복 상태 변경 helper: `vnState.js`
 
 새 기능이 테스트 가능한 순수 함수라면 먼저 `src/engine/` 또는 `src/utils/`로 빼고, React에서는 호출만 한다.
+
+
+### VN polish helper 경계
+
+- Audio playback side effects stay in `BAVisualNovel.jsx`; audio directive calculation stays in `src/engine/audioEngine.js`.
+- Save card display metadata is built by `src/engine/saveSummary.js`; do not duplicate summary formatting inside modal JSX.
+- Phone display data is normalized by `src/engine/phoneEngine.js` before rendering.
+- Chapter/day card visibility is calculated by `src/engine/chapterEngine.js`; scenario authors control it with `kind: 'chapter'` and `chapter` metadata.
+- Character expression asset fallback belongs in `src/data/characterProfiles.js`; scenario files should reference expression names, not duplicate fallback paths.
 
 ### scenario는 데이터, validator는 계약이다
 
@@ -141,7 +155,7 @@ save 관련 코드를 바꾸면 다음을 확인한다.
 1. `SAVE_VERSION` 변경이 필요한지 판단한다.
 2. 기존 payload를 읽었을 때 안전하게 normalize되는지 테스트한다.
 3. out-of-range index는 `itemId` 또는 fallback으로 복구되는지 확인한다.
-4. settings 숫자는 UI 범위 안으로 clamp되는지 확인한다.
+4. settings 숫자는 UI 범위 안으로 clamp되는지 확인한다. 현재 범위는 text 8~60ms, auto 500~2600ms, BGM/SE 0~100이다.
 5. directorState schema가 바뀌면 저장값을 그대로 신뢰하지 말고 replay로 복원한다.
 
 ## Scenario 변경 체크리스트
@@ -151,7 +165,7 @@ save 관련 코드를 바꾸면 다음을 확인한다.
 1. ID 중복 없음.
 2. `next`, `nextId`, `endingNext`, `skipToId` target 존재.
 3. choice/phone의 선택지, rewards, next 배열 길이 일치.
-4. 정상 장면은 시작점에서 reachable.
+4. 정상 장면은 시작점에서 reachable. chapter card와 phone timeline도 예외가 아니다.
 5. 프리뷰 전용 장면은 `previewOnly: true`.
 6. 새 unlock ID는 `routeConfig.js`에 등록.
 7. `npm test` 통과.

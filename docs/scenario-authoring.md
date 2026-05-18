@@ -124,6 +124,70 @@
 - `E`: 감정 이펙트/오버레이/효과음
 - `OVERLAY`, `MOOD`: 화면 오버레이
 
+### `BGM` / `AMBIENT`
+
+`BGM`은 반복 재생되는 음악을 바꾼다. `AMBIENT`는 빗소리 같은 반복 환경음을 추가한다. `cue`는 `src/App.jsx`의 `sounds` 맵에 등록된 이름을 쓰거나 `/assets/bgm/...` 직접 경로를 쓸 수 있다. 중지할 때는 `STOP_BGM`, `STOP_AMBIENT`를 쓴다.
+
+```js
+{ type: 'BGM', cue: 'bgmRain', fadeMs: 900 }
+{ type: 'AMBIENT', id: 'ambientRain', cue: 'ambientRain', volume: 42 }
+{ type: 'STOP_AMBIENT', id: 'ambientRain' }
+{ type: 'STOP_BGM' }
+```
+
+### Chapter cards
+
+하루나 챕터가 시작될 때는 `banner` 장면에 `kind: 'chapter'`, `chapter`, `sectionTitle`을 넣는다. 정상 흐름에 들어가는 chapter card도 일반 장면이므로 `nextId`가 실제 ID를 가리켜야 한다.
+
+```js
+{
+  id: 'day2-chapter-card',
+  type: 'banner',
+  kind: 'chapter',
+  chapter: 'day-2',
+  sectionTitle: 'Day 2: 우산을 돌려주는 아침',
+  text: 'Day 2 · 우산을 돌려주는 아침',
+  nextId: 'day2-morning'
+}
+```
+
+### Phone timelines
+
+`phone` 장면은 기존 `text`/`replies` 외에 `messages` 배열을 가질 수 있다. `from: 'hakbeom'` 또는 `from: 'me'`는 오른쪽 말풍선, 그 외 발신자는 왼쪽 말풍선으로 렌더된다. 입력 중 표시만 필요하면 `pending: true`를 넣고 `text`는 비워도 된다.
+
+```js
+{
+  id: 'phone-evening-message',
+  type: 'phone',
+  name: '현겸',
+  text: '집 도착했어.',
+  messages: [
+    { from: 'hyeongyeom', text: '우산 고마워.', read: true },
+    { from: 'hakbeom', text: '내일 봐.', read: true },
+    { from: 'hyeongyeom', text: '', pending: true }
+  ],
+  replies: ['바로 답장한다.', '장난스럽게 답한다.'],
+  next: ['reply-warm', 'reply-playful']
+}
+```
+
+### Route text variants
+
+분기 선택 결과에 따라 같은 장면의 문장을 바꾸려면 `variants`를 사용한다. 새 작성은 `requiredFlags`를 권장하며, 기존 `flags`도 계속 동작한다. 배열 앞쪽부터 검사되므로 더 구체적인 조건을 먼저 둔다.
+
+```js
+variants: [
+  {
+    requiredFlags: ['shared_umbrella'],
+    text: '어제 우산 같이 쓴 거, 아직도 생각나.'
+  },
+  {
+    default: true,
+    text: '현겸은 조용히 우산을 내밀었다.'
+  }
+]
+```
+
 ### 캐릭터 위치 `pos` / `position`
 
 캐릭터는 5개 프리셋 구역에 세운다. 시나리오에서는 `pos` 또는 `position`을 쓸 수 있고, 값이 없으면 중앙인 `3`으로 처리된다. 실제 좌표는 `src/components/BAVisualNovel.jsx`의 `POSITION_PRESETS`가 원본이다.
