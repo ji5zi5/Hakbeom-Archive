@@ -186,45 +186,6 @@ function applyReadUnlocks(gameState, itemId) {
   return next;
 }
 
-function getAffectionTargetId() {
-  return typeof routeConfig.affectionTarget === 'string'
-    ? routeConfig.affectionTarget
-    : routeConfig.affectionTarget?.id || 'hyeongyeom';
-}
-
-function getAffectionTargetName() {
-  return typeof routeConfig.affectionTarget === 'string'
-    ? '현겸'
-    : routeConfig.affectionTarget?.name || '현겸';
-}
-
-function getAffectionLabel(value) {
-  const labels = [...(routeConfig.affectionLabels || [])].sort((a, b) => Number(a.min || 0) - Number(b.min || 0));
-  return labels.reduce((current, label) => (value >= Number(label.min || 0) ? label.label : current), labels[0]?.label || '어색함');
-}
-
-function resolveRouteStatus(gameState) {
-  const targetId = getAffectionTargetId();
-  const value = gameState.affection?.[targetId] || 0;
-  return {
-    targetId,
-    name: getAffectionTargetName(),
-    value,
-    label: getAffectionLabel(value)
-  };
-}
-
-function getRewardFeedback(item, choiceIndex) {
-  const reward = item?.rewards?.[choiceIndex] || item?.choiceRewards?.[choiceIndex] || {};
-  const targetId = getAffectionTargetId();
-  const delta = Number(reward.affection?.[targetId] || 0);
-  if (!delta && !(reward.flags || []).length) return null;
-  return {
-    id: `${item?.id || 'choice'}-${choiceIndex}-${Date.now()}`,
-    text: `${getAffectionTargetName()} ${delta >= 0 ? '+' : ''}${delta} · 선택이 기록됨`
-  };
-}
-
 function getStorage() {
   try {
     return window.localStorage;
@@ -353,7 +314,6 @@ export function BAVisualNovel({
   const [log, setLog] = useState([]);
   const [roleX, setRoleX] = useState(205);
   const [visibleCount, setVisibleCount] = useState(0);
-  const [rewardFeedback, setRewardFeedback] = useState(null);
 
   const speakerNameRef = useRef(null);
   const autoTimerRef = useRef(null);
@@ -368,7 +328,6 @@ export function BAVisualNovel({
   const sceneCharacters = directorState.characters;
   const sceneOverlays = directorState.overlays;
   const fullText = resolveItemText(item, gameState);
-  const routeStatus = useMemo(() => resolveRouteStatus(gameState), [gameState]);
   const previousItem = scenario[index - 1] || null;
   const chapterInfo = useMemo(
     () => getChapterInfo(item, { previousItem, fallbackTitle: episodeInfo.sectionTitle || episodeInfo.title }),
@@ -522,9 +481,6 @@ export function BAVisualNovel({
     pushLog(`${current.type === 'phone' ? '답장' : '선택'}: ${value}`);
     onChoice?.({ choiceIndex, value, item: current });
     setMenuOpen(false);
-
-    const feedback = getRewardFeedback(current, choiceIndex);
-    if (feedback) setRewardFeedback(feedback);
 
     const targetId = current.next?.[choiceIndex] || current.choiceNext?.[choiceIndex];
     const targetIndex = targetId ? scenario.findIndex((line) => line.id === targetId) : -1;
@@ -735,12 +691,6 @@ export function BAVisualNovel({
   }, [auto, backlogOpen, goNextRaw, index, mode, settings.autoDelayMs, skipOpen, typing, uiHidden]);
 
   useEffect(() => {
-    if (!rewardFeedback) return undefined;
-    const feedbackTimer = window.setTimeout(() => setRewardFeedback(null), 1400);
-    return () => window.clearTimeout(feedbackTimer);
-  }, [rewardFeedback]);
-
-  useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key === 'Escape') {
         setMenuOpen(false);
@@ -890,9 +840,6 @@ export function BAVisualNovel({
             <button type="button" onClick={openGallery}>CG</button>
           </div>
         )}
-
-        {screen === 'game' && !uiHidden && <RouteStatusChip status={routeStatus} />}
-        {rewardFeedback && <div key={rewardFeedback.id} className="affection-feedback">{rewardFeedback.text}</div>}
 
         <TitleScreen
           open={screen === 'title'}
@@ -1461,14 +1408,6 @@ function TitleScreen({ open, canContinue, onStart, onContinue, onLoad, onGallery
         <button type="button" role="menuitem" onClick={onConfig}>CONFIG</button>
       </div>
       <p className="title-footer">Hakbeom Love / Prologue</p>
-    </div>
-  );
-}
-
-function RouteStatusChip({ status }) {
-  return (
-    <div className="route-chip" aria-label="호감도 상태">
-      {status.name} · {status.label} {status.value}
     </div>
   );
 }

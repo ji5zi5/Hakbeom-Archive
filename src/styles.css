@@ -812,38 +812,6 @@ button {
   letter-spacing: .12em;
 }
 
-.affection-feedback,
-.route-chip {
-  position: absolute;
-  z-index: 9;
-  font-family: "BA Main", "BA Noto", system-ui, sans-serif;
-  font-weight: 900;
-  pointer-events: none;
-}
-
-.affection-feedback {
-  left: 50%;
-  top: 17%;
-  transform: translateX(-50%);
-  padding: 9px 16px;
-  border: 1px solid rgba(255, 255, 255, .58);
-  border-radius: 999px;
-  background: rgba(29, 58, 84, .70);
-  color: #fff;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, .26);
-  animation: effectPop .38s cubic-bezier(.2, 1.35, .5, 1) both;
-}
-
-.route-chip {
-  right: 3.2%;
-  top: 11%;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 243, 132, .94), rgba(255, 209, 73, .90));
-  color: #334055;
-  box-shadow: 0 6px 16px rgba(74, 55, 0, .22);
-}
-
 .space-key-svg {
   cursor: pointer;
   pointer-events: auto;

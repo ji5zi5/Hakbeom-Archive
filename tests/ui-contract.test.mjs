@@ -569,6 +569,18 @@ assert.doesNotMatch(
   'Game screen system buttons should not duplicate quick-save, quick-load, config, or quick-menu gallery controls in the top-left.'
 );
 
+assert.doesNotMatch(
+  component,
+  /RouteStatusChip|className="route-chip"/,
+  'Game screen should not show the top-corner route/affection label chip during normal play.'
+);
+
+assert.doesNotMatch(
+  component,
+  /rewardFeedback|affection-feedback|선택이 기록됨/,
+  'Choice rewards should update state silently instead of showing "recorded" toast feedback.'
+);
+
 assert.match(
   visualNovelSource,
   /const \[gameState,\s*setGameState\] = useState\(createInitialGameState\)/,
