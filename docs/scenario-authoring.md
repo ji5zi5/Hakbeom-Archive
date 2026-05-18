@@ -136,21 +136,21 @@
 
 ### 배경 `BCG` asset
 
-배경은 `public/assets/bg/` 아래 generated VN background bundle을 사용한다. 각 배경은 같은 이름의 `.prompt.txt`를 같이 둔다. 장면 분위기가 바뀌면 `BCG` directive로 배경을 명시하고, 모든 장면을 `/assets/ui/image0_13_6.jpg` 하나에 몰아넣지 않는다.
+배경은 `public/assets/bg/` 아래 generated VN background bundle을 사용한다. 각 배경은 같은 이름의 `.prompt.txt`를 같이 둔다. 이 번들은 GitHub `agent-sprite-forge`의 repo-local `generate2dmap` 설치를 기준으로 관리하며, VN 장면 배경은 SVG가 아니라 PNG baked raster로 둔다. 장면 분위기가 바뀌면 `BCG` directive로 배경을 명시하고, 모든 장면을 `/assets/ui/image0_13_6.jpg` 하나에 몰아넣지 않는다.
 
 ```js
-{ type: 'BCG', src: '/assets/bg/school-rain-hallway.svg', transition: 'fade-in' }
-{ type: 'BCG', src: '/assets/bg/library-window.svg', transition: 'fade-in' }
+{ type: 'BCG', src: '/assets/bg/school-rain-hallway.png', transition: 'fade-in' }
+{ type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' }
 ```
 
 현재 bundle:
 
-- `school-rain-hallway.svg`
-- `student-council-room-evening.svg`
-- `school-gate-rain.svg`
-- `school-morning-hallway.svg`
-- `library-window.svg`
-- `broadcast-room.svg`
+- `school-rain-hallway.png`
+- `student-council-room-evening.png`
+- `school-gate-rain.png`
+- `school-morning-hallway.png`
+- `library-window.png`
+- `broadcast-room.png`
 
 ### `BGM` / `AMBIENT`
 

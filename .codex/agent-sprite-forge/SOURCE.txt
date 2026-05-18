@@ -1,0 +1,6 @@
+agent-sprite-forge project-local install
+Repository: https://github.com/0x0funky/agent-sprite-forge
+Commit: fff651a89223b044ccfc0b75ed9f3754c6d739b1
+Installed: copied skills/generate2dmap and skills/generate2dsprite into .codex/skills for this repository.
+Runtime deps: .deps/agent-sprite-forge-venv, created with python3 -m venv and pip install -r /tmp/agent-sprite-forge/requirements.txt.
+Reinstall deps: python3 -m venv .deps/agent-sprite-forge-venv && .deps/agent-sprite-forge-venv/bin/python -m pip install -r .codex/agent-sprite-forge/requirements.txt

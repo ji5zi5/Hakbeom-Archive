@@ -49,7 +49,7 @@ export const scenario = [
     directives: [
       { type: 'BGM', cue: 'bgmRain', fadeMs: 900 },
       { type: 'AMBIENT', id: 'ambientRain', cue: 'ambientRain', volume: 42 },
-      { type: 'BCG', src: '/assets/bg/school-rain-hallway.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/school-rain-hallway.png', transition: 'fade-in' }
     ]
   },
   {
@@ -63,7 +63,7 @@ export const scenario = [
     place: '방과 후 복도',
     text: '비가 오기 시작했다. 학생회 서류를 다 정리했을 때쯤, 복도에는 빗소리만 남아 있었다.',
     directives: [
-      { type: 'BCG', src: '/assets/bg/school-rain-hallway.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/school-rain-hallway.png', transition: 'fade-in' }
     ]
   },
   {
@@ -105,7 +105,7 @@ export const scenario = [
     place: '학생회실',
     text: '창가에 선 현겸은 젖은 앞머리를 손끝으로 넘겼다. 이상하게, 그 순간만 빗소리가 멀어진 것 같았다.',
     directives: [
-      { type: 'BCG', src: '/assets/bg/student-council-room-evening.svg', transition: 'fade-in' },
+      { type: 'BCG', src: '/assets/bg/student-council-room-evening.png', transition: 'fade-in' },
       { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'wet', motion: 'zoom' }
     ]
   },
@@ -258,7 +258,7 @@ export const scenario = [
       }
     ],
     directives: [
-      { type: 'BCG', src: '/assets/bg/school-gate-rain.svg', transition: 'fade-in' },
+      { type: 'BCG', src: '/assets/bg/school-gate-rain.png', transition: 'fade-in' },
       { type: 'E', flash: true, color: '#FFFFFF', opacity: 0.36, transition: 'flash', se: 'rain-step' }
     ]
   },
@@ -445,7 +445,7 @@ export const scenario = [
     text: '다음 날 아침, 비는 그쳤지만 학범은 현겸이 기다릴 복도를 먼저 떠올렸다.',
     summary: '둘째 날, 어제의 선택들이 복도와 메시지 사이에서 조금씩 다른 온도로 돌아온다.',
     directives: [
-      { type: 'BCG', src: '/assets/bg/school-morning-hallway.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/school-morning-hallway.png', transition: 'fade-in' }
     ],
     nextId: 'day2-morning-message'
   },
@@ -578,7 +578,7 @@ export const scenario = [
     nextId: 'day3-morning-message',
     directives: [
       { type: 'BGM', cue: 'bgmWarm', fadeMs: 700 },
-      { type: 'BCG', src: '/assets/bg/school-morning-hallway.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/school-morning-hallway.png', transition: 'fade-in' }
     ]
   },
   {
@@ -618,7 +618,7 @@ export const scenario = [
     place: '도서관 앞',
     text: '학범은 학생회 서류를 평소보다 빨리 정리했다. 기다리게 하지 않겠다는 말은, 생각보다 무거운 약속이었다.',
     directives: [
-      { type: 'BCG', src: '/assets/bg/library-window.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' }
     ],
     nextId: 'day3-library-meet'
   },
@@ -632,7 +632,7 @@ export const scenario = [
     place: '도서관 앞',
     text: '학범은 약속 시간보다 일찍 도서관 앞에 섰다. 먼저 기다리는 일은 낯설었지만, 현겸을 떠올리면 이상하게 자연스러웠다.',
     directives: [
-      { type: 'BCG', src: '/assets/bg/library-window.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' }
     ],
     nextId: 'day3-library-meet'
   },
@@ -682,7 +682,7 @@ export const scenario = [
       }
     ],
     directives: [
-      { type: 'BCG', src: '/assets/bg/student-council-room-evening.svg', transition: 'fade-in' }
+      { type: 'BCG', src: '/assets/bg/student-council-room-evening.png', transition: 'fade-in' }
     ]
   },
   {
@@ -711,7 +711,7 @@ export const scenario = [
     text: '학범아, 이 노트 네 거 맞지? 일부러 놓고 간 건 아니겠지만… 돌려줄 핑계가 생긴 건 조금 좋았어.',
     effect: { target: 'ukhyun', type: 'ellipsis' },
     directives: [
-      { type: 'BCG', src: '/assets/bg/library-window.svg', transition: 'fade-in' },
+      { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
       { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
       { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
       { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
@@ -787,7 +787,7 @@ export const scenario = [
     text: '학범, 학생회장 맞지? 방송 장비 점검 좀 도와줘. 아니… 사실은 네 목소리로 확인하고 싶은 게 있어.',
     effect: { target: 'jaeseong', type: 'question' },
     directives: [
-      { type: 'BCG', src: '/assets/bg/broadcast-room.svg', transition: 'fade-in' },
+      { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
       { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
       { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
       { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }

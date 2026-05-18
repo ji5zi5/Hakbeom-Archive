@@ -145,7 +145,8 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 - 게임에 쓰는 asset은 `public/assets/` 아래에 둔다.
 - 캐릭터: `public/assets/character/`
 - 배경/UI/CG: `public/assets/ui/` 또는 `public/assets/bg/`
-- Generated VN 배경은 `public/assets/bg/<name>.svg`와 `<name>.prompt.txt`를 쌍으로 둔다.
+- Generated VN 배경은 `public/assets/bg/<name>.png`와 `<name>.prompt.txt`를 쌍으로 둔다.
+- VN 배경 생성/후처리는 GitHub `0x0funky/agent-sprite-forge`를 프로젝트 로컬 `.codex/skills/generate2dmap`에 설치한 워크플로우를 기준으로 한다. 임의 SVG 배경을 추가하지 않는다.
 - 효과음: `public/assets/se/`
 - 폰트: `public/assets/fonts/`
 - 작업용 reference 이미지는 repo root에 두지 말고, 필요하면 별도 문서에 출처/용도만 기록한다. root reference upload는 `.gitignore` 대상이다.

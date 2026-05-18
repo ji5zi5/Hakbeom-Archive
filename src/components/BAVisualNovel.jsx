@@ -318,7 +318,7 @@ export function BAVisualNovel({
   initialItemId = '',
   initialScreen = 'game',
   initialAuto = false,
-  backgroundSrc = '/assets/bg/school-rain-hallway.svg',
+  backgroundSrc = '/assets/bg/school-rain-hallway.png',
   characterSrc = '',
   character = EMPTY_CHARACTER,
   sounds = {},
@@ -863,7 +863,6 @@ export function BAVisualNovel({
               onHideClick={hideUi}
               onBacklogClick={openBacklog}
               onSkipClick={openSkip}
-              onGalleryClick={openGallery}
             />
           )}
         </svg>
@@ -888,6 +887,7 @@ export function BAVisualNovel({
           <div className="game-system-buttons" aria-label="시스템 메뉴">
             <button type="button" onClick={() => setSaveLoadMode('save')}>SAVE</button>
             <button type="button" onClick={() => setSaveLoadMode('load')}>LOAD</button>
+            <button type="button" onClick={openGallery}>CG</button>
           </div>
         )}
 
@@ -1350,7 +1350,7 @@ function PlaceTag({ visible, text }) {
   );
 }
 
-function TopNav({ auto, menuOpen, onAutoClick, onMenuClick, onHideClick, onBacklogClick, onSkipClick, onGalleryClick }) {
+function TopNav({ auto, menuOpen, onAutoClick, onMenuClick, onHideClick, onBacklogClick, onSkipClick }) {
   return (
     <g id="topNav" className="top-nav" transform="translate(874 17.8)">
       <NavButton label="AUTO" active={auto} x="0" textX="58.6" onClick={onAutoClick} />
@@ -1360,7 +1360,6 @@ function TopNav({ auto, menuOpen, onAutoClick, onMenuClick, onHideClick, onBackl
           onHideClick={onHideClick}
           onBacklogClick={onBacklogClick}
           onSkipClick={onSkipClick}
-          onGalleryClick={onGalleryClick}
         />
       )}
     </g>
@@ -1385,32 +1384,13 @@ function NavButton({ label, active = false, menuOpen = false, x, textX, onClick 
   );
 }
 
-function QuickMenu({ onHideClick, onBacklogClick, onSkipClick, onGalleryClick }) {
+function QuickMenu({ onHideClick, onBacklogClick, onSkipClick }) {
   return (
     <g className="quick-menu" transform="translate(-9 48)" onClick={(event) => event.stopPropagation()}>
       <path className="quick-menu-panel" d={MENU_PANEL_PATH} />
       <QuickIconButton x="22" label="UI 숨김" onClick={onHideClick} icon="hide" />
       <QuickIconButton x="92" label="백로그" onClick={onBacklogClick} icon="log" />
       <QuickIconButton x="156" label="스킵" onClick={onSkipClick} icon="skip" />
-      <QuickGalleryButton onClick={onGalleryClick} />
-    </g>
-  );
-}
-
-function QuickGalleryButton({ onClick }) {
-  return (
-    <g
-      className="quick-gallery-button"
-      transform="translate(220 18)"
-      role="button"
-      tabIndex="0"
-      aria-label="갤러리"
-      onKeyDown={createKeyboardActivationHandler(onClick)}
-      onClick={onClick}
-    >
-      <title>갤러리</title>
-      <rect className="quick-gallery-shape" x="0" y="0" width="23" height="31" rx="6" />
-      <text className="quick-gallery-text" x="11.5" y="20">CG</text>
     </g>
   );
 }

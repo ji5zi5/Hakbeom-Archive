@@ -1,0 +1,78 @@
+{
+  "tool": "agent-sprite-forge/generate2dmap",
+  "visualAssetSource": "built-in image_gen",
+  "repository": "https://github.com/0x0funky/agent-sprite-forge",
+  "commit": "fff651a89223b044ccfc0b75ed9f3754c6d739b1",
+  "installedSkills": [
+    ".codex/skills/generate2dmap",
+    ".codex/skills/generate2dsprite"
+  ],
+  "mapMode": "baked_scene_mode",
+  "visualModel": "baked_raster",
+  "runtimeObjectModel": "none",
+  "collisionModel": "none",
+  "engineTarget": "project-native",
+  "postProcess": "center-crop and resize selected generated image to 1129x524 PNG; originals remain under CODEX_HOME/generated_images",
+  "outputs": [
+    {
+      "id": "school-rain-hallway",
+      "path": "public/assets/bg/school-rain-hallway.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_029495960c9b3d7e016a0a748871d0819192d3147132485ba7.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "85a9627492b9d196d80904423c4f26c03e6d5ddc2147b49343919007fb96bfdd",
+      "bytes": 803100,
+      "promptPath": "public/assets/bg/school-rain-hallway.prompt.txt"
+    },
+    {
+      "id": "student-council-room-evening",
+      "path": "public/assets/bg/student-council-room-evening.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_029495960c9b3d7e016a0a74e230e08191a62960f367992e3c.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "8088a35d722171ece49adbb9b18a234dd50fb5685999bd04727cf9ca1469df62",
+      "bytes": 718449,
+      "promptPath": "public/assets/bg/student-council-room-evening.prompt.txt"
+    },
+    {
+      "id": "school-gate-rain",
+      "path": "public/assets/bg/school-gate-rain.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_029495960c9b3d7e016a0a75303b4481918f42e19da79f72e0.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "dc4c63e8ea59b98c0eb5006ec673279cc3c05761083c2436803beaa4ddda7c85",
+      "bytes": 939858,
+      "promptPath": "public/assets/bg/school-gate-rain.prompt.txt"
+    },
+    {
+      "id": "school-morning-hallway",
+      "path": "public/assets/bg/school-morning-hallway.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_029495960c9b3d7e016a0a7576ac3c81919c69674ce77ef913.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "51b178f9e7631dd45e114bed7d0344677c8012ddd0c1f258a2a18603c63915d1",
+      "bytes": 752051,
+      "promptPath": "public/assets/bg/school-morning-hallway.prompt.txt"
+    },
+    {
+      "id": "library-window",
+      "path": "public/assets/bg/library-window.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_029495960c9b3d7e016a0a75b5dd9c819187863b39ad2f205c.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "a5a5822402ce0f8a70512a3aac05174e5538331f1be086d5de4172192cec94ab",
+      "bytes": 763805,
+      "promptPath": "public/assets/bg/library-window.prompt.txt"
+    },
+    {
+      "id": "broadcast-room",
+      "path": "public/assets/bg/broadcast-room.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_029495960c9b3d7e016a0a75ff1af481918a95a40b3f490db3.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "034e24e25452a60ee47abd9cecab2e80875e72a7b7f95a015d38eb2faea03939",
+      "bytes": 764425,
+      "promptPath": "public/assets/bg/broadcast-room.prompt.txt"
+    }
+  ]
+}

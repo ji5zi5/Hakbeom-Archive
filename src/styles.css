@@ -1292,27 +1292,6 @@ button {
 }
 
 
-.quick-gallery-button {
-  cursor: pointer;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.quick-gallery-shape {
-  fill: rgba(40, 64, 94, .88);
-  stroke: rgba(255,255,255,.16);
-  stroke-width: .3;
-  filter: drop-shadow(.8px 1.2px .8px rgba(20, 40, 60, .26));
-}
-
-.quick-gallery-text {
-  fill: #fff;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: -.04em;
-  text-anchor: middle;
-  pointer-events: none;
-}
 
 .character-wrap.expression-blush .character-sprite {
   filter: saturate(1.08) brightness(1.03) drop-shadow(0 0 12px rgba(255, 125, 176, .25));

@@ -15,40 +15,40 @@ export const routeConfig = {
     { min: 6, label: '같은 우산의 약속' }
   ],
   chapterItems: [
-    { id: 'day-1', title: 'Day 1: 비 오는 방과 후', thumbnail: '/assets/bg/school-rain-hallway.svg' },
-    { id: 'day-2', title: 'Day 2: 우산을 돌려주는 아침', thumbnail: '/assets/bg/school-morning-hallway.svg' },
-    { id: 'day-3', title: 'Day 3: 마른 우산의 약속', thumbnail: '/assets/bg/library-window.svg' }
+    { id: 'day-1', title: 'Day 1: 비 오는 방과 후', thumbnail: '/assets/bg/school-rain-hallway.png' },
+    { id: 'day-2', title: 'Day 2: 우산을 돌려주는 아침', thumbnail: '/assets/bg/school-morning-hallway.png' },
+    { id: 'day-3', title: 'Day 3: 마른 우산의 약속', thumbnail: '/assets/bg/library-window.png' }
   ],
   galleryItems: [
     {
       id: 'cg-umbrella',
       title: '같은 우산 아래',
       unlockFlag: 'shared_umbrella',
-      src: '/assets/bg/school-gate-rain.svg'
+      src: '/assets/bg/school-gate-rain.png'
     },
     {
       id: 'cg-message',
       title: '밤의 메시지',
       unlockFlag: 'warm_reply',
-      src: '/assets/bg/school-rain-hallway.svg'
+      src: '/assets/bg/school-rain-hallway.png'
     },
     {
       id: 'cg-promise',
       title: '내일의 약속',
       unlockFlag: 'promise_hand',
-      src: '/assets/bg/school-gate-rain.svg'
+      src: '/assets/bg/school-gate-rain.png'
     },
     {
       id: 'cg-ukhyun-note',
       title: '욱현의 접힌 노트',
       unlockFlag: 'ukhyun_route',
-      src: '/assets/bg/library-window.svg'
+      src: '/assets/bg/library-window.png'
     },
     {
       id: 'cg-jaeseong-call',
       title: '재성의 호출',
       unlockFlag: 'jaeseong_route',
-      src: '/assets/bg/broadcast-room.svg'
+      src: '/assets/bg/broadcast-room.png'
     }
   ],
   recollectionItems: [

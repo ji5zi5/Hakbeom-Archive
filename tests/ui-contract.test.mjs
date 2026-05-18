@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
@@ -33,6 +33,15 @@ const vnEngine = readFileSync('src/engine/vnEngine.js', 'utf8');
 const phoneEngine = readFileSync('src/engine/phoneEngine.js', 'utf8');
 const chapterEngine = readFileSync('src/engine/chapterEngine.js', 'utf8');
 const regressionCapture = readFileSync('scripts/capture-vn-regression.mjs', 'utf8');
+
+function readPngSize(path) {
+  const buffer = readFileSync(path);
+  assert.equal(buffer.toString('ascii', 1, 4), 'PNG', `${path} should be a PNG file.`);
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20)
+  };
+}
 
 assert.equal(
   /showHud(?:=|\s|\n|\r|\t|>)/.test(app),
@@ -551,13 +560,13 @@ const gameButtonsMatch = visualNovelSource.match(/<div className="game-system-bu
 assert.ok(gameButtonsMatch, 'Game screen should still expose a compact save/load system button cluster.');
 assert.match(
   gameButtonsMatch[0],
-  /<button type="button" onClick=\{\(\) => setSaveLoadMode\('save'\)\}>SAVE<\/button>[\s\S]*?<button type="button" onClick=\{\(\) => setSaveLoadMode\('load'\)\}>LOAD<\/button>/,
-  'Game screen system buttons should keep only explicit SAVE and LOAD actions.'
+  /<button type="button" onClick=\{\(\) => setSaveLoadMode\('save'\)\}>SAVE<\/button>[\s\S]*?<button type="button" onClick=\{\(\) => setSaveLoadMode\('load'\)\}>LOAD<\/button>[\s\S]*?<button type="button" onClick=\{openGallery\}>CG<\/button>/,
+  'Game screen system buttons should keep explicit SAVE, LOAD, and adjacent CG actions.'
 );
 assert.doesNotMatch(
   gameButtonsMatch[0],
-  /Q\.SAVE|Q\.LOAD|CONFIG/,
-  'Game screen system buttons should not duplicate quick-save, quick-load, or config controls in the top-left.'
+  /Q\.SAVE|Q\.LOAD|CONFIG|QuickGalleryButton/,
+  'Game screen system buttons should not duplicate quick-save, quick-load, config, or quick-menu gallery controls in the top-left.'
 );
 
 assert.match(
@@ -628,8 +637,8 @@ assert.match(
 
 assert.match(
   app,
-  /backgroundSrc="\/assets\/bg\/school-rain-hallway\.svg"/,
-  'App should use the generated VN background bundle as the default background.'
+  /backgroundSrc="\/assets\/bg\/school-rain-hallway\.png"/,
+  'App should use the generated PNG VN background bundle as the default background.'
 );
 
 const scenarioSource = readFileSync('src/data/scenario.js', 'utf8');
@@ -666,10 +675,51 @@ const generatedBackgrounds = [
   'library-window',
   'broadcast-room'
 ];
+
+assert.ok(
+  existsSync('.codex/skills/generate2dmap/SKILL.md'),
+  'agent-sprite-forge generate2dmap skill should be installed project-locally instead of relying on ad-hoc SVG art.'
+);
+assert.ok(
+  existsSync('.codex/skills/generate2dmap/scripts/compose_layered_preview.py'),
+  'agent-sprite-forge map post-processing scripts should be available in the repo-local install.'
+);
+const forgeSource = readFileSync('.codex/agent-sprite-forge/SOURCE.txt', 'utf8');
+assert.match(
+  forgeSource,
+  /github\.com\/0x0funky\/agent-sprite-forge[\s\S]*fff651a89223b044ccfc0b75ed9f3754c6d739b1/,
+  'Repo should record the GitHub source and commit used for the agent-sprite-forge install.'
+);
+const forgeManifest = readFileSync('public/assets/bg/agent-sprite-forge-manifest.json', 'utf8');
+assert.match(
+  forgeManifest,
+  /"tool":\s*"agent-sprite-forge\/generate2dmap"[\s\S]*"visualAssetSource":\s*"built-in image_gen"[\s\S]*"mapMode":\s*"baked_scene_mode"[\s\S]*"visualModel":\s*"baked_raster"/,
+  'VN background bundle should be tied to the installed agent-sprite-forge generate2dmap baked raster workflow and real image generation.'
+);
+assert.match(
+  forgeManifest,
+  /"sourceGeneratedImage":\s*"\/home\/jio\/\.codex\/generated_images\/[^"]+\.png"/,
+  'VN background manifest should record the real generated image source copied into the project.'
+);
+
 for (const backgroundName of generatedBackgrounds) {
+  const backgroundPath = `public/assets/bg/${backgroundName}.png`;
   assert.ok(
-    existsSync(`public/assets/bg/${backgroundName}.svg`),
-    `Generated VN background should exist: ${backgroundName}.svg`
+    existsSync(backgroundPath),
+    `Generated VN background should exist as a raster PNG: ${backgroundName}.png`
+  );
+  assert.deepEqual(
+    readPngSize(backgroundPath),
+    { width: 1129, height: 524 },
+    `Generated VN background should be imported at the game stage size: ${backgroundName}.png`
+  );
+  assert.ok(
+    statSync(backgroundPath).size > 500_000,
+    `Generated VN background should be a real imagegen raster asset, not a tiny procedural placeholder: ${backgroundName}.png`
+  );
+  assert.ok(
+    !existsSync(`public/assets/bg/${backgroundName}.svg`),
+    `Generated VN background should not keep rejected SVG art: ${backgroundName}.svg`
   );
   assert.ok(
     existsSync(`public/assets/bg/${backgroundName}.prompt.txt`),
@@ -677,10 +727,10 @@ for (const backgroundName of generatedBackgrounds) {
   );
 }
 
-const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^']+\.svg/g)].map((match) => match[0]);
+const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^']+\.png/g)].map((match) => match[0]);
 assert.ok(
   new Set(scenarioBackgroundRefs).size >= 6,
-  'Scenario BCG directives should use multiple generated VN backgrounds instead of one repeated UI image.'
+  'Scenario BCG directives should use multiple generated PNG VN backgrounds instead of one repeated UI image.'
 );
 
 assert.doesNotMatch(
@@ -1075,8 +1125,14 @@ assert.match(
 
 assert.match(
   component,
-  /setGalleryOpen\(true\)[\s\S]*?onGalleryClick[\s\S]*?QuickGalleryButton|onGalleryClick[\s\S]*?QuickGalleryButton[\s\S]*?openGallery/,
-  'In-game quick menu should expose a compact gallery shortcut without adding top-left clutter.'
+  /<div className="game-system-buttons"[\s\S]*?<button type="button" onClick=\{openGallery\}>CG<\/button>[\s\S]*?<\/div>/,
+  'In-game CG/gallery should live beside SAVE and LOAD instead of inside the quick menu.'
+);
+
+assert.doesNotMatch(
+  component,
+  /QuickGalleryButton|onGalleryClick/,
+  'Quick menu should not carry the CG shortcut because it breaks the menu layout.'
 );
 
 

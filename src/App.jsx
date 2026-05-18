@@ -12,7 +12,7 @@ export default function App() {
       initialItemId={params.get('id') || ''}
       initialScreen={params.get('screen') || (params.has('id') || params.has('mode') ? 'game' : 'title')}
       initialAuto={params.get('auto') === '1'}
-      backgroundSrc="/assets/bg/school-rain-hallway.svg"
+      backgroundSrc="/assets/bg/school-rain-hallway.png"
       sounds={{
         click: '',
         choice: '',
