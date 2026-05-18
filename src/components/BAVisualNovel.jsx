@@ -831,7 +831,6 @@ export function BAVisualNovel({
             characters={sceneCharacters}
             overlays={sceneOverlays}
             item={item}
-            text={fullText}
             onChoose={choose}
           />
 
@@ -1177,9 +1176,17 @@ function BannerScene({ visible, uiHidden, backgroundSrc, backgroundTransition, c
   );
 }
 
-function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters = [], overlays = [], item, text, onChoose }) {
+function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters = [], overlays = [], item, onChoose }) {
   const messages = normalizePhoneMessages(item);
   const replies = normalizePhoneReplies(item);
+  const chatListRef = useRef(null);
+  const contactName = safeText(item?.name || '메시지');
+  const hasReplies = replies.length > 0;
+
+  useEffect(() => {
+    if (!visible || !chatListRef.current) return;
+    chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+  }, [visible, item?.id, messages.length, hasReplies]);
 
   return (
     <g className="scene scene-phone" style={{ display: visible ? 'inline' : 'none' }}>
@@ -1187,14 +1194,19 @@ function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransit
       <DirectorOverlays overlays={overlays} />
       <CharacterLayer characters={characters} />
       {!uiHidden && (
-        <foreignObject x="610" y="58" width="360" height="408">
-          <div className="phone-ui">
-            <div className="phone-head">
-              <span>MESSAGE</span>
-              <strong>{item?.name || '현겸'}</strong>
+        <foreignObject x="586" y="58" width="406" height="454">
+          <div className={`phone-ui ${hasReplies ? 'phone-ui-reply' : 'phone-ui-message'}`}>
+            <div className="phone-device-bar" aria-hidden="true">
+              <span />
             </div>
-            <div className="phone-message">{safeText(text)}</div>
-            <div className="phone-chat-list">
+            <div className="phone-head">
+              <div>
+                <span>BA MESSENGER</span>
+                <strong>{contactName}</strong>
+              </div>
+              <small>{hasReplies ? '답장 선택' : '대화 수신'}</small>
+            </div>
+            <div ref={chatListRef} className="phone-chat-list" aria-label={`${contactName} 메시지`}>
               {messages.map((message) => (
                 <div key={message.id} className={`phone-bubble phone-bubble-${message.side}`}>
                   <span className="phone-bubble-name">{message.name}</span>
@@ -1207,21 +1219,23 @@ function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransit
                 </div>
               ))}
             </div>
-            <div className="phone-replies">
-              {replies.map((reply) => (
-                <button
-                  key={`${reply.index}-${reply.text}`}
-                  className="phone-reply"
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onChoose(reply.index);
-                  }}
-                >
-                  {reply.text}
-                </button>
-              ))}
-            </div>
+            {hasReplies && (
+              <div className="phone-replies" aria-label="답장 선택지">
+                {replies.map((reply) => (
+                  <button
+                    key={`${reply.index}-${reply.text}`}
+                    className="phone-reply"
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onChoose(reply.index);
+                    }}
+                  >
+                    {reply.text}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </foreignObject>
       )}

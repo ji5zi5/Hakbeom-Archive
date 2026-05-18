@@ -863,59 +863,102 @@ button {
   bottom: 13.5%;
   width: min(312px, 36%);
   min-height: 282px;
-  padding: 16px 14px 18px;
-  border: 1px solid rgba(255, 255, 255, .58);
-  border-radius: 30px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(255, 255, 255, .68);
+  border-radius: 34px;
   background:
-    linear-gradient(180deg, rgba(248, 253, 255, .96), rgba(223, 240, 249, .94)),
-    radial-gradient(circle at 50% 0, rgba(112, 215, 246, .28), transparent 42%);
+    linear-gradient(180deg, rgba(248, 253, 255, .97), rgba(221, 239, 248, .95)),
+    radial-gradient(circle at 50% 0, rgba(105, 210, 244, .34), transparent 42%);
   box-shadow:
     0 18px 44px rgba(0, 0, 0, .34),
-    inset 0 1px 0 rgba(255, 255, 255, .92);
+    inset 0 1px 0 rgba(255, 255, 255, .92),
+    inset 0 -18px 30px rgba(87, 195, 194, .08);
   backdrop-filter: blur(8px);
+}
+
+.phone-device-bar {
+  display: grid;
+  place-items: center;
+  height: 13px;
+  flex: 0 0 auto;
+  margin-bottom: 4px;
+}
+
+.phone-device-bar span {
+  width: 54px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(48, 83, 105, .18);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .7);
 }
 
 .phone-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 0 7px 12px;
-  border-bottom: 1px solid rgba(56, 88, 115, .14);
+  flex: 0 0 auto;
+  gap: 14px;
+  padding: 0 7px 10px;
+  border-bottom: 1px solid rgba(56, 88, 115, .16);
   color: #277aa7;
-  font-size: clamp(12px, 1.35vw, 15px);
   font-weight: 900;
-  letter-spacing: .02em;
+}
+
+.phone-head div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.phone-head span {
+  color: #2d8ab9;
+  font-size: 11px;
+  letter-spacing: .08em;
+}
+
+.phone-head strong {
+  color: #19344d;
+  font-size: 17px;
+  line-height: 1.05;
+}
+
+.phone-head small {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #2a789f;
+  background: rgba(255, 255, 255, .74);
+  border: 1px solid rgba(45, 134, 179, .14);
+  font-size: 10px;
+  letter-spacing: -.03em;
 }
 
 .phone-message {
-  max-width: 86%;
-  margin: 13px 0;
-  padding: 11px 13px;
-  border-radius: 16px 16px 16px 4px;
-  background: rgba(255, 255, 255, .86);
-  box-shadow: 0 5px 15px rgba(35, 76, 106, .14);
-  color: #283443;
-  font-size: clamp(13px, 1.45vw, 16px);
-  font-weight: 800;
-  line-height: 1.45;
+  display: none;
 }
 
 .phone-replies {
   display: grid;
   gap: 8px;
-  margin-top: 16px;
+  flex: 0 0 auto;
+  margin-top: 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(56, 88, 115, .12);
 }
 
 .phone-replies button {
   width: 100%;
-  min-height: 38px;
+  min-height: 34px;
   border: 1px solid rgba(44, 135, 179, .24);
   border-radius: 999px;
-  padding: 8px 13px;
+  padding: 7px 13px;
   background: linear-gradient(180deg, #f7fdff, #dff5ff);
   color: #245571;
   font-weight: 900;
+  font-size: 12px;
+  line-height: 1.24;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   cursor: pointer;
   box-shadow: 0 4px 9px rgba(34, 78, 110, .16);
 }
@@ -1345,6 +1388,9 @@ button {
   width: 100%;
   height: 100%;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .scene-phone .phone-reply {
@@ -1627,33 +1673,49 @@ button {
 }
 
 .phone-chat-list {
-  display: grid;
-  gap: 10px;
-  max-height: 226px;
-  overflow: hidden;
-  padding-right: 2px;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  gap: 9px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 4px 12px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(48, 137, 183, .45) transparent;
+}
+
+.phone-chat-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.phone-chat-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(48, 137, 183, .42);
 }
 
 .phone-bubble {
   display: grid;
   gap: 3px;
-  max-width: 78%;
-  padding: 10px 12px;
+  max-width: 84%;
+  padding: 9px 12px;
   border-radius: 16px;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.42;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   box-shadow: 0 8px 18px rgba(13, 31, 48, .12);
 }
 
 .phone-bubble-other {
-  justify-self: start;
+  align-self: flex-start;
   color: #1b3348;
   background: rgba(255, 255, 255, .92);
   border-bottom-left-radius: 5px;
 }
 
 .phone-bubble-me {
-  justify-self: end;
+  align-self: flex-end;
   color: white;
   background: linear-gradient(135deg, #48b9c4, #3479c8);
   border-bottom-right-radius: 5px;
