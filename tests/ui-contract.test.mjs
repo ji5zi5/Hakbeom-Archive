@@ -541,8 +541,8 @@ assert.match(
 
 assert.deepEqual(
   readPngSize('public/assets/ui/hakbeom-archive-logo.png'),
-  { width: 900, height: 250 },
-  'Hakbeom Archive logo asset should be installed from the provided folder PNG.'
+  { width: 2176, height: 604 },
+  'Hakbeom Archive logo asset should use the latest transparent cutout PNG supplied by the user.'
 );
 
 assert.doesNotMatch(
@@ -561,6 +561,24 @@ assert.match(
   styles,
   /\.title-screen\s*\{[\s\S]*?z-index\s*:\s*20[\s\S]*?\.ba-modal-layer\s*\{[\s\S]*?z-index\s*:\s*30/i,
   'Save/load/config modals should layer above the title screen.'
+);
+
+assert.match(
+  styles,
+  /\.title-screen::before\s*\{[\s\S]*?url\('\/assets\/bg\/school-rain-hallway\.png'\)[\s\S]*?background-size:\s*cover/i,
+  'Title screen should use the generated rainy hallway background instead of a flat generic gradient.'
+);
+
+assert.match(
+  styles,
+  /\.title-brand\s*\{[\s\S]*?backdrop-filter:\s*blur\([\d.]+px\)[\s\S]*?border-radius:\s*clamp/i,
+  'Title brand area should be a polished glass panel around the supplied logo.'
+);
+
+assert.match(
+  styles,
+  /\.title-menu\s*\{[\s\S]*?backdrop-filter:\s*blur\([\d.]+px\)[\s\S]*?border-radius:\s*clamp/i,
+  'Title menu should be styled as a glass navigation dock, not plain floating buttons.'
 );
 
 assert.match(
