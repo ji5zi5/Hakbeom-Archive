@@ -1378,6 +1378,46 @@ for (const [sceneId, expectedName] of [
   assert.equal(scene?.name, expectedName, `${sceneId} should be a direct dialogue scene with ${expectedName}, not a narration-only detour.`);
 }
 
+for (const [sceneId, forbiddenNextId] of [
+  ['day1-action-ukhyun', 'hallway-lights'],
+  ['day1-action-jaeseong', 'hallway-lights'],
+  ['day2-action-ukhyun', 'day2-after-school'],
+  ['day2-action-jaeseong', 'day2-after-school']
+]) {
+  const scene = scenario.find((item) => item.id === sceneId);
+  assert.notEqual(
+    scene?.nextId,
+    forbiddenNextId,
+    `${sceneId} should not snap back to the Hyungyeom common scene after the player chose another route.`
+  );
+}
+
+for (const [sceneId, expectedNextName] of [
+  ['day1-action-ukhyun', '욱현'],
+  ['day1-action-jaeseong', '재성'],
+  ['day2-action-ukhyun', '욱현'],
+  ['day2-action-jaeseong', '재성']
+]) {
+  const scene = scenario.find((item) => item.id === sceneId);
+  const nextScene = scenario.find((item) => item.id === scene?.nextId);
+  assert.equal(
+    nextScene?.name,
+    expectedNextName,
+    `${sceneId} should continue with ${expectedNextName} instead of suddenly showing Hyungyeom.`
+  );
+}
+
+assert.equal(
+  scenario.find((item) => item.id === 'day2-ukhyun-close')?.nextId,
+  'ukhyun-route-start',
+  'Ukhyun Day 2 close should enter the Ukhyun Day 3 route start instead of the Hyungyeom Day 3 phone opener.'
+);
+assert.equal(
+  scenario.find((item) => item.id === 'day2-jaeseong-close')?.nextId,
+  'jaeseong-route-start',
+  'Jaeseong Day 2 close should enter the Jaeseong Day 3 route start instead of the Hyungyeom Day 3 phone opener.'
+);
+
 assert.match(
   scenarioSource,
   /id:\s*'choice-promise'[\s\S]*?choices:\s*\[[\s\S]*?'손을 잡는다\.'/,

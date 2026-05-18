@@ -25,6 +25,46 @@ export const day2Scenes = [
       nextId: 'day2-morning-message'
     },
   {
+      id: 'day2-ukhyun-morning-bridge',
+      type: 'dialogue',
+      mood: 'tense',
+      chapter: 'day-2',
+      sectionTitle: 'Day 2: 접힌 노트의 답장',
+      name: '욱현',
+      role: '도서위원',
+      place: '도서관 창가',
+      text: '아침 도서관 창가에는 학범이 접어 둔 답장이 먼저 놓여 있었다. 욱현은 그것을 펼치지 않고 손끝으로 눌렀다. “읽기 전에 물어볼게. 오늘도 직접 확인하러 온 거지?”',
+      effect: { target: 'ukhyun', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
+        { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
+      ],
+      nextId: 'choice-day2-free-action'
+    },
+  {
+      id: 'day2-jaeseong-morning-bridge',
+      type: 'dialogue',
+      mood: 'tense',
+      chapter: 'day-2',
+      sectionTitle: 'Day 2: 꺼진 마이크의 아침',
+      name: '재성',
+      role: '방송부',
+      place: '방송실 앞',
+      text: '아침 방송 전, 재성은 온에어 불을 켜지 않은 채 학범을 기다리고 있었다. “어제 네가 왔던 거, 아무 데도 안 남겼어. 대신 오늘 네가 먼저 온 건 내가 기억해도 되지?”',
+      effect: { target: 'jaeseong', type: 'question' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'fade-in' },
+        { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce' }
+      ],
+      nextId: 'choice-day2-free-action'
+    },
+  {
       id: 'day2-morning-message',
       type: 'phone',
       chapter: 'day-2',
@@ -172,7 +212,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
         { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod', se: 'question' }
       ],
-      nextId: 'day2-introduction-briefing'
+      nextId: 'day2-ukhyun-close'
     },
   {
       id: 'day2-action-jaeseong',
@@ -190,9 +230,44 @@ export const day2Scenes = [
         { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
         { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
       ],
-      nextId: 'day2-introduction-briefing'
+      nextId: 'day2-jaeseong-close'
     },
-
+  {
+      id: 'day2-ukhyun-close',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '욱현',
+      role: '도서위원',
+      place: '도서관 창가',
+      text: '욱현은 접힌 답장을 노트 사이에 끼워 넣었다. “내일도 창가에 둘게. 네가 또 펼칠지, 아니면 이번엔 먼저 말할지 보고 싶어.”',
+      effect: { target: 'ukhyun', type: 'heart' },
+      directives: [
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', action: 'update', expression: 'smile' },
+        { type: 'E', target: 'ukhyun', effect: 'heart', motion: 'nod' }
+      ],
+      nextId: 'ukhyun-route-start'
+    },
+  {
+      id: 'day2-jaeseong-close',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '재성',
+      role: '방송부',
+      place: '방송실',
+      text: '재성은 헤드폰을 벗겨 주며 마이크 전원을 끝까지 내렸다. “오늘은 여기까지. 다음에 또 네가 먼저 오면, 그땐 방송 멘트 말고 내 목소리로 답할게.”',
+      effect: { target: 'jaeseong', type: 'heart' },
+      directives: [
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', action: 'update', expression: 'smile' },
+        { type: 'E', target: 'jaeseong', effect: 'heart', motion: 'nod' }
+      ],
+      nextId: 'jaeseong-route-start'
+    },
   {
       id: 'day2-introduction-briefing',
       type: 'dialogue',

@@ -374,7 +374,7 @@ export const day1Scenes = [
         { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
         { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod', se: 'question' }
       ],
-      nextId: 'hallway-lights'
+      nextId: 'day1-ukhyun-night-note'
     },
   {
       id: 'day1-action-jaeseong',
@@ -392,7 +392,45 @@ export const day1Scenes = [
         { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
         { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
       ],
-      nextId: 'hallway-lights'
+      nextId: 'day1-jaeseong-night-call'
+    },
+  {
+      id: 'day1-ukhyun-night-note',
+      type: 'phone',
+      kind: 'phone',
+      chapter: 'day-1',
+      name: '욱현',
+      role: '메시지',
+      text: '접힌 부분, 펴 봤으면 답도 접어 둬.',
+      messages: [
+        { from: 'ukhyun', text: '노트 가져갔지.', read: true },
+        { from: 'ukhyun', text: '접힌 부분, 펴 봤으면 답도 접어 둬.', read: true },
+        { from: 'hakbeom', text: '내일 도서관 창가에 둘게.', read: true },
+        { from: 'ukhyun', text: '기다릴게.', read: true }
+      ],
+      directives: [
+        { type: 'SE', cue: 'message' }
+      ],
+      nextId: 'day2-ukhyun-morning-bridge'
+    },
+  {
+      id: 'day1-jaeseong-night-call',
+      type: 'phone',
+      kind: 'phone',
+      chapter: 'day-1',
+      name: '재성',
+      role: '메시지',
+      text: '오늘 온 거, 방송 기록에는 안 남겨뒀어.',
+      messages: [
+        { from: 'jaeseong', text: '오늘 온 거, 방송 기록에는 안 남겨뒀어.', read: true },
+        { from: 'jaeseong', text: '마이크 꺼 둔 이유는 내일도 유효하고.', read: true },
+        { from: 'hakbeom', text: '그럼 내일은 내가 먼저 확인하러 갈게.', read: true },
+        { from: 'jaeseong', text: '좋네. 그 말은 저장해둘게.', read: true }
+      ],
+      directives: [
+        { type: 'SE', cue: 'message' }
+      ],
+      nextId: 'day2-jaeseong-morning-bridge'
     },
   {
       id: 'hallway-lights',
