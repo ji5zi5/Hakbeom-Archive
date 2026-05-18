@@ -35,6 +35,41 @@ async function visibleSvgScene(page, selector) {
   return page.locator(selector).first().evaluate((node) => getComputedStyle(node).display !== 'none');
 }
 
+async function assertChoiceLayoutFits(page, label) {
+  const metrics = await page.evaluate(() => {
+    const box = (node) => {
+      if (!node) return null;
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height
+      };
+    };
+
+    return [...document.querySelectorAll('.scene-choice .choice-row')].map((row) => ({
+      panel: box(row.querySelector('use')),
+      text: box(row.querySelector('.choice-text')),
+      lines: row.querySelectorAll('.choice-text tspan').length,
+      label: row.getAttribute('aria-label')
+    }));
+  });
+
+  assert.ok(metrics.length > 0, `${label}: choice rows should exist`);
+  for (const [index, row] of metrics.entries()) {
+    assert.ok(row.panel, `${label}: choice row ${index + 1} should have a panel`);
+    assert.ok(row.text, `${label}: choice row ${index + 1} should have text`);
+    assert.ok(row.lines >= 1 && row.lines <= 2, `${label}: choice row ${index + 1} should render one or two text lines`);
+    assert.ok(row.text.left >= row.panel.left + 18, `${label}: choice row ${index + 1} text should not overflow left`);
+    assert.ok(row.text.right <= row.panel.right - 18, `${label}: choice row ${index + 1} text should not overflow right`);
+    assert.ok(row.text.top >= row.panel.top + 6, `${label}: choice row ${index + 1} text should not overflow top`);
+    assert.ok(row.text.bottom <= row.panel.bottom - 6, `${label}: choice row ${index + 1} text should not overflow bottom`);
+  }
+}
+
 async function assertPhoneLayoutFits(page, label, { minReplies = 0 } = {}) {
   const metrics = await page.evaluate(() => {
     const box = (node) => {
@@ -178,9 +213,17 @@ async function main() {
     await page.goto(buildUrl('?screen=game&id=choice-approach'), { waitUntil: 'networkidle' });
     await page.waitForSelector('.choice-row');
     assert.equal(await visibleSvgScene(page, '.scene-choice'), true, 'choice scene should be visible');
+    await assertChoiceLayoutFits(page, 'choice-approach');
     await page.locator('.choice-row').first().click();
     await page.waitForTimeout(350);
     assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'choice should advance into dialogue');
+  });
+
+  await check('choice-layout', async () => {
+    await page.goto(buildUrl('?screen=game&id=choice-day1-after-school-action'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.choice-row');
+    assert.equal(await visibleSvgScene(page, '.scene-choice'), true, 'long choice scene should be visible');
+    await assertChoiceLayoutFits(page, 'choice-day1-after-school-action');
   });
 
   await check('phone-reply', async () => {

@@ -33,6 +33,11 @@ const CHOICE_ROW_LAYOUTS = {
   2: [191, 269],
   3: [152, 230, 308]
 };
+const CHOICE_TEXT_WRAP_OPTIONS = {
+  maxChars: 28,
+  maxWidth: 620,
+  maxLines: 2
+};
 const TYPE_INTERVAL_MS = 22;
 const AUTO_DELAY_MS = 1250;
 const BACKGROUND_TRANSITION_MS = 560;
@@ -1103,6 +1108,21 @@ function DialogueTextLines({ text, visibleCount = safeText(text).length }) {
   );
 }
 
+function ChoiceTextLines({ text }) {
+  const lines = wrapDialogueText(text, CHOICE_TEXT_WRAP_OPTIONS);
+  const startY = lines.length > 1 ? 24 : 37;
+
+  return (
+    <text className={`choice-text ${lines.length > 1 ? 'choice-text-multiline' : ''}`} x="380" y={startY}>
+      {lines.map((line, index) => (
+        <tspan key={`${index}-${line}`} x="380" dy={index === 0 ? 0 : 20}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  );
+}
+
 function DialogueScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters, overlays, item, fullText, text, roleX, speakerNameRef, onNext }) {
   return (
     <g className="scene scene-dialogue" style={{ display: visible ? 'inline' : 'none' }}>
@@ -1284,7 +1304,7 @@ function ChoiceScene({ visible, uiHidden, backgroundSrc, backgroundTransition, c
                   }}
                 >
                   <use href="#baSlantPanel" x="0" y="0" width="760" height="58" />
-                  <text className="choice-text" x="380" y="37">{text}</text>
+                  <ChoiceTextLines text={text} />
                 </g>
               );
             })}

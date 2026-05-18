@@ -153,6 +153,7 @@ const dialogueSceneSource = topLevelFunctionSource(component, 'DialogueScene');
 const characterLayerSource = topLevelFunctionSource(component, 'CharacterLayer');
 const characterSpriteSource = topLevelFunctionSource(component, 'CharacterSprite');
 const dialogueTextLinesSource = topLevelFunctionSource(component, 'DialogueTextLines');
+const choiceTextLinesSource = topLevelFunctionSource(component, 'ChoiceTextLines');
 const wrapDialogueTextSource = topLevelFunctionSource(vnText, 'wrapDialogueText');
 const effectGeometrySource = topLevelFunctionSource(component, 'getEffectBadgeGeometry');
 const effectBadgeSource = topLevelFunctionSource(component, 'EffectBadge');
@@ -687,6 +688,18 @@ assert.match(
   dialogueTextLinesSource,
   /<text className="dialogue-text" x="136" y="429" textAnchor="start">[\s\S]*?lines\.map\(\(line, index\) =>[\s\S]*?<tspan[\s\S]*?x="136"[\s\S]*?dy=\{index === 0 \? 0 : 29\}[\s\S]*?textAnchor="start"/,
   'DialogueScene should render wrapped dialogue as left-anchored SVG tspans instead of one overflowing or center-shifted text node.'
+);
+
+assert.match(
+  component,
+  /const CHOICE_TEXT_WRAP_OPTIONS = \{[\s\S]*?maxWidth:\s*620[\s\S]*?maxLines:\s*2[\s\S]*?\}/,
+  'Choice text should have a fixed two-line wrapping contract that fits inside the BA choice panel.'
+);
+
+assert.match(
+  choiceTextLinesSource,
+  /function ChoiceTextLines\(\{ text \}\)[\s\S]*?wrapDialogueText\(text,\s*CHOICE_TEXT_WRAP_OPTIONS\)[\s\S]*?startY = lines\.length > 1 \? 24 : 37[\s\S]*?<tspan[\s\S]*?x="380"[\s\S]*?dy=\{index === 0 \? 0 : 20\}/,
+  'Choice text should render through wrapped SVG tspans so long Korean choices stay inside the button.'
 );
 
 assert.match(
@@ -1833,8 +1846,8 @@ assert.match(
 
 assert.match(
   component,
-  /transform=\{`translate\(185 \$\{y\}\)`\}[\s\S]*?<use href="#baSlantPanel" x="0" y="0" width="760" height="58" \/>[\s\S]*?<text className="choice-text" x="380" y="37">/,
-  'Choice row panels should share the same x/width/height as BannerScene for one-choice alignment.'
+  /transform=\{`translate\(185 \$\{y\}\)`\}[\s\S]*?<use href="#baSlantPanel" x="0" y="0" width="760" height="58" \/>[\s\S]*?<ChoiceTextLines text=\{text\} \/>/,
+  'Choice row panels should share the same x/width/height as BannerScene while delegating wrapped text rendering.'
 );
 
 
