@@ -11,7 +11,7 @@ import {
   resolveAudioCue
 } from '../src/engine/audioEngine.js';
 import { getChapterInfo, shouldShowChapterCard } from '../src/engine/chapterEngine.js';
-import { applyDirectorItem } from '../src/engine/directorEngine.js';
+import { applyDirectorItem, getMoodOverlay } from '../src/engine/directorEngine.js';
 import { normalizePhoneMessages, normalizePhoneReplies } from '../src/engine/phoneEngine.js';
 import { normalizeSavePayload } from '../src/engine/saveCodec.js';
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
@@ -1364,6 +1364,20 @@ const directorResult = applyDirectorItem(
 assert.equal(directorResult.backgroundSrc, '/assets/ui/test.jpg');
 assert.equal(directorResult.characters[0].expression, 'smile');
 assert.ok(directorResult.overlays.length > 0, 'Director engine should add mood overlays.');
+
+for (const mood of ['warm', 'confession']) {
+  const overlay = getMoodOverlay(mood);
+  assert.ok(overlay, `${mood} mood should still resolve to an overlay contract.`);
+  assert.doesNotMatch(
+    overlay.color,
+    /#ffd876|#ff9bc0/i,
+    `${mood} mood overlay should not wash the real background with yellow or pink.`
+  );
+  assert.ok(
+    Number(overlay.opacity) <= 0.04,
+    `${mood} mood overlay should stay subtle enough that generated backgrounds remain visible.`
+  );
+}
 
 assert.equal(clampVolumePercent(-20), 0);
 assert.equal(clampVolumePercent(45), 45);

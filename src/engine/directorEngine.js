@@ -61,10 +61,10 @@ export function clearEphemeralCharacterState(character) {
 
 export function getMoodOverlay(mood) {
   const moodOverlays = {
-    rain: { id: 'mood-rain', kind: 'rain', color: '#2b81a8', opacity: 0.10, transition: 'fade-in' },
-    warm: { id: 'mood-warm', kind: 'warm', color: '#ffd876', opacity: 0.08, transition: 'fade-in' },
-    tense: { id: 'mood-tense', kind: 'tense', color: '#1d2940', opacity: 0.12, transition: 'fade-in' },
-    confession: { id: 'mood-confession', kind: 'confession', color: '#ff9bc0', opacity: 0.10, transition: 'fade-in' }
+    rain: { id: 'mood-rain', kind: 'rain', color: '#1f5d78', opacity: 0.05, transition: 'fade-in' },
+    warm: { id: 'mood-warm', kind: 'warm', color: '#ffffff', opacity: 0.025, transition: 'fade-in' },
+    tense: { id: 'mood-tense', kind: 'tense', color: '#111827', opacity: 0.06, transition: 'fade-in' },
+    confession: { id: 'mood-confession', kind: 'confession', color: '#ffffff', opacity: 0.03, transition: 'fade-in' }
   };
   const overlay = moodOverlays[safeClassName(mood)];
   return overlay ? addDirectorOverlay({ overlays: [] }, overlay).overlays[0] : null;
