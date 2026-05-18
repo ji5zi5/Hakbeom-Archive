@@ -139,6 +139,11 @@ export function getReplayCandidateSteps(scenario, index, gameState, options = {}
 
   const endingRules = options.endingRules || [];
   if (item.endingNext) {
+    if (options.targetId && Object.values(item.endingNext).includes(options.targetId)) {
+      const explicitTargetIndex = findScenarioIndexById(scenario, options.targetId);
+      if (explicitTargetIndex >= 0) return [{ index: explicitTargetIndex, gameState }];
+    }
+
     const route = endingRules.length > 0 ? resolveEndingRoute(gameState, endingRules) : null;
     const targetId = route
       ? item.endingNext[route.id] || item.endingNext.default || item.endingNext.quiet

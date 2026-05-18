@@ -59,6 +59,10 @@ export function clearEphemeralCharacterState(character) {
   };
 }
 
+function getCharacterPosition(character) {
+  return character?.position ?? character?.pos ?? 3;
+}
+
 export function getMoodOverlay(mood) {
   const moodOverlays = {
     rain: { id: 'mood-rain', kind: 'rain', color: '#1f5d78', opacity: 0.05, transition: 'fade-in' },
@@ -71,13 +75,17 @@ export function getMoodOverlay(mood) {
 }
 
 export function applyDirectorItem(state, item, defaults = {}) {
+  const retainedCharacters = item?.kind === 'chapter'
+    ? []
+    : (state.characters || [])
+        .filter((character) => !character.leaving)
+        .map(clearEphemeralCharacterState);
+
   let next = {
     ...state,
     backgroundSrc: item?.backgroundSrc || state.backgroundSrc || defaults.backgroundSrc,
     backgroundTransition: '',
-    characters: (state.characters || [])
-      .filter((character) => !character.leaving)
-      .map(clearEphemeralCharacterState),
+    characters: retainedCharacters,
     overlays: [],
     soundCues: [],
     audio: createAudioState(state.audio)
@@ -166,7 +174,7 @@ function applyScgDirective(state, directive, defaults = {}) {
     name: directive.name || existing?.name || safeText(id),
     src: directive.src || directive.image || directive.asset || existing?.src || defaults.characterSrc || '',
     action,
-    position: directive.position ?? directive.pos ?? existing?.position ?? 3,
+    position: directive.position ?? directive.pos ?? getCharacterPosition(existing),
     x: directive.x ?? existing?.x,
     y: directive.y ?? existing?.y,
     width: directive.width ?? existing?.width,
@@ -179,9 +187,15 @@ function applyScgDirective(state, directive, defaults = {}) {
     leaving: false
   };
 
+  const baseCharacters = existing
+    ? state.characters
+    : (state.characters || []).filter((character) => (
+        getCharacterPosition(character) !== nextCharacter.position
+      ));
+
   const characters = existing
     ? state.characters.map((character) => (character.id === id ? nextCharacter : character))
-    : [...(state.characters || []), nextCharacter];
+    : [...baseCharacters, nextCharacter];
 
   return { ...state, characters };
 }

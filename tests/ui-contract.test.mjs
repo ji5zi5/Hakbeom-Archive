@@ -16,7 +16,7 @@ import { normalizePhoneMessages, normalizePhoneReplies } from '../src/engine/pho
 import { normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCodec.js';
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
-import { findReplayPath, resolveNextIndex } from '../src/engine/vnEngine.js';
+import { findReplayPath, replayDirectorState, resolveNextIndex } from '../src/engine/vnEngine.js';
 import { resolveDominantRoute, resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
 
@@ -1850,8 +1850,14 @@ assert.match(
 
 assert.match(
   directorApplySource,
-  /characters:\s*\(state\.characters \|\| \[\]\)[\s\S]*?\.filter\(\(character\) => !character\.leaving\)[\s\S]*?\.map\(clearEphemeralCharacterState\)/,
-  'Director state should not carry emotion badges/motions forward onto unrelated dialogue lines.'
+  /const retainedCharacters = item\?\.kind === 'chapter'[\s\S]*?\(state\.characters \|\| \[\]\)[\s\S]*?\.filter\(\(character\) => !character\.leaving\)[\s\S]*?\.map\(clearEphemeralCharacterState\)[\s\S]*?characters:\s*retainedCharacters/,
+  'Director state should reset characters on chapter cards and not carry emotion badges/motions forward onto unrelated dialogue lines.'
+);
+
+assert.match(
+  directorEngine,
+  /function getCharacterPosition\(character\)[\s\S]*?character\?\.position \?\? character\?\.pos \?\? 3[\s\S]*?baseCharacters[\s\S]*?getCharacterPosition\(character\) !== nextCharacter\.position/,
+  'Director state should drop same-slot characters before entering a replacement sprite so people do not overlap.'
 );
 
 assert.doesNotMatch(
@@ -2057,10 +2063,10 @@ assert.match(
   'Route-aware replay should simulate choice rewards and resolve endingNext using the simulated route state.'
 );
 
-assert.doesNotMatch(
+assert.match(
   replayCandidateSource,
-  /Object\.values\(item\.endingNext/,
-  'Replay candidates should not blindly include every endingNext branch before route resolution.'
+  /options\.targetId[\s\S]*?Object\.values\(item\.endingNext\)\.includes\(options\.targetId\)[\s\S]*?resolveEndingRoute\(gameState,\s*endingRules\)/,
+  'Replay candidates may take an explicit deep-link ending target, then otherwise resolve endingNext through route state.'
 );
 
 
@@ -2397,6 +2403,17 @@ const jaeseongReplayPath = findReplayPath(
 assert.ok(Array.isArray(jaeseongReplayPath), 'Replay path should be found for the Jaeseong heroine ending.');
 assert.ok(jaeseongReplayPath.includes(jaeseongEndingIndex), 'Replay path should include the Jaeseong ending target.');
 
+const goodEndingIndex = scenario.findIndex((item) => item.id === 'ending-good');
+const goodReplayPath = findReplayPath(
+  scenario,
+  goodEndingIndex,
+  0,
+  createInitialGameState(),
+  { targetId: 'ending-good', endingRules: episodeInfo.endingRules || [], routeConfig: routeConfigData }
+);
+assert.ok(Array.isArray(goodReplayPath), 'Replay path should directly target explicit endingNext values for visual QA deep links.');
+assert.ok(goodReplayPath.includes(goodEndingIndex), 'Replay path should include the explicit good-ending target without exhaustively searching all branches.');
+
 const directorResult = applyDirectorItem(
   { backgroundSrc: null, backgroundTransition: '', characters: [], overlays: [], soundCues: [], soundKey: '' },
   {
@@ -2409,6 +2426,91 @@ const directorResult = applyDirectorItem(
 assert.equal(directorResult.backgroundSrc, '/assets/ui/test.jpg');
 assert.equal(directorResult.characters[0].expression, 'smile');
 assert.ok(directorResult.overlays.length > 0, 'Director engine should add mood overlays.');
+
+const chapterDirectorResult = applyDirectorItem(
+  {
+    backgroundSrc: null,
+    backgroundTransition: '',
+    characters: [{ id: 'yunho', position: 3, expression: 'quiet' }],
+    overlays: [],
+    soundCues: [],
+    soundKey: '',
+    audio: createAudioState()
+  },
+  { id: 'chapter-reset-test', kind: 'chapter', type: 'banner', directives: [] },
+  {}
+);
+assert.deepEqual(chapterDirectorResult.characters, [], 'Chapter cards should clear previous standing character sprites.');
+
+const sameSlotDirectorResult = applyDirectorItem(
+  {
+    backgroundSrc: null,
+    backgroundTransition: '',
+    characters: [{ id: 'old', position: 3, expression: 'normal' }],
+    overlays: [],
+    soundCues: [],
+    soundKey: '',
+    audio: createAudioState()
+  },
+  {
+    id: 'same-slot-replacement-test',
+    directives: [
+      { type: 'SCG', id: 'old', action: 'delete', transition: 'fade-out' },
+      { type: 'SCG', id: 'new', action: 'enter', pos: 3, expression: 'smile' }
+    ]
+  },
+  {}
+);
+assert.deepEqual(
+  sameSlotDirectorResult.characters.map((character) => character.id),
+  ['new'],
+  'Same-position character replacement should not keep the fading old sprite behind the new one.'
+);
+
+const implicitSameSlotDirectorResult = applyDirectorItem(
+  {
+    backgroundSrc: null,
+    backgroundTransition: '',
+    characters: [{ id: 'yunho', position: 3, expression: 'quiet' }],
+    overlays: [],
+    soundCues: [],
+    soundKey: '',
+    audio: createAudioState()
+  },
+  {
+    id: 'implicit-same-slot-replacement-test',
+    directives: [
+      { type: 'SCG', id: 'ukhyun', action: 'enter', pos: 3, expression: 'quiet' }
+    ]
+  },
+  {}
+);
+assert.deepEqual(
+  implicitSameSlotDirectorResult.characters.map((character) => character.id),
+  ['ukhyun'],
+  'Entering a new character into an occupied slot should replace the previous occupant even if the scenario forgot an explicit delete.'
+);
+
+const day2SangwonFormsIndex = scenario.findIndex((item) => item.id === 'day2-sangwon-forms');
+const day2SangwonDirector = replayDirectorState(scenario, day2SangwonFormsIndex, { audio: createAudioState() });
+assert.deepEqual(
+  day2SangwonDirector.characters.filter((character) => !character.leaving).map((character) => character.id),
+  ['sangwon'],
+  'Day 2 festival setup should not keep stale Day 1/previous character sprites behind Sangwon.'
+);
+
+for (const [sceneId, expectedCharacter] of [
+  ['day2-ukhyun-library-request', 'ukhyun'],
+  ['day2-jaeseong-broadcast-invite', 'jaeseong']
+]) {
+  const targetIndex = scenario.findIndex((item) => item.id === sceneId);
+  const director = replayDirectorState(scenario, targetIndex, { audio: createAudioState(), routeConfig: routeConfigData });
+  assert.deepEqual(
+    director.characters.filter((character) => !character.leaving).map((character) => character.id),
+    [expectedCharacter],
+    `${sceneId} should show only ${expectedCharacter} without stale Yunho/previous-route sprites.`
+  );
+}
 
 for (const mood of ['warm', 'confession']) {
   const overlay = getMoodOverlay(mood);
