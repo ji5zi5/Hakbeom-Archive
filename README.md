@@ -22,6 +22,7 @@ npm run dev
 Day 1 카드:    http://localhost:5173/?id=day1-chapter-card
 폰 답장:        http://localhost:5173/?id=phone-evening-message
 Day 2 카드:    http://localhost:5173/?id=day2-chapter-card
+Day 3 카드:    http://localhost:5173/?id=day3-chapter-card
 
 대화창:        http://localhost:5173/?mode=dialogue
 중앙 배너:     http://localhost:5173/?mode=banner

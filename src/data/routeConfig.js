@@ -11,7 +11,8 @@ export const routeConfig = {
   ],
   chapterItems: [
     { id: 'day-1', title: 'Day 1: 비 오는 방과 후', thumbnail: '/assets/ui/image0_13_6.jpg' },
-    { id: 'day-2', title: 'Day 2: 우산을 돌려주는 아침', thumbnail: '/assets/ui/image0_13_6.jpg' }
+    { id: 'day-2', title: 'Day 2: 우산을 돌려주는 아침', thumbnail: '/assets/ui/image0_13_6.jpg' },
+    { id: 'day-3', title: 'Day 3: 마른 우산의 약속', thumbnail: '/assets/ui/image0_13_6.jpg' }
   ],
   galleryItems: [
     {
@@ -43,6 +44,11 @@ export const routeConfig = {
       id: 'rec-message',
       title: '잠들기 전 메시지',
       startId: 'phone-vibration'
+    },
+    {
+      id: 'rec-day3',
+      title: '마른 우산의 약속',
+      startId: 'day3-chapter-card'
     },
     {
       id: 'rec-ending',

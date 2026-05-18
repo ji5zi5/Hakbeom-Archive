@@ -630,6 +630,12 @@ assert.match(
 
 assert.match(
   scenarioSource,
+  /id:\s*'day3-chapter-card'[\s\S]*chapter:\s*'day-3'[\s\S]*Day 3 · 비가 그친 뒤에도 남은 약속/,
+  'Scenario should include a third-day romance chapter before the ending.'
+);
+
+assert.match(
+  scenarioSource,
   /kind:\s*'chapter'[\s\S]*chapter:\s*'day-1'[\s\S]*kind:\s*'chapter'[\s\S]*chapter:\s*'day-2'/,
   'Scenario should include explicit Day 1 and Day 2 chapter transition beats.'
 );
@@ -945,6 +951,18 @@ assert.match(
   scenarioSource,
   /id:\s*'choice-honesty'[\s\S]*?choices:\s*\[[\s\S]*?'솔직하게 내일도 만나고 싶다고 말한다\.'[\s\S]*?'장난처럼 넘기며 손을 내민다\.'[\s\S]*?next:\s*\['promise-honest',\s*'promise-joke'\]/,
   'Scenario should add a second meaningful two-choice romance beat before the ending.'
+);
+
+assert.match(
+  scenarioSource,
+  /id:\s*'choice-day3-distance'[\s\S]*?choices:\s*\[[\s\S]*?'네가 없으면 하루가 허전하다고 말한다\.'[\s\S]*?'우산 손잡이를 내밀며 장난스럽게 넘긴다\.'[\s\S]*?next:\s*\['day3-distance-honest',\s*'day3-distance-joke'\]/,
+  'Scenario should add a third-day two-choice beat that deepens the confession route.'
+);
+
+assert.match(
+  scenarioSource,
+  /id:\s*'day3-morning-message'[\s\S]*?type:\s*'phone'[\s\S]*?messages:\s*\[[\s\S]*?오늘은 우산 필요 없겠다[\s\S]*?pending:\s*true/,
+  'Day 3 should include a phone timeline with a typing beat.'
 );
 
 assert.match(

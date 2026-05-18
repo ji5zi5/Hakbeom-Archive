@@ -551,6 +551,185 @@ export const scenario = [
         text: '오늘은 비 안 오네. 그래도 같이 걸어도 돼? 학생회장 승인, 아직 유효한 거지?'
       }
     ],
+    nextId: 'day3-chapter-card'
+  },
+  {
+    id: 'day3-chapter-card',
+    type: 'banner',
+    kind: 'chapter',
+    chapter: 'day-3',
+    sectionTitle: 'Day 3: 마른 우산의 약속',
+    mood: 'confession',
+    text: 'Day 3 · 비가 그친 뒤에도 남은 약속',
+    nextId: 'day3-morning-message',
+    directives: [
+      { type: 'BGM', cue: 'bgmWarm', fadeMs: 700 },
+      { type: 'BCG', src: '/assets/ui/image0_13_6.jpg', transition: 'fade-in' }
+    ]
+  },
+  {
+    id: 'day3-morning-message',
+    type: 'phone',
+    chapter: 'day-3',
+    kind: 'phone',
+    name: '현겸',
+    role: '메시지',
+    text: '오늘은 우산 필요 없겠다. 그래도 방과 후에 잠깐 볼 수 있어?',
+    messages: [
+      { from: 'hyeongyeom', text: '오늘은 우산 필요 없겠다.', read: true },
+      { from: 'hyeongyeom', text: '그래도 방과 후에 잠깐 볼 수 있어?', read: true },
+      { from: 'hakbeom', text: '학생회 끝나면 바로 갈게.', read: true },
+      { from: 'hyeongyeom', text: '', pending: true }
+    ],
+    replies: [
+      '기다리게 안 할게.',
+      '이번엔 내가 먼저 기다릴게.'
+    ],
+    rewards: [
+      { affection: { hyeongyeom: 1 }, flags: ['day3_fast_reply'] },
+      { affection: { hyeongyeom: 2 }, flags: ['day3_wait_first'] }
+    ],
+    next: ['day3-library-fast', 'day3-library-wait'],
+    directives: [
+      { type: 'SE', cue: 'message' }
+    ]
+  },
+  {
+    id: 'day3-library-fast',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '학범',
+    role: '독백',
+    place: '도서관 앞',
+    text: '학범은 학생회 서류를 평소보다 빨리 정리했다. 기다리게 하지 않겠다는 말은, 생각보다 무거운 약속이었다.',
+    nextId: 'day3-library-meet'
+  },
+  {
+    id: 'day3-library-wait',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '학범',
+    role: '독백',
+    place: '도서관 앞',
+    text: '학범은 약속 시간보다 일찍 도서관 앞에 섰다. 먼저 기다리는 일은 낯설었지만, 현겸을 떠올리면 이상하게 자연스러웠다.',
+    nextId: 'day3-library-meet'
+  },
+  {
+    id: 'day3-library-meet',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '현겸',
+    role: '동급생',
+    place: '도서관 앞',
+    text: '진짜 왔네. 비도 안 오는데 학범이가 올까 봐, 괜히 우산을 챙겨올 뻔했어.',
+    variants: [
+      {
+        requiredFlags: ['day3_wait_first'],
+        text: '먼저 와 있었네. 비도 안 오는데 학범이가 날 기다리는 거, 생각보다 반칙이야.'
+      },
+      {
+        requiredFlags: ['day3_fast_reply'],
+        text: '빨리 왔네. 기다리게 안 한다더니, 진짜 그런 약속은 꼭 지키는구나.'
+      }
+    ],
+    effect: { target: 'hyeongyeom', type: 'blush' },
+    directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'move', pos: 3, motion: 'straight' },
+      { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'blush' },
+      { type: 'E', target: 'hyeongyeom', effect: 'blush', motion: 'nod' }
+    ]
+  },
+  {
+    id: 'day3-student-council-room',
+    type: 'dialogue',
+    mood: 'tense',
+    chapter: 'day-3',
+    name: '학범',
+    role: '독백',
+    place: '빈 학생회실',
+    text: '현겸은 책을 빌리러 왔다고 했지만, 책장 앞에서도 학범 쪽을 자꾸 돌아봤다. 학범은 그 시선이 어느 문장보다 읽기 어려웠다.',
+    variants: [
+      {
+        requiredFlags: ['shared_umbrella'],
+        text: '같은 우산 아래에서 가까워졌던 거리만큼, 빈 학생회실의 침묵도 더 크게 느껴졌다.'
+      },
+      {
+        requiredFlags: ['message_tease'],
+        text: '우산 보관료 같은 농담을 주고받았던 사이인데도, 빈 학생회실에서는 말 한마디가 쉽게 나오지 않았다.'
+      }
+    ]
+  },
+  {
+    id: 'choice-day3-distance',
+    type: 'choice',
+    choices: [
+      '네가 없으면 하루가 허전하다고 말한다.',
+      '우산 손잡이를 내밀며 장난스럽게 넘긴다.'
+    ],
+    rewards: [
+      { affection: { hyeongyeom: 2 }, flags: ['day3_honest_distance'] },
+      { affection: { hyeongyeom: 1 }, flags: ['day3_umbrella_joke'] }
+    ],
+    next: ['day3-distance-honest', 'day3-distance-joke']
+  },
+  {
+    id: 'day3-distance-honest',
+    type: 'dialogue',
+    mood: 'confession',
+    chapter: 'day-3',
+    name: '학범',
+    role: '학생회',
+    text: '비가 안 와도 네가 생각나. 그래서 오늘 하루가 조금 허전했어.',
+    effect: { target: 'hyeongyeom', type: 'heart' },
+    directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'surprised' },
+      { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'zoom', se: 'promise' }
+    ],
+    nextId: 'day3-before-promise'
+  },
+  {
+    id: 'day3-distance-joke',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '학범',
+    role: '학생회',
+    text: '비는 안 오지만, 혹시 모르니까. 오늘도 학생회장 전용 우산 대여 서비스.',
+    effect: { target: 'hyeongyeom', type: 'chatter' },
+    directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'smile' },
+      { type: 'E', target: 'hyeongyeom', effect: 'chatter', motion: 'bounce' }
+    ],
+    nextId: 'day3-before-promise'
+  },
+  {
+    id: 'day3-before-promise',
+    type: 'dialogue',
+    mood: 'confession',
+    chapter: 'day-3',
+    name: '현겸',
+    role: '동급생',
+    place: '방과 후 교문',
+    text: '학범아, 나 사실 오늘도 비가 오길 조금 바랐어. 핑계가 있으면, 네 옆에 서는 게 덜 어색할 것 같아서.',
+    variants: [
+      {
+        requiredFlags: ['day3_honest_distance'],
+        text: '학범아, 방금 말 때문에 나도 솔직해져야 할 것 같아. 오늘 하루 종일, 나도 네가 없어서 허전했어.'
+      },
+      {
+        requiredFlags: ['day3_umbrella_joke'],
+        text: '그 우산, 이제 핑계로 쓰기엔 너무 자주 빌렸지? 그래도 학범이 옆에 서고 싶은 건 진짜야.'
+      }
+    ],
+    effect: { target: 'hyeongyeom', type: 'heart' },
+    directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'move', pos: 4, motion: 'straight' },
+      { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'blush' },
+      { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' }
+    ],
     nextId: 'choice-promise'
   },
   {
