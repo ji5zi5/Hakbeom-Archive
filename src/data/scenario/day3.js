@@ -164,9 +164,9 @@ export const day3Scenes = [
       id: 'choice-day3-route-focus',
       type: 'choice',
       choices: [
-        '현겸에게 남은 말을 전한다.',
-        '욱현이 놓고 간 노트를 따라간다.',
-        '재성이 보낸 호출에 답한다.'
+        '현겸에게 남은 말을 직접 묻는다.',
+        '욱현이 일부러 남긴 것 같은 노트를 펼친다.',
+        '재성이 마이크를 꺼 둔 이유를 묻는다.'
       ],
       rewards: [
         { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_route_focus'] },
@@ -184,6 +184,20 @@ export const day3Scenes = [
       role: '도서위원',
       place: '도서관 창가',
       text: '학범아, 이 노트 네 거지. 회의 끝나고 창가에 두고 갔더라. 접힌 부분이 신경 쓰여서… 그냥 넘기기 어려웠어.',
+      variants: [
+        {
+          requiredFlags: ['ukhyun_early_interest', 'ukhyun_day2_library'],
+          text: '또 펼쳤네. 욱현은 학범이 쥔 노트를 보더니 아주 작게 웃었다. “첫날에도, 어제도. 학범이는 모른 척하다가 결국 직접 확인하러 오는 사람이구나.”'
+        },
+        {
+          requiredFlags: ['ukhyun_day2_library'],
+          text: '“어제 답장 기다렸잖아.” 욱현은 접힌 노트를 학범 쪽으로 밀었다. “그러니까 오늘은 내가 먼저 기다렸어. 네가 또 창가를 볼지 궁금해서.”'
+        },
+        {
+          requiredFlags: ['ukhyun_early_interest'],
+          text: '“그때 읽었지.” 욱현은 학범이 펼친 노트를 보고 시선을 비켰다. “읽고도 모른 척할 수 있는 사람인지, 한 번 더 확인하고 싶었어.”'
+        }
+      ],
       effect: { target: 'ukhyun', type: 'ellipsis' },
       directives: [
         { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
@@ -202,6 +216,18 @@ export const day3Scenes = [
       place: '도서관 창가',
       text: '노트의 접힌 페이지에는 학범이 쓴 안건 목록이 있었다. 마지막 줄, “나중에 말하기”라는 흐린 글씨 밑에 욱현의 작은 표시가 붙어 있었다.',
       variants: [
+        {
+          requiredFlags: ['ukhyun_early_interest', 'ukhyun_day2_library'],
+          text: '첫날 펼친 접힌 선과 어제 기다린 창가가 같은 페이지에 겹쳐 있었다. 학범은 그제야 욱현이 단서를 숨긴 게 아니라, 대답할 자리를 비워 둔 거라는 걸 알아차렸다.'
+        },
+        {
+          requiredFlags: ['ukhyun_day2_library'],
+          text: '어제 기다린 답장은 노트 가장자리의 짧은 밑줄로 남아 있었다. 욱현은 말보다 먼저 종이를 내밀었고, 학범은 그 침묵이 선택을 요구한다는 걸 알았다.'
+        },
+        {
+          requiredFlags: ['ukhyun_early_interest'],
+          text: '첫날 학범이 펼쳤던 접힌 페이지에는 새 표시가 하나 더 늘어 있었다. “나중에 말하기” 옆에 붙은 작은 점이 이상하게 오래 눈에 남았다.'
+        },
         {
           requiredFlags: ['student_council_help'],
           text: '학생회 회의 메모 한쪽에 학범이 미뤄둔 할 일이 남아 있었다. 욱현은 놓친 숫자 대신, 학범이 지운 문장 옆에 조용히 밑줄을 그어두었다.'
@@ -260,6 +286,20 @@ export const day3Scenes = [
       role: '방송부',
       place: '방송실 앞',
       text: '학범 학생회장님, 방송실에서 호출합니다. 장비 점검이라는 핑계는 있고, 네 목소리로 확인하고 싶은 것도 있고.',
+      variants: [
+        {
+          requiredFlags: ['jaeseong_early_signal', 'jaeseong_day2_broadcast'],
+          text: '“마이크 꺼 둔 이유, 아직 궁금하지?” 재성은 온에어 불을 켜지 않은 채 웃었다. “첫날도, 어제도 왔잖아. 이제는 호출이 아니라 네가 고른 거라고 해도 되지?”'
+        },
+        {
+          requiredFlags: ['jaeseong_day2_broadcast'],
+          text: '“어제 방송실까지 왔으면서 오늘은 모른 척?” 재성은 헤드폰을 손가락에 걸고 흔들었다. “학범, 그런 척은 네 목소리에 제일 안 어울려.”'
+        },
+        {
+          requiredFlags: ['jaeseong_early_signal'],
+          text: '“그때 마이크 꺼 둔 거 기억하지?” 재성은 방송실 문을 반쯤 열어 둔 채 속삭였다. “오늘도 꺼 뒀어. 네 대답은 밖으로 내보내기 아까워서.”'
+        }
+      ],
       effect: { target: 'jaeseong', type: 'question' },
       directives: [
         { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
@@ -278,6 +318,18 @@ export const day3Scenes = [
       place: '방송실',
       text: '재성은 일부러 온에어 불을 꺼두고 학범에게 헤드폰 한쪽을 내밀었다. 장난스러운 호출이었지만, 마이크 밖에서 이름을 부르는 목소리는 이상하게 가까웠다.',
       variants: [
+        {
+          requiredFlags: ['jaeseong_early_signal', 'jaeseong_day2_broadcast'],
+          text: '온에어 불은 첫날처럼 꺼져 있었고, 어제 학범이 섰던 자리에는 헤드폰 한쪽이 놓여 있었다. 재성은 장난처럼 웃었지만, 볼륨 노브를 내리는 손끝은 이상하게 조심스러웠다.'
+        },
+        {
+          requiredFlags: ['jaeseong_day2_broadcast'],
+          text: '어제 건넨 헤드폰이 다시 학범 쪽으로 밀려왔다. 재성은 아무도 듣지 않는 채널을 열어 두고, 이번엔 학범이 먼저 말할 때까지 기다렸다.'
+        },
+        {
+          requiredFlags: ['jaeseong_early_signal'],
+          text: '첫날 꺼져 있던 온에어 불은 오늘도 켜지지 않았다. 재성은 그 침묵을 핑계처럼 걸어 두고, 학범이 문을 닫는 소리까지 가만히 들었다.'
+        },
         {
           requiredFlags: ['direct_compliment'],
           text: '재성은 학범이 솔직해지는 순간을 놓치지 않는 사람처럼 볼륨 노브를 아주 조금 낮췄다. 농담은 남겼지만, 숨소리는 방송에 태우지 않았다.'
