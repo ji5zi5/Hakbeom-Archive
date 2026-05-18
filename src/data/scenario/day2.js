@@ -4,9 +4,9 @@ export const day2Scenes = [
       type: 'banner',
       kind: 'chapter',
       chapter: 'day-2',
-      sectionTitle: 'Day 2: 우산을 돌려주는 아침',
+      sectionTitle: 'Day 2: 문화제 기록 담당',
       mood: 'warm',
-      text: 'Day 2 · 우산을 돌려주는 아침',
+      text: 'Day 2 · 문화제 기록 담당',
       nextId: 'day2-morning',
       directives: [
         { type: 'BGM', cue: 'bgmWarm', fadeMs: 900 },
@@ -121,6 +121,200 @@ export const day2Scenes = [
           flags: ['playful_reply'],
           text: '현겸은 우산을 돌려준 뒤에도 학범의 책상 근처를 지나쳤다 돌아왔다. 어제의 장난을 떠올리는지, 말끝마다 웃음을 삼켰다.'
         }
+      ]
+    },
+
+  {
+      id: 'day2-moe-hyeongyeom-lunch-side',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '현겸',
+      role: '동급생',
+      place: '교실 창가',
+      text: '현겸은 학범 도시락에서 싫어하는 반찬을 자연스럽게 자기 쪽으로 옮겼다. “어제 우산값은 이걸로 받을게. 너, 이건 항상 마지막까지 남기잖아.”',
+      effect: { target: 'hyeongyeom', type: 'heart' },
+      directives: [
+        { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-moe-sangwon-pen-line',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '상원',
+      role: '학생회 기록 담당',
+      place: '학생회 기록실',
+      text: '상원은 학범의 펜 끝이 멈춘 줄에 작은 표시를 했다. “여기서 네 표정이 바뀌었어. 기록하지 말라고 하면 안 할게. 대신 네가 모른 척하지는 마.”',
+      effect: { target: 'sangwon', type: 'ellipsis' },
+      directives: [
+        { type: 'E', target: 'sangwon', effect: 'ellipsis', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-moe-jaeseong-preview',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '재성',
+      role: '방송부',
+      place: '방송실 앞',
+      text: '재성은 방송실 문틈으로 고개만 내밀었다. “기록 담당님, 홍보 영상 예고편 찍자. 제목은 ‘학범이가 웃으면 방송사고가 난다’ 어때?”',
+      effect: { target: 'jaeseong', type: 'chatter' },
+      directives: [
+        { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
+      ]
+    },
+
+  {
+      id: 'day2-festival-briefing',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '학범',
+      role: '학생회 기록 담당',
+      place: '학생회 기록실',
+      text: '점심이 끝나자 학생회 기록실 책상 위에는 문화제 협조 요청서가 쌓였다. 학범은 기록집 첫 장에 “봄날의 방과 후”라고 적었다가, 너무 솔직한 제목 같아서 손바닥으로 가렸다.',
+      directives: [
+        { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' }
+      ]
+    },
+  {
+      id: 'day2-sangwon-forms',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '상원',
+      role: '학생회 기록 담당',
+      place: '학생회 기록실',
+      text: '상원은 양식 칸을 반듯하게 맞추며 학범의 펜을 가져갔다. “네 글씨는 급하면 오른쪽으로 기울어. 오늘은 내가 줄 맞출 테니까, 너는 누구를 먼저 만나고 싶은지만 정해.”',
+      effect: { target: 'sangwon', type: 'question' },
+      directives: [
+        { type: 'SCG', id: 'sangwon', name: '상원', action: 'enter', pos: 3, expression: 'serious', transition: 'fade-in' },
+        { type: 'E', target: 'sangwon', effect: 'question', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-ukhyun-library-request',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '욱현',
+      role: '도서관 전시 담당',
+      place: '도서관 창가',
+      text: '욱현은 전시 도서 목록 사이에 작은 노트를 끼워 두었다. “필요한 자료 적어 놨어. 네가 말하기 전에 찾는 편이 빠를 것 같아서.” 말은 짧았지만, 노트 모서리는 학범이 펼치기 좋게 접혀 있었다.',
+      effect: { target: 'ukhyun', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'sangwon', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
+        { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-jaeseong-broadcast-invite',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '재성',
+      role: '방송부',
+      place: '방송실',
+      text: '재성은 마이크 테스트 버튼을 톡톡 누르며 웃었다. “문화제 홍보 영상에 기록 담당 목소리도 필요하지 않아? 학범아, 긴장하면 더 귀엽게 녹음될 것 같은데.”',
+      effect: { target: 'jaeseong', type: 'chatter' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
+        { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
+      ]
+    },
+  {
+      id: 'day2-sanguk-gym-poster',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '상욱',
+      role: '운동부',
+      place: '체육관 복도',
+      text: '상욱은 포스터를 붙이다 테이프를 이마에 붙이고도 크게 웃었다. “사진 찍어도 돼! 대신 기록집에 이상하게 나오면 네가 직접 다시 찍어줘. 나, 네 앞에서는 잘 보이고 싶거든.”',
+      effect: { target: 'sanguk', type: 'chatter' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/gym-corridor-evening.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'sanguk', name: '상욱', action: 'enter', pos: 3, expression: 'energetic', transition: 'enter-right' },
+        { type: 'E', target: 'sanguk', effect: 'chatter', motion: 'bounce' }
+      ]
+    },
+  {
+      id: 'day2-junhyeok-map-note',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '준혁',
+      role: '문화제 동선 담당',
+      place: '도서관 앞 복도',
+      text: '준혁은 행사 동선표에 빨간 선을 하나 더 그었다. “이 길은 효율이 낮아. 그런데 네가 사진 찍다가 길 잃을 확률을 줄여. 그러니까 채택.”',
+      effect: { target: 'junhyeok', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'sanguk', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'junhyeok', name: '준혁', action: 'enter', pos: 3, expression: 'thinking', transition: 'fade-in' },
+        { type: 'E', target: 'junhyeok', effect: 'ellipsis', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-dohun-coupon',
+      type: 'phone',
+      kind: 'phone',
+      chapter: 'day-2',
+      name: '도훈',
+      role: '메시지',
+      text: '매점 협찬 쿠폰 하나 확보. 고맙다고 하면 가격 올라감.',
+      messages: [
+        { from: 'dohun', text: '매점 협찬 쿠폰 하나 확보.' },
+        { from: 'dohun', text: '네가 좋아하는 복숭아 음료도 목록에 있더라.' },
+        { from: 'hakbeom', text: '그걸 왜 기억해?' },
+        { from: 'dohun', text: '정보통이라서. 다른 뜻 없음. 아마도.' }
+      ],
+      directives: [
+        { type: 'SE', cue: 'message' }
+      ],
+      nextId: 'day2-haeum-performance-list'
+    },
+  {
+      id: 'day2-haeum-performance-list',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '하음',
+      role: '음악실 담당',
+      place: '음악실',
+      text: '하음은 공연 순서표를 넘기다 마지막 칸을 비워 두었다. “여긴 아직 정하지 않았어. 기록 담당이 어떤 봄을 남기고 싶은지 듣고 나서 맞추고 싶어서.”',
+      effect: { target: 'haeum', type: 'heart' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/music-room-late-afternoon.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'junhyeok', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'haeum', name: '하음', action: 'enter', pos: 3, expression: 'gentle', transition: 'fade-in' },
+        { type: 'E', target: 'haeum', effect: 'heart', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-yunho-rooftop-wait',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '윤호',
+      role: '후배 / 옥상 담당',
+      place: '옥상 문 앞',
+      text: '윤호는 옥상 배치도를 품에 안고 문 앞에 서 있었다. “선배가 오시면 보여드리려고요. 먼저 정리해도 되지만, 같이 본 풍경을 기록에 넣고 싶었어요.”',
+      effect: { target: 'yunho', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/rooftop-after-rain.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'haeum', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'yunho', name: '윤호', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
+        { type: 'E', target: 'yunho', effect: 'ellipsis', motion: 'nod' }
       ]
     },
   {

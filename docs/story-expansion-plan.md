@@ -31,16 +31,16 @@ Existing routes:
 
 New route scaffolds:
 
-- **상원 / sangwon:** student council records lead; precise, responsible, archive-truth route with a soft yandere edge. He records Hakbeom's choices too carefully and becomes unsettling when the record says Hakbeom looked elsewhere.
+- **상원 / sangwon:** student council records lead; precise, responsible culture-festival route with a soft yandere edge. He notices Hakbeom's choices too carefully and must learn where recording becomes control.
 - **상욱 / sanguk:** 직진 댕댕이. Gym corridor/sports route; direct, warm, physical comedy, protective energy.
-- **준혁 / junhyeok:** 무심한 두뇌파. Investigation/library route; quiet logic, puzzle-solving, dry humor.
+- **준혁 / junhyeok:** 무심한 두뇌파. Library/exam-study route; quiet logic, maps, dry humor.
 - **도훈 / dohun:** 장난치는 츤데레. Convenience-store/night errand route; casual, street-smart, mischievous loyalty.
 - **하음 / haeum:** 치유계. Music-room/sound route; gentle, emotional memory, atmosphere-heavy route.
 - **윤호 / yunho:** junior / 후배 route; courtyard/rooftop, rain-afterglow, polite “선배” speech, quiet loyalty, and soft jealousy. He is not horror-yandere; he is a 후배 who wants to be the person Hakbeom finds most comfortable.
 
 ## Route Archetype Rules
 
-- **상원:** 기록집착 얀데레. Use calm, exact sentences; he should sound like he is preserving Hakbeom's choices as evidence. Avoid overt violence; the unsettling part is control, memory, and “I know who you chose.”
+- **상원:** 기록집착 얀데레. Use calm, exact sentences; he should sound like he remembers Hakbeom's choices too precisely. Avoid overt violence; the unsettling part is control, memory, and “I know who you chose.”
 - **현겸:** 정실 순애. Keep the umbrella/rain promise as the emotional home base. He should be sincere and quietly brave rather than flashy.
 - **욱현:** 무표정 쿨데레. Keep sentences short, observational, and delayed. He hides care inside notes and precise observations.
 - **재성:** 능글 플러팅. Let him tease with stage/broadcast language, then drop the act for direct sincerity at key beats.
@@ -54,25 +54,25 @@ Photo policy: until user supplies PNGs, new profiles use `baseSrc: ''`. Story ca
 
 ## Season Structure
 
-### Act 1 — Archive Opens / Days 4–6
+### Act 1 — School Routine Opens / Days 4–6
 
-- **Day 4: 아카이브실의 새 이름들**
-  - Bridge from the old promise into the archive mystery.
+- **Day 4: 문화제 기록 담당**
+  - Bridge from the umbrella promise into the culture-festival recordbook.
   - Introduce 상원, 상욱, 준혁, 도훈, 하음, 윤호.
   - Use two 3-option focus choices.
-  - End with a missing-record hook.
+  - End with Hakbeom realizing the recordbook is becoming an album of who he spends spring with.
 
-- **Day 5: 여섯 갈래의 방과 후**
-  - Six mini-route seeds.
-  - Each route receives a location, conflict, route flag, and one choice.
+- **Day 5: 작은 소문**
+  - Small rumor day: “Hakbeom will confess at the festival.”
+  - Each route reacts through location-specific school-life scenes and one choice.
 
-- **Day 6: 기록되지 않은 하루**
-  - Phone/SNS follow-ups.
-  - Common scenes react to at least three route flags.
+- **Day 6: 시험 공부**
+  - Exam-study day with library/student-council/classroom/music-room study groups.
+  - Phone/SNS follow-ups react to at least three route flags.
 
 ### Act 2 — Route Pressure / Days 7–10
 
-- Invitation conflicts and investigation pairs.
+- Rainy walk-home, festival group assignment, and first misunderstanding beats.
 - Festival/broadcast/music/sports preparation arc.
 - Day 10 route-lock gate with deterministic tie-breaks.
 
@@ -80,7 +80,7 @@ Photo policy: until user supplies PNGs, new profiles use `baseSrc: ''`. Story ca
 
 - At least three locked routes receive deep payoff first.
 - Remaining routes receive meaningful intermediate endings.
-- Archive mystery answer changes by route.
+- Festival confession place and final recordbook sentence change by route.
 
 ## Batch 1 Required Backgrounds
 
@@ -106,13 +106,13 @@ Each background requires:
    - Batch 2 started 2026-05-18: scenario data is split under `src/data/scenario/`; Day 5 adds the first route-seed pass for 상원/상욱/준혁/도훈/하음/윤호.
    - New generated backgrounds: `music-room-late-afternoon.png`, `convenience-store-night.png`, `rooftop-after-rain.png`.
 3. **Batch 3 — Days 6–8 pressure**
-   - Phone/SNS density, route variants, investigation pairs.
+   - Phone/SNS density, route variants, study/rain/festival prep pairs.
 4. **Batch 4 — Days 9–10 lock**
    - Festival arc, route-lock helper, route-lock tests.
    - Ultragoal pass: Day 9 adds festival pressure scenes; Day 10 adds a 3×3 route-lock choice structure so nine routes stay selectable without exceeding the 3-choice UI limit.
 5. **Batch 5 — Days 11–14 payoff**
-   - Route endings, final archive mystery, gallery/recollection completion.
-   - Ultragoal pass: Day 11–14 now use deterministic `endingGate` + `routeGate` route gates for all nine `route_lock_<id>` flags, add route-specific payoff scenes, reveal the shared “Hakbeom Archive” mystery, and reconnect through `ending-promise` into route terminal endings.
+   - Route endings, final culture-festival confession, gallery/recollection completion.
+   - Ultragoal pass: Day 11–14 now use deterministic `endingGate` + `routeGate` route gates for all nine `route_lock_<id>` flags, add route-specific payoff scenes, resolve the shared “Hakbeom Archive” recordbook motif, and reconnect through `ending-promise` into route terminal endings.
 
 ## Route Lock Rules
 

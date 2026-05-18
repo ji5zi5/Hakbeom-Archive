@@ -34,20 +34,20 @@ export const routeConfig = {
     { min: 6, label: '같은 우산의 약속' }
   ],
   chapterItems: [
-    { id: 'day-1', title: 'Day 1: 비 오는 방과 후', thumbnail: '/assets/bg/school-rain-hallway.png' },
-    { id: 'day-2', title: 'Day 2: 우산을 돌려주는 아침', thumbnail: '/assets/bg/school-morning-hallway.png' },
-    { id: 'day-3', title: 'Day 3: 마른 우산의 약속', thumbnail: '/assets/bg/library-window.png' },
-    { id: 'day-4', title: 'Day 4: 아카이브실의 새 이름들', thumbnail: '/assets/bg/archive-club-room-evening.png' },
-    { id: 'day-5', title: 'Day 5: 여섯 갈래의 방과 후', thumbnail: '/assets/bg/music-room-late-afternoon.png' },
-    { id: 'day-6', title: 'Day 6: 기록되지 않은 하루', thumbnail: '/assets/bg/archive-club-room-evening.png' },
-    { id: 'day-7', title: 'Day 7: 첫 번째 약속 충돌', thumbnail: '/assets/bg/school-courtyard-blue-hour.png' },
-    { id: 'day-8', title: 'Day 8: 비밀 기록 조사', thumbnail: '/assets/bg/library-window.png' },
-    { id: 'day-9', title: 'Day 9: 축제 준비의 소문', thumbnail: '/assets/bg/broadcast-room.png' },
-    { id: 'day-10', title: 'Day 10: 중간 고백 전야', thumbnail: '/assets/bg/rooftop-after-rain.png' },
-    { id: 'day-11', title: 'Day 11: 선택한 이름의 아침', thumbnail: '/assets/bg/school-morning-hallway.png' },
-    { id: 'day-12', title: 'Day 12: 축제 리허설의 고백 연습', thumbnail: '/assets/bg/school-courtyard-blue-hour.png' },
-    { id: 'day-13', title: 'Day 13: 잃어버린 원본과 마지막 불안', thumbnail: '/assets/bg/archive-club-room-evening.png' },
-    { id: 'day-14', title: 'Day 14: 학범 아카이브 개방일', thumbnail: '/assets/bg/school-gate-rain.png' }
+    { id: 'day-1', title: 'Day 1: 비 오는 새 학기', thumbnail: '/assets/bg/school-rain-hallway.png' },
+    { id: 'day-2', title: 'Day 2: 문화제 기록 담당', thumbnail: '/assets/bg/school-morning-hallway.png' },
+    { id: 'day-3', title: 'Day 3: 점심시간 선택', thumbnail: '/assets/bg/library-window.png' },
+    { id: 'day-4', title: 'Day 4: 문화제 기록 담당', thumbnail: '/assets/bg/archive-club-room-evening.png' },
+    { id: 'day-5', title: 'Day 5: 작은 소문', thumbnail: '/assets/bg/music-room-late-afternoon.png' },
+    { id: 'day-6', title: 'Day 6: 시험 공부', thumbnail: '/assets/bg/archive-club-room-evening.png' },
+    { id: 'day-7', title: 'Day 7: 비 오는 귀갓길', thumbnail: '/assets/bg/school-courtyard-blue-hour.png' },
+    { id: 'day-8', title: 'Day 8: 문화제 조 편성', thumbnail: '/assets/bg/library-window.png' },
+    { id: 'day-9', title: 'Day 9: 첫 번째 오해', thumbnail: '/assets/bg/broadcast-room.png' },
+    { id: 'day-10', title: 'Day 10: 한 사람을 기다리는 방과 후', thumbnail: '/assets/bg/rooftop-after-rain.png' },
+    { id: 'day-11', title: 'Day 11: 선택한 사람의 아침', thumbnail: '/assets/bg/school-morning-hallway.png' },
+    { id: 'day-12', title: 'Day 12: 문화제 리허설', thumbnail: '/assets/bg/school-courtyard-blue-hour.png' },
+    { id: 'day-13', title: 'Day 13: 고백 전날의 망설임', thumbnail: '/assets/bg/archive-club-room-evening.png' },
+    { id: 'day-14', title: 'Day 14: 봄날의 문화제', thumbnail: '/assets/bg/school-gate-rain.png' }
   ],
   galleryItems: [
     {
@@ -97,10 +97,10 @@ export const routeConfig = {
     },
     {
       id: 'cg-archive-room',
-      title: '아카이브실의 새 이름들',
+      title: '문화제 기록 담당',
       chapter: 'day-4',
       routeId: 'common',
-      hint: '아카이브실 조사를 시작하면 해금',
+      hint: '학생회 기록실 준비를 시작하면 해금',
       unlockFlag: 'archive_room_opened',
       src: '/assets/bg/archive-club-room-evening.png'
     },
@@ -118,7 +118,7 @@ export const routeConfig = {
       title: '밤의 편의점',
       chapter: 'day-5',
       routeId: 'dohun',
-      hint: '도훈과 매점 CCTV를 확인하면 해금',
+      hint: '도훈과 매점 쿠폰을 확인하면 해금',
       unlockFlag: 'day5_cctv_check',
       src: '/assets/bg/convenience-store-night.png'
     },
@@ -135,7 +135,7 @@ export const routeConfig = {
   recollectionItems: [
     {
       id: 'rec-day1',
-      title: '비 오는 방과 후',
+      title: '비 오는 새 학기',
       chapter: 'day-1',
       routeId: 'hyeongyeom',
       startId: 'opening'
@@ -149,7 +149,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day3',
-      title: '마른 우산의 약속',
+      title: '점심시간 선택',
       chapter: 'day-3',
       routeId: 'hyeongyeom',
       startId: 'day3-chapter-card'
@@ -174,7 +174,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day4',
-      title: '아카이브실의 새 이름들',
+      title: '문화제 기록 담당',
       chapter: 'day-4',
       routeId: 'common',
       startId: 'day4-chapter-card',
@@ -182,7 +182,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day5',
-      title: '여섯 갈래의 방과 후',
+      title: '작은 소문',
       chapter: 'day-5',
       routeId: 'common',
       startId: 'day5-chapter-card',
@@ -190,7 +190,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day6',
-      title: '기록되지 않은 하루',
+      title: '시험 공부',
       chapter: 'day-6',
       routeId: 'common',
       startId: 'day6-chapter-card',
@@ -198,7 +198,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day7',
-      title: '첫 번째 약속 충돌',
+      title: '비 오는 귀갓길',
       chapter: 'day-7',
       routeId: 'common',
       startId: 'day7-chapter-card',
@@ -206,7 +206,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day8',
-      title: '비밀 기록 조사',
+      title: '문화제 조 편성',
       chapter: 'day-8',
       routeId: 'common',
       startId: 'day8-chapter-card',
@@ -214,7 +214,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day9',
-      title: '축제 준비의 소문',
+      title: '첫 번째 오해',
       chapter: 'day-9',
       routeId: 'common',
       startId: 'day9-chapter-card',
@@ -222,7 +222,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day10',
-      title: '중간 고백 전야',
+      title: '한 사람을 기다리는 방과 후',
       chapter: 'day-10',
       routeId: 'common',
       startId: 'day10-chapter-card',
@@ -230,7 +230,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day11',
-      title: '선택한 이름의 아침',
+      title: '선택한 사람의 아침',
       chapter: 'day-11',
       routeId: 'common',
       startId: 'day11-chapter-card',
@@ -238,7 +238,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day12',
-      title: '축제 리허설의 고백 연습',
+      title: '문화제 리허설',
       chapter: 'day-12',
       routeId: 'common',
       startId: 'day12-chapter-card',
@@ -246,7 +246,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day13',
-      title: '잃어버린 원본과 마지막 불안',
+      title: '고백 전날의 망설임',
       chapter: 'day-13',
       routeId: 'common',
       startId: 'day13-chapter-card',
@@ -254,7 +254,7 @@ export const routeConfig = {
     },
     {
       id: 'rec-day14',
-      title: '학범 아카이브 개방일',
+      title: '봄날의 문화제',
       chapter: 'day-14',
       routeId: 'common',
       startId: 'day14-chapter-card',

@@ -4,9 +4,9 @@ export const day7Scenes = [
     "type": "banner",
     "kind": "chapter",
     "chapter": "day-7",
-    "sectionTitle": "Day 7: 첫 번째 약속 충돌",
+    "sectionTitle": "Day 7: 비 오는 귀갓길",
     "mood": "warm",
-    "text": "Day 7 · 첫 번째 약속 충돌",
+    "text": "Day 7 · 비 오는 귀갓길",
     "nextId": "day7-opening",
     "directives": [
       {
@@ -23,8 +23,8 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "전날 맞춰 둔 기록이 아침이 되자 어긋났다. CCTV 시간, 음악실 문소리, 준혁의 동선표가 모두 사실이라면 누군가는 동시에 두 곳에 있어야 했다. 학범은 단서보다 먼저 서로의 목소리가 날카로워지는 것을 들었다.",
+    "place": "학생회 기록실",
+    "text": "방과 후가 되자 예보에 없던 비가 운동장 위로 떨어졌다. 학범의 가방에는 우산이 하나뿐이었고, 오늘은 누구와 같은 방향으로 걸을지 정해야 했다.",
     "directives": [
       {
         "type": "BCG",
@@ -88,17 +88,98 @@ export const day7Scenes = [
     ]
   },
   {
+    "id": "day7-moe-hyeongyeom-umbrella-edge",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-7",
+    "name": "현겸",
+    "role": "동급생",
+    "place": "현관 앞",
+    "text": "현겸은 우산 끝을 학범 쪽으로 살짝 밀었다. “나한테 너무 기울이지 마. 네 어깨 젖으면 내가 먼저 알아채고, 그러면 또 신경 쓰이잖아.”",
+    "effect": {
+      "target": "hyeongyeom",
+      "type": "blush"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/school-gate-rain.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "hyeongyeom",
+        "effect": "blush",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
+    "id": "day7-moe-jaeseong-rain-broadcast",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-7",
+    "name": "재성",
+    "role": "방송부",
+    "place": "방송실",
+    "text": "재성은 빗소리를 배경음처럼 낮춰 녹음 버튼 옆에 손을 올렸다. “오늘 방송실에 우산 없는 거, 사실 알았어. 핑계가 필요했거든. 너랑 더 말할 핑계.”",
+    "effect": {
+      "target": "jaeseong",
+      "type": "chatter"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/broadcast-room.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "jaeseong",
+        "effect": "chatter",
+        "motion": "bounce"
+      }
+    ]
+  },
+  {
+    "id": "day7-moe-yunho-stair-wait",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-7",
+    "name": "윤호",
+    "role": "후배 / 옥상 담당",
+    "place": "옥상 계단",
+    "text": "윤호는 젖은 계단 위에서 교복 소매를 꼭 쥐고 있었다. “선배가 올 줄 알았어요. 아니요, 올 거라고 믿고 싶어서 먼저 기다렸어요.”",
+    "effect": {
+      "target": "yunho",
+      "type": "heart"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/rooftop-after-rain.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "yunho",
+        "effect": "heart",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
     "id": "day7-morning-phone",
     "type": "phone",
     "kind": "phone",
     "chapter": "day-7",
-    "name": "단체방",
+    "name": "문화제 준비 채팅방",
     "role": "메시지",
-    "text": "등교 직후 단체방에는 확인보다 반박이 먼저 올라왔다.",
+    "text": "등교 직후 문화제 준비 채팅방에는 확인보다 반박이 먼저 올라왔다.",
     "messages": [
       {
         "from": "sangwon",
-        "text": "CCTV 시간이 틀렸다고 단정하지 마. 기록을 부정하면 남는 게 없어."
+        "text": "매점 쿠폰 시간이 틀렸다고 단정하지 마. 기록을 부정하면 남는 게 없어."
       },
       {
         "from": "dohun",
@@ -125,9 +206,9 @@ export const day7Scenes = [
     "id": "day7-choice-morning",
     "type": "choice",
     "choices": [
-      "기록 쪽 단서를 먼저 정리한다.",
-      "현장 쪽 단서를 먼저 확인한다.",
-      "감정 쪽 단서를 먼저 묻는다."
+      "기록 쪽 준비 기록을 먼저 정리한다.",
+      "방과 후 쪽 준비 기록을 먼저 확인한다.",
+      "감정 쪽 준비 기록을 먼저 묻는다."
     ],
     "rewards": [
       {
@@ -174,7 +255,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "상원은 “기록이 남아야 얼굴도 지켜진다”고 말했고, 준혁은 감정을 제외한 경우의 수만 칠판에 남겼다. 현겸이 “그 기록 안에 학범 표정은 어디 있어?”라고 묻자 방 안의 공기가 종이처럼 팽팽해졌다.",
     "directives": [
       {
@@ -241,7 +322,7 @@ export const day7Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "중정 벤치",
-    "text": "하음은 학범의 손이 떨리는 박자를 먼저 짚었고, 현겸은 괜찮다는 말만 반복했다. 욱현은 노트 가장자리의 떨림을 증거라고 했지만, 준혁은 “재현 불가능한 감각”이라며 선을 그었다.",
+    "text": "하음은 학범의 손이 떨리는 박자를 먼저 짚었고, 현겸은 괜찮다는 말만 반복했다. 욱현은 노트 가장자리의 떨림을 기억라고 했지만, 준혁은 “재현 불가능한 감각”이라며 선을 그었다.",
     "directives": [
       {
         "type": "BCG",
@@ -273,8 +354,8 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "학범은 모두를 진정시키려다 자신이 또 중재자 자리로 물러났다는 걸 깨달았다. 아카이브가 묻는 것은 범인이 아니라, 학범이 누구의 불안을 대신 떠안고 있는지였다.",
+    "place": "학생회 기록실",
+    "text": "학범은 모두를 진정시키려다 자신이 또 중재자 자리로 물러났다는 걸 깨달았다. 기록집이 묻는 것은 소문이 아니라, 학범이 누구의 불안을 대신 떠안고 있는지였다.",
     "directives": [
       {
         "type": "BCG",
@@ -510,7 +591,7 @@ export const day7Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "도서관 구석자리",
-    "text": "욱현은 노트의 미세한 눌림을 증거라고 했고, 준혁은 재현할 수 없으면 배제해야 한다고 했다. “사람 손이 기계냐.” 욱현의 낮은 목소리가 드물게 거칠어졌다.",
+    "text": "욱현은 노트의 미세한 눌림을 기억라고 했고, 준혁은 재현할 수 없으면 배제해야 한다고 했다. “사람 손이 기계냐.” 욱현의 낮은 목소리가 드물게 거칠어졌다.",
     "directives": [
       {
         "type": "BCG",
@@ -796,7 +877,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "재성",
     "role": "메시지",
-    "text": "재성은 단체방이 아닌 개인 채팅으로 들어왔다. 농담을 붙이지 못한 첫 알림이었다.",
+    "text": "재성은 문화제 준비 채팅방이 아닌 개인 채팅으로 들어왔다. 농담을 붙이지 못한 첫 알림이었다.",
     "messages": [
       {
         "from": "jaeseong",
@@ -835,7 +916,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "상원은 틀린 시간을 고치겠다며 학범의 메모까지 다시 쓰려 했다. “기록이 흩어지면 선택도 흩어져.” 통제하려는 손끝이 학범의 글씨를 덮었다.",
     "directives": [
       {
@@ -915,14 +996,14 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "현겸의 반박 이후에도 상원은 물러서지 않았다. 그는 학범을 지키고 싶어서 기록했지만, 지키려는 마음이 학범의 자리를 좁혔다.",
     "variants": [
       {
         "requiredFlags": [
           "sangwon_route_seed"
         ],
-        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 아카이브 원본 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
+        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 문화제 기록집 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
       }
     ],
     "effect": {
@@ -937,8 +1018,8 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "“내가 놓치면 네가 사라질 것 같아.” 상원은 처음으로 이유를 말했다. 그 말이 다정해서, 더 위험하게 들렸다."
+    "place": "학생회 기록실",
+    "text": "“내가 놓치면 네가 멀어질 것 같아.” 상원은 처음으로 이유를 말했다. 그 말이 다정해서, 더 위험하게 들렸다."
   },
   {
     "id": "day7-sangwon-beat-04",
@@ -947,7 +1028,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "상원은 수정펜 뚜껑을 닫으며 “네가 틀려도 남길 수 있어?”라고 스스로에게 묻듯 중얼거렸다."
   },
   {
@@ -986,7 +1067,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "학범은 상원의 기록이 증언이 되려면 자신을 소유하지 않아야 한다는 걸 보았다. 그 경계가 오늘 처음으로 흔들렸다.",
     "effect": {
       "target": "sangwon",
@@ -1156,7 +1237,7 @@ export const day7Scenes = [
     "name": "상욱",
     "role": "운동부",
     "place": "체육관 복도",
-    "text": "상욱의 빠른 마음은 단서를 놓치게 했다. 학범은 그가 돌아와 사과하는 순간까지 함께 기록하기로 했다."
+    "text": "상욱의 빠른 마음은 준비 기록을 놓치게 했다. 학범은 그가 돌아와 사과하는 순간까지 함께 기록하기로 했다."
   },
   {
     "id": "day7-junhyeok-beat-01",
@@ -1164,7 +1245,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "준혁은 지도 위 불가능한 시간을 지우며 “감정 증언은 오차가 크다”고 했다. 욱현의 눈썹이 아주 조금 올라갔고, 그 작은 변화가 방 안을 얼렸다.",
     "directives": [
@@ -1244,7 +1325,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "정답에 가까워질수록 준혁은 학범의 표정을 덜 보았다. 그는 틀린 선을 정확히 지웠지만, 그 선을 붙잡고 있던 마음까지 지웠다.",
     "variants": [
@@ -1262,7 +1343,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "“맞는 말이면 충분한가?” 학범이 묻자 준혁은 바로 답하지 못했다. 계산은 빨랐지만, 상처의 속도는 예상하지 못했다.",
     "effect": {
@@ -1276,7 +1357,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "준혁은 자를 내려놓고 “효율적으로 말하면 안 되는 상황도 있나 보네”라고 했다. 사과처럼 서툰 문장이었다."
   },
@@ -1315,7 +1396,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "지도에는 정답에 가까운 선만 남았지만 방 안은 멀어져 있었다. 준혁의 똑똑함이 오늘은 모두를 편하게 하지 못했다."
   },
@@ -1327,7 +1408,7 @@ export const day7Scenes = [
     "name": "도훈",
     "role": "정보통",
     "place": "밤의 편의점",
-    "text": "도훈은 “그럼 범인은 문고리냐?”고 농담했다가 재성의 표정을 보고 말을 삼켰다. 피하려고 던진 말이 누군가의 진심을 건드렸다.",
+    "text": "도훈은 “그럼 소문은 문고리냐?”고 농담했다가 재성의 표정을 보고 말을 삼켰다. 피하려고 던진 말이 누군가의 진심을 건드렸다.",
     "directives": [
       {
         "type": "BCG",
@@ -1808,7 +1889,7 @@ export const day7Scenes = [
     "name": "윤호",
     "role": "후배 / 풍기 도우미",
     "place": "비 갠 옥상",
-    "text": "학범은 윤호의 기다림을 더는 미덕으로만 적을 수 없었다. 옆에 서고 싶다는 마음을 후배 자리 뒤에 숨기면, 단서도 사람도 늦어진다."
+    "text": "학범은 윤호의 기다림을 더는 미덕으로만 적을 수 없었다. 옆에 서고 싶다는 마음을 후배 자리 뒤에 숨기면, 준비 기록도 사람도 늦어진다."
   },
   {
     "id": "day7-pair-hyeongyeom-sangwon-01",
@@ -1816,7 +1897,7 @@ export const day7Scenes = [
     "mood": "tense",
     "chapter": "day-7",
     "name": "현겸",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "현겸은 학범의 얼굴을 보라 했고, 상원은 얼굴보다 오래 남는 기록을 붙잡았다.",
     "directives": [
@@ -1899,9 +1980,9 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "상원",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
-    "text": "둘의 걱정은 같은 곳을 향하지 않았다. 한쪽은 지금의 떨림을, 다른 한쪽은 사라질 가능성을 두려워했다."
+    "text": "둘의 걱정은 같은 곳을 향하지 않았다. 한쪽은 지금의 떨림을, 다른 한쪽은 멀어질 가능성을 두려워했다."
   },
   {
     "id": "day7-pair-hyeongyeom-sangwon-03",
@@ -1975,7 +2056,7 @@ export const day7Scenes = [
     "mood": "tense",
     "chapter": "day-7",
     "name": "욱현",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "욱현은 손글씨의 떨림을 믿었고, 준혁은 같은 결과가 다시 나와야 한다고 맞섰다.",
     "directives": [
@@ -2058,9 +2139,9 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "준혁",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
-    "text": "증거와 감각 사이에서 노트가 구겨질 뻔했다."
+    "text": "기억와 감각 사이에서 노트가 구겨질 뻔했다."
   },
   {
     "id": "day7-pair-ukhyun-junhyeok-03",
@@ -2134,7 +2215,7 @@ export const day7Scenes = [
     "mood": "tense",
     "chapter": "day-7",
     "name": "재성",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "재성은 웃기 위해 말했고, 도훈은 들키지 않기 위해 웃었다.",
     "directives": [
@@ -2217,7 +2298,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "도훈",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "농담끼리 부딪히자 가벼움은 더 이상 가볍지 않았다."
   },
@@ -2293,7 +2374,7 @@ export const day7Scenes = [
     "mood": "tense",
     "chapter": "day-7",
     "name": "상욱",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "상욱은 바로 뛰어야 한다고 했고, 윤호는 선배 허락 없이는 안 된다고 물러섰다.",
     "directives": [
@@ -2376,9 +2457,9 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "윤호",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
-    "text": "너무 앞선 마음과 너무 뒤에 선 마음 사이에서 단서는 잠시 길을 잃었다."
+    "text": "너무 앞선 마음과 너무 뒤에 선 마음 사이에서 준비 기록은 잠시 길을 잃었다."
   },
   {
     "id": "day7-pair-sanguk-yunho-03",
@@ -2452,7 +2533,7 @@ export const day7Scenes = [
     "mood": "tense",
     "chapter": "day-7",
     "name": "하음",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "하음은 불안을 이름 붙였고, 현겸은 괜찮다는 말로 덮으려 했다.",
     "directives": [
@@ -2535,7 +2616,7 @@ export const day7Scenes = [
     "mood": "warm",
     "chapter": "day-7",
     "name": "현겸",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "두 사람 모두 학범을 진정시키려 했지만, 한쪽은 말했고 한쪽은 삼켰다."
   },
@@ -2609,8 +2690,8 @@ export const day7Scenes = [
     "id": "day7-choice-evening",
     "type": "choice",
     "choices": [
-      "단체방에 오늘의 결론을 공유한다.",
-      "아카이브실에 혼자 남아 다시 읽는다.",
+      "문화제 준비 채팅방에 오늘의 결론을 공유한다.",
+      "학생회 기록실에 혼자 남아 다시 읽는다.",
       "현겸에게 먼저 괜찮다고 말한다."
     ],
     "rewards": [
@@ -2658,8 +2739,8 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "단체방에 중간 결론을 올리려던 학범의 손이 멈췄다. 상원은 전송 버튼을 기다렸지만, 학범은 처음으로 “아직 내 생각을 쓰지 않았어”라고 말했다.",
+    "place": "학생회 기록실",
+    "text": "문화제 준비 채팅방에 중간 결론을 올리려던 학범의 손이 멈췄다. 상원은 전송 버튼을 기다렸지만, 학범은 처음으로 “아직 내 생각을 쓰지 않았어”라고 말했다.",
     "directives": [
       {
         "type": "BCG",
@@ -2685,7 +2766,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "복도 불이 하나씩 꺼지는 동안 학범은 맞지 않는 시간표를 다시 보았다. 이상한 것은 숫자만이 아니었다. 모두가 학범을 도우려다 자기 약점을 가장 먼저 드러냈다.",
     "directives": [
       {
@@ -2758,7 +2839,7 @@ export const day7Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "중정 벤치",
-    "text": "현겸은 사과 대신 오래 침묵했다. 그러고는 “괜찮냐고만 묻는 것도 도망일 수 있겠다”라고 낮게 말했다. 학범은 그 솔직함이 오늘의 어떤 증거보다 아팠다.",
+    "text": "현겸은 사과 대신 오래 침묵했다. 그러고는 “괜찮냐고만 묻는 것도 도망일 수 있겠다”라고 낮게 말했다. 학범은 그 솔직함이 오늘의 어떤 기억보다 아팠다.",
     "directives": [
       {
         "type": "BCG",
@@ -2790,7 +2871,7 @@ export const day7Scenes = [
     "chapter": "day-7",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "모순 충돌의 끝에서 학범은 기록장에 결론 대신 질문을 남겼다. “나는 왜 매번 판정을 미루고 모두의 사이에 서 있었을까.” 빈 페이지는 대답을 재촉하지 않았지만, 더는 숨을 자리도 주지 않았다.",
     "directives": [
       {

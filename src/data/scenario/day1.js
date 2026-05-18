@@ -4,9 +4,9 @@ export const day1Scenes = [
       type: 'banner',
       kind: 'chapter',
       chapter: 'day-1',
-      sectionTitle: 'Day 1: 비 오는 방과 후',
+      sectionTitle: 'Day 1: 비 오는 새 학기',
       mood: 'rain',
-      text: 'Day 1 · 비 오는 방과 후',
+      text: 'Day 1 · 비 오는 새 학기',
       nextId: 'opening',
       directives: [
         { type: 'BGM', cue: 'bgmRain', fadeMs: 900 },
@@ -18,7 +18,7 @@ export const day1Scenes = [
       id: 'opening',
       type: 'dialogue',
       chapter: 'day-1',
-      sectionTitle: 'Day 1: 비 오는 방과 후',
+      sectionTitle: 'Day 1: 비 오는 새 학기',
       mood: 'rain',
       name: '학범',
       role: '방과 후',
@@ -35,7 +35,7 @@ export const day1Scenes = [
       name: '현겸',
       role: '동급생',
       place: '학생회실 앞',
-      text: '학범아. 혹시… 우산 남는 거 있어? 없으면 괜찮아. 나 원래 조금 젖는 건 잘 참거든.',
+      text: '학범아. 혹시… 우산 남는 거 있어? 없으면 괜찮아. 나 원래 조금 젖는 건 괜찮거든.',
       effect: { target: 'hyeongyeom', type: 'question' },
       directives: [
         {
@@ -53,10 +53,38 @@ export const day1Scenes = [
       ]
     },
   {
+      id: 'day1-moe-hyeongyeom-shoulder',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '현겸',
+      role: '동급생',
+      place: '학생회실 앞',
+      text: '학범아, 네 어깨 쪽만 비 맞은 거 알아? 우산을 나한테 기울이는 버릇, 다정해서 고마운데 다음엔 들키지 말고 해. 들키면… 나도 기대하게 되니까.',
+      effect: { target: 'hyeongyeom', type: 'blush' },
+      directives: [
+        { type: 'E', target: 'hyeongyeom', effect: 'blush', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day1-moe-hyeongyeom-handkerchief',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '현겸',
+      role: '동급생',
+      place: '학생회실 앞',
+      text: '현겸은 마른 손수건을 꺼내 학범 손목에 살짝 얹었다. “빌려주는 거야. 내일 돌려줘. 그래야 내일도 너한테 올 이유가 생기잖아.”',
+      effect: { target: 'hyeongyeom', type: 'heart' },
+      directives: [
+        { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'bounce' }
+      ]
+    },
+  {
       id: 'prologue-title',
       type: 'banner',
       text: '학생회실 문 앞에서 현겸은 젖은 소매를 감추고 웃었다.',
-      summary: '학범은 늘 부탁을 정리해 왔지만, 오늘은 현겸의 망설임이 더 오래 마음에 남는다.'
+      summary: '학범은 늘 부탁을 정리해 왔지만, 오늘은 현겸의 말이 더 오래 마음에 남는다.'
     },
   {
       id: 'quiet-room',

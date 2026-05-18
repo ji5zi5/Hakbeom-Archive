@@ -20,24 +20,28 @@ import { findReplayPath, resolveNextIndex } from '../src/engine/vnEngine.js';
 import { resolveDominantRoute, resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
 
-const app = readFileSync('src/App.jsx', 'utf8');
-const indexHtml = readFileSync('index.html', 'utf8');
-const styles = readFileSync('src/styles.css', 'utf8');
-const routeConfig = readFileSync('src/data/routeConfig.js', 'utf8');
-const packageJson = readFileSync('package.json', 'utf8');
-const vnState = readFileSync('src/utils/vnState.js', 'utf8');
-const vnText = readFileSync('src/utils/vnText.js', 'utf8');
-const directorEngine = readFileSync('src/engine/directorEngine.js', 'utf8');
-const audioEngine = readFileSync('src/engine/audioEngine.js', 'utf8');
-const saveCodec = readFileSync('src/engine/saveCodec.js', 'utf8');
-const saveSummary = readFileSync('src/engine/saveSummary.js', 'utf8');
-const scenarioValidator = readFileSync('src/engine/scenarioValidator.js', 'utf8');
-const vnEngine = readFileSync('src/engine/vnEngine.js', 'utf8');
-const phoneEngine = readFileSync('src/engine/phoneEngine.js', 'utf8');
-const chapterEngine = readFileSync('src/engine/chapterEngine.js', 'utf8');
-const regressionCapture = readFileSync('scripts/capture-vn-regression.mjs', 'utf8');
+function readSource(path) {
+  return readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+}
+
+const app = readSource('src/App.jsx');
+const indexHtml = readSource('index.html');
+const styles = readSource('src/styles.css');
+const routeConfig = readSource('src/data/routeConfig.js');
+const packageJson = readSource('package.json');
+const vnState = readSource('src/utils/vnState.js');
+const vnText = readSource('src/utils/vnText.js');
+const directorEngine = readSource('src/engine/directorEngine.js');
+const audioEngine = readSource('src/engine/audioEngine.js');
+const saveCodec = readSource('src/engine/saveCodec.js');
+const saveSummary = readSource('src/engine/saveSummary.js');
+const scenarioValidator = readSource('src/engine/scenarioValidator.js');
+const vnEngine = readSource('src/engine/vnEngine.js');
+const phoneEngine = readSource('src/engine/phoneEngine.js');
+const chapterEngine = readSource('src/engine/chapterEngine.js');
+const regressionCapture = readSource('scripts/capture-vn-regression.mjs');
 const vnFlowQa = existsSync('scripts/qa-vn-flow.mjs')
-  ? readFileSync('scripts/qa-vn-flow.mjs', 'utf8')
+  ? readSource('scripts/qa-vn-flow.mjs')
   : '';
 
 assert.match(
@@ -71,7 +75,7 @@ assert.match(
   'VN capture should load repo-local Playwright browser libraries when system packages are unavailable.'
 );
 assert.match(
-  readFileSync('scripts/check-scenario-line-count.mjs', 'utf8'),
+  readSource('scripts/check-scenario-line-count.mjs'),
   /MIN_SCENARIO_SOURCE_LINES \|\| 10_000[\s\S]*Scenario source line count/,
   'Scenario line-count script should enforce the 10,000-line longform target.'
 );
@@ -134,7 +138,7 @@ assert.ok(
   'Quick menu button outlines should be subtle like the references.'
 );
 
-const component = readFileSync('src/components/BAVisualNovel.jsx', 'utf8');
+const component = readSource('src/components/BAVisualNovel.jsx');
 
 function topLevelFunctionSource(source, functionName) {
   const start = source.indexOf(`function ${functionName}`);
@@ -158,10 +162,10 @@ const replayCandidateSource = topLevelFunctionSource(vnEngine, 'getReplayCandida
 const replayDirectorSource = topLevelFunctionSource(vnEngine, 'replayDirectorState');
 
 function readScenarioSourceTree() {
-  const parts = [readFileSync('src/data/scenario.js', 'utf8')];
+  const parts = [readSource('src/data/scenario.js')];
   if (existsSync('src/data/scenario')) {
     for (const fileName of readdirSync('src/data/scenario').filter((file) => file.endsWith('.js')).sort()) {
-      parts.push(readFileSync(`src/data/scenario/${fileName}`, 'utf8'));
+      parts.push(readSource(`src/data/scenario/${fileName}`));
     }
   }
   return parts.join('\n');
@@ -1008,7 +1012,7 @@ function routeLockOrEndingIdPattern(routeId) {
 }
 
 assert.match(
-  readFileSync('src/data/scenario.js', 'utf8'),
+  readSource('src/data/scenario.js'),
   /export \{ episodeInfo, scenario \} from '\.\/scenario\/index\.js';/,
   'Scenario facade should re-export the modular scenario pack.'
 );
@@ -1019,7 +1023,7 @@ assert.ok(
 
 const storyExpansionPlanPath = 'docs/story-expansion-plan.md';
 assert.ok(existsSync(storyExpansionPlanPath), 'Story expansion plan should exist for the longform Season 1 roadmap.');
-const storyExpansionPlan = readFileSync(storyExpansionPlanPath, 'utf8');
+const storyExpansionPlan = readSource(storyExpansionPlanPath);
 assert.match(
   storyExpansionPlan,
   /90\s*분|90-minute|2\s*[–-]\s*3\s*시간|2\s*[–-]\s*3\s*hour/i,
@@ -1030,12 +1034,12 @@ for (const routeName of ['현겸', '욱현', '재성', '상원', '상욱', '준�
 }
 
 assert.match(
-  readFileSync('docs/scenario-authoring.md', 'utf8'),
+  readSource('docs/scenario-authoring.md'),
   /route lock|route-lock|루트락|3개|placeholder|누락|generated background|배경 provenance|manifest/i,
   'Scenario authoring guide should document longform route locks, placeholder photos, <=3 choices, and generated background provenance.'
 );
 assert.match(
-  readFileSync('docs/development-guide.md', 'utf8'),
+  readSource('docs/development-guide.md'),
   /post-Batch-1|Batch 1|모듈화|dominant route|대표 루트|save summary|저장 요약/i,
   'Development guide should document the post-Batch-1 modularization checkpoint and dominant-route save summary expectation.'
 );
@@ -1048,7 +1052,7 @@ assert.match(
 
 assert.match(
   scenarioSource,
-  /id:\s*'day3-chapter-card'[\s\S]*chapter:\s*'day-3'[\s\S]*Day 3 · 비가 그친 뒤에도 남은 약속/,
+  /id:\s*'day3-chapter-card'[\s\S]*chapter:\s*'day-3'[\s\S]*Day 3 · 점심시간 선택/,
   'Scenario should include a third-day romance chapter before the ending.'
 );
 
@@ -1087,13 +1091,13 @@ assert.ok(
   existsSync('.codex/skills/generate2dmap/scripts/compose_layered_preview.py'),
   'agent-sprite-forge map post-processing scripts should be available in the repo-local install.'
 );
-const forgeSource = readFileSync('.codex/agent-sprite-forge/SOURCE.txt', 'utf8');
+const forgeSource = readSource('.codex/agent-sprite-forge/SOURCE.txt');
 assert.match(
   forgeSource,
   /github\.com\/0x0funky\/agent-sprite-forge[\s\S]*fff651a89223b044ccfc0b75ed9f3754c6d739b1/,
   'Repo should record the GitHub source and commit used for the agent-sprite-forge install.'
 );
-const forgeManifest = readFileSync('public/assets/bg/agent-sprite-forge-manifest.json', 'utf8');
+const forgeManifest = readSource('public/assets/bg/agent-sprite-forge-manifest.json');
 assert.match(
   forgeManifest,
   /"tool":\s*"agent-sprite-forge\/generate2dmap"[\s\S]*"visualAssetSource":\s*"built-in image_gen"[\s\S]*"mapMode":\s*"baked_scene_mode"[\s\S]*"visualModel":\s*"baked_raster"/,
@@ -1208,7 +1212,7 @@ for (const placeholderText of [
 
 assert.match(
   scenarioSource,
-  /title:\s*'학범 아카이브'[\s\S]*sectionTitle:\s*'프롤로그: 비 오는 방과 후'/,
+  /title:\s*'학범 아카이브'[\s\S]*sectionTitle:\s*'프롤로그: 봄비의 새 학기'/,
   'Scenario should use the Hakbeom Archive episode title instead of the old Hakbeom Love branding.'
 );
 
@@ -1242,7 +1246,7 @@ assert.match(
 );
 assert.match(
   scenarioSource,
-  /id:\s*'day4-chapter-card'[\s\S]*?chapter:\s*'day-4'[\s\S]*?아카이브실의 새 이름들/,
+  /id:\s*'day4-chapter-card'[\s\S]*?chapter:\s*'day-4'[\s\S]*?방과 후 동아리 순회/,
   'Scenario should add a reachable Day 4 longform chapter card.'
 );
 assert.match(
@@ -1252,7 +1256,7 @@ assert.match(
 );
 assert.match(
   scenarioSource,
-  /id:\s*'day5-chapter-card'[\s\S]*?chapter:\s*'day-5'[\s\S]*?여섯 갈래의 방과 후/,
+  /id:\s*'day5-chapter-card'[\s\S]*?chapter:\s*'day-5'[\s\S]*?작은 소문/,
   'Scenario should add a reachable Day 5 route-seed chapter card.'
 );
 for (const routeName of ['상원', '상욱', '준혁', '도훈', '하음', '윤호']) {
@@ -2182,7 +2186,7 @@ const saveSummaryResult = buildSaveSummary({
 });
 assert.equal(saveSummaryResult.itemId, 'day2-rooftop');
 assert.equal(saveSummaryResult.chapterTitle, 'Day 2: 옥상');
-assert.equal(saveSummaryResult.chapterLabel, 'Day 2: 우산을 돌려주는 아침');
+assert.equal(saveSummaryResult.chapterLabel, 'Day 2: 문화제 기록 담당');
 assert.equal(saveSummaryResult.linePreview, '오늘도 우산 가져왔어.');
 assert.equal(saveSummaryResult.affectionLabel, '같은 우산의 약속');
 assert.equal(saveSummaryResult.routeId, 'hyeongyeom');
@@ -2234,7 +2238,7 @@ const routeArchetypeContracts = [
     routeId: 'sangwon',
     archetype: '기록집착 얀데레',
     voicePattern: /기록|통제/,
-    prosePattern: /틀리게 기록|누구를 골랐는지|흔들린 기록|선택을 자기 장부|네가 고른 순서|선택한 흔적|기록하지 않으면/
+    prosePattern: /허락할 때만 적을게|대답은 기록으로 받지 않을게|네 목소리|기록 양식|빈칸/
   },
   {
     routeId: 'sanguk',

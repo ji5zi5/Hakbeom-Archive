@@ -4,9 +4,9 @@ export const day12Scenes = [
     "type": "banner",
     "kind": "chapter",
     "chapter": "day-12",
-    "sectionTitle": "Day 12: 축제 리허설의 약점",
+    "sectionTitle": "Day 12: 문화제 리허설",
     "mood": "school",
-    "text": "Day 12 · 축제 리허설의 약점",
+    "text": "Day 12 · 문화제 리허설",
     "nextId": "day12-opening",
     "directives": [
       {
@@ -35,6 +35,204 @@ export const day12Scenes = [
         "type": "BGM",
         "cue": "bgmSchool",
         "fadeMs": 700
+      }
+    ]
+  },
+  {
+    "id": "day12-moe-route-rehearsal-slip",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-12",
+    "name": "학범",
+    "role": "독백",
+    "place": "문화제 리허설장",
+    "text": "리허설의 실수는 이상하게도 두 사람의 거리를 더 쉽게 줄였다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom"
+        ],
+        "text": "현겸은 리허설 동선을 놓치고도 학범 손목만은 놓치지 않았다. “미안. 길은 틀렸는데, 네가 옆에 있는 건 맞는 것 같아서.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun"
+        ],
+        "text": "욱현은 전시 순서표를 한 장 떨어뜨리고 바로 주웠다. “손이 미끄러졌어. 네가 가까이 오면 글씨보다 네 얼굴을 먼저 보게 돼.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong"
+        ],
+        "text": "재성은 큐시트를 거꾸로 들고도 태연했다. “방송 실수? 아니, 네가 앞줄에 서면 세계가 잠깐 뒤집히는 건 자연 현상이야.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon"
+        ],
+        "text": "상원은 체크리스트 한 칸을 비워 둔 채 펜을 멈췄다. “여긴 고치지 않을래. 네가 웃은 시간이라, 수치로 바꾸기 아까워.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk"
+        ],
+        "text": "상욱은 결승선 테이프를 너무 빨리 펼치다가 멈췄다. “아, 또 앞서갔다. 네가 준비됐다고 할 때까지 팔 이렇게 들고 있을게.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok"
+        ],
+        "text": "준혁은 무대 이동 시간을 계산하다 숫자를 지웠다. “이상해. 네가 옆에 있으면 대기 시간이 손실이 아니라 보상처럼 느껴져.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun"
+        ],
+        "text": "도훈은 매점 메뉴판 가격을 잘못 붙이고 얼굴을 붉혔다. “네가 웃으니까 손이 삐끗한 거야. 책임져. 아니, 웃지 말라는 뜻은 아니고.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum"
+        ],
+        "text": "하음은 첫 음을 한 박자 늦게 눌렀다. “네가 숨 고르는 소리를 기다렸어. 틀린 게 아니라, 같이 시작하고 싶었던 거야.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho"
+        ],
+        "text": "윤호는 옥상 안내 표지판을 거꾸로 들고 굳었다. “선배가 봐주니까 긴장했어요. 그래도… 다시 하면 더 잘할 수 있어요.”"
+      }
+    ]
+  },
+  {
+    "id": "day12-moe-route-praise",
+    "type": "dialogue",
+    "mood": "confession",
+    "chapter": "day-12",
+    "name": "학범",
+    "role": "독백",
+    "place": "문화제 리허설장",
+    "text": "칭찬은 리허설 대사보다 더 어색했고, 그래서 더 오래 남았다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom"
+        ],
+        "text": "현겸은 학범이 “잘했어”라고 하자 귀끝까지 붉어졌다. “그 말 들으려고 한 건 아닌데… 들으니까 내일도 잘하고 싶어졌어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun"
+        ],
+        "text": "욱현은 칭찬을 듣고 노트 모서리만 만졌다. “알겠어. 오늘 이 페이지는 접어 둘게. 나중에 다시 읽고 싶으니까.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong"
+        ],
+        "text": "재성은 “잘했어” 한마디에 과장되게 가슴을 눌렀다. “큰일 났네. 이 목소리로 칭찬받으면 나, 다음 멘트 다 진심으로 해버려.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon"
+        ],
+        "text": "상원은 고개를 끄덕이다 작게 웃었다. “네가 칭찬한 문장은 수정 안 해. 오탈자가 있어도 원문 보존.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk"
+        ],
+        "text": "상욱은 칭찬을 듣고 제자리에서 두 번 뛰었다가 멈췄다. “뛰고 싶을 만큼 좋은데, 네 앞이라 멋있게 참고 있어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok"
+        ],
+        "text": "준혁은 무표정하게 “확인”이라고 답했다. 하지만 동선표 여백에는 학범의 칭찬 시간이 분 단위로 적혀 있었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun"
+        ],
+        "text": "도훈은 “그 정도는 기본이지”라고 말했지만 메뉴판 뒤에 얼굴을 숨겼다. 귀가 빨개져서 가격표 숫자가 흔들렸다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum"
+        ],
+        "text": "하음은 칭찬을 듣고 악보를 가슴에 안았다. “그 말, 오늘 마지막 음으로 써도 돼? 오래 울리게 두고 싶어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho"
+        ],
+        "text": "윤호는 “잘했어”를 듣자 고개를 깊이 숙였다. “선배가 말해주면… 저, 다음엔 조금 덜 떨 수 있을 것 같아요.”"
+      }
+    ]
+  },
+  {
+    "id": "day12-moe-route-near-hand",
+    "type": "dialogue",
+    "mood": "confession",
+    "chapter": "day-12",
+    "name": "학범",
+    "role": "독백",
+    "place": "문화제 리허설장",
+    "text": "리허설이 끝날 무렵, 잡지 않은 손 사이에도 고백 직전의 열이 남았다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom"
+        ],
+        "text": "현겸의 손등이 학범 손등에 닿았다. 그는 물러서지 않고 작게 물었다. “이 정도 거리는 괜찮아? 아니면… 조금 더 가까워도 돼?”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun"
+        ],
+        "text": "욱현은 책을 넘기다 손끝이 닿자 페이지를 멈췄다. “미안. 그런데 지금 넘기면 이 순간까지 넘어갈 것 같아서.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong"
+        ],
+        "text": "재성은 마이크 선을 정리하다 학범 손 가까이에서 멈췄다. “잡아도 되냐고 물어보는 방송 멘트, 지금 하면 너무 티 나지?”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon"
+        ],
+        "text": "상원은 펜을 건네며 손끝을 조심스럽게 뗐다. “기록으로 남기지 않을 거라서 더 조심하는 거야. 네 허락이 먼저니까.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk"
+        ],
+        "text": "상욱은 손을 뻗었다가 주먹을 쥐고 참았다. “잡고 싶은데, 네가 먼저 괜찮다고 할 때까지 여기서 대기.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok"
+        ],
+        "text": "준혁은 손이 닿은 시간을 계산하다 포기했다. “초 단위로 세면 이상해져. 그냥… 짧지 않았으면 좋겠어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun"
+        ],
+        "text": "도훈은 캔을 건네다 손끝이 닿자 괜히 툴툴댔다. “차갑지? 그러니까 빨리 잡— 아니, 캔을 잡으라고.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum"
+        ],
+        "text": "하음은 악보를 넘기는 손을 멈췄다. “지금 박자, 조금 빨라졌어. 네 손이 가까워서 그런 거면… 나도 같아.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho"
+        ],
+        "text": "윤호는 손을 모으다 조심스레 풀었다. “선배 손 잡으면 너무 욕심일까요? 오늘은 물어보는 연습부터 해볼게요.”"
       }
     ]
   },
@@ -402,7 +600,7 @@ export const day12Scenes = [
     "mood": "school",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
+    "place": "문화제 기록집",
     "text": "상원은 리허설 변경표를 들고 학범의 숨이 흔들린 순간까지 적으려 했다. 펜 끝이 가까워지자 학범의 손끝이 종이 위에 먼저 닿았다.",
     "nextId": "day12-sangwon-stage",
     "directives": [
@@ -477,7 +675,7 @@ export const day12Scenes = [
     "mood": "confession",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브 원본",
+    "place": "문화제 기록집",
     "text": "펜 끝이 학범의 이름 바로 앞에서 멈췄다. 상원은 바로 기록하지 않았고, 빈칸 위에 손을 올린 채 “네가 허락할 때까지 비워 둘게”라고 말했다.",
     "nextId": "day12-sangwon-signal"
   },
@@ -488,7 +686,7 @@ export const day12Scenes = [
     "mood": "warm",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
+    "place": "문화제 기록집",
     "text": "상원은 괄호를 지우지도 채우지도 않았다. 기록지 모서리가 접힌 뒤에도 쓰지 않는 침묵이 남아, 학범은 그 공백을 처음으로 안전하게 느꼈다.",
     "nextId": "day12-merge",
     "effect": {
@@ -621,7 +819,7 @@ export const day12Scenes = [
     "chapter": "day-12",
     "mood": "school",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "준혁은 이동 동선을 줄이다가 학범과 어깨가 닿는 좁은 통로를 남겼다. “의도한 건 맞아.” 그는 인정했지만, 학범의 숨이 막히자 곧바로 선 하나를 지웠다.",
     "nextId": "day12-junhyeok-stage",
@@ -707,7 +905,7 @@ export const day12Scenes = [
     "chapter": "day-12",
     "mood": "warm",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "“정답보다 네가 필요해.” 준혁은 그 말을 기록하지 않았다. 대신 막았던 경로를 열어 두고, 학범이 먼저 나갈 수 있게 문 옆으로 비켜섰다.",
     "nextId": "day12-merge",
@@ -1132,7 +1330,7 @@ export const day12Scenes = [
     "choices": [
       "무대 뒤 동선을 다시 본다.",
       "방송실 로그를 확인한다.",
-      "아카이브 원본을 복사한다."
+      "문화제 기록집을 복사한다."
     ],
     "rewards": [
       {
@@ -1200,8 +1398,8 @@ export const day12Scenes = [
     "mood": "tense",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브실",
-    "text": "원본을 복사하자 빈 줄이 검게 떠올랐다. 그 줄에는 “고백은 기록보다 늦으면 안 된다”라고 적혀 있었다.",
+    "place": "학생회 기록실",
+    "text": "기록집을 복사하자 빈 줄이 검게 떠올랐다. 그 줄에는 “고백은 기록보다 늦으면 안 된다”라고 적혀 있었다.",
     "nextId": "day12-after-check",
     "directives": [
       {
@@ -1219,7 +1417,7 @@ export const day12Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "복도",
-    "text": "세 단서는 다른 장소에서 나왔지만 같은 결론을 가리켰다. 기록을 훔친 사람은 학범에게 누군가를 고르라고 강요하는 게 아니라, 고른 마음을 끝까지 책임지라고 묻고 있었다."
+    "text": "세 준비 기록은 다른 장소에서 나왔지만 같은 결론을 가리켰다. 기록을 대신 맡은 사람은 학범에게 누군가를 고르라고 강요하는 게 아니라, 고른 마음을 끝까지 책임지라고 묻고 있었다."
   },
   {
     "id": "day12-closing",

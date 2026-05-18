@@ -4,9 +4,9 @@ export const day11Scenes = [
     "type": "banner",
     "kind": "chapter",
     "chapter": "day-11",
-    "sectionTitle": "Day 11: 선택 다음 날의 확인",
+    "sectionTitle": "Day 11: 선택한 사람의 아침",
     "mood": "warm",
-    "text": "Day 11 · 선택 다음 날의 확인",
+    "text": "Day 11 · 선택한 사람의 아침",
     "nextId": "day11-opening",
     "directives": [
       {
@@ -48,7 +48,7 @@ export const day11Scenes = [
         "requiredFlags": [
           "route_lock_sangwon"
         ],
-        "text": "상원은 출입 명단을 들고도 학범의 이름 옆에 아무 표시를 하지 않았다. 빈칸을 남기는 일이 그에게는 처음 보는 배려처럼 보였다."
+        "text": "상원은 준비 명단을 들고도 학범의 이름 옆에 아무 표시를 하지 않았다. 빈칸을 남기는 일이 그에게는 처음 보는 배려처럼 보였다."
       },
       {
         "requiredFlags": [
@@ -99,6 +99,204 @@ export const day11Scenes = [
     ]
   },
   {
+    "id": "day11-moe-route-greeting",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-11",
+    "name": "학범",
+    "role": "독백",
+    "place": "아침 복도",
+    "text": "어제 한 사람을 향해 걸어간 뒤, 아침 인사는 평소보다 조금 더 가까운 거리에서 시작됐다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom"
+        ],
+        "text": "현겸은 우산 손잡이를 학범 책상 옆에 세워 두고 말했다. “오늘 비 안 와. 그래도 네가 먼저 보면 좋을 것 같아서 가져왔어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun"
+        ],
+        "text": "욱현은 접지 않은 메모를 건네며 눈을 피했다. “오늘은 말로 해도 돼. 그래도 네가 불편하면, 종이는 여기 있어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong"
+        ],
+        "text": "재성은 방송실 열쇠를 빙글 돌리다 학범을 보자 목소리를 낮췄다. “오늘 첫 멘트는 장난 안 할래. 보고 싶었어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon"
+        ],
+        "text": "상원은 출석부 옆에 학범 이름만 반듯하게 적었다. “공식 문서엔 안 남길게. 하지만 아침부터 네가 먼저 보였다는 건 기억할래.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk"
+        ],
+        "text": "상욱은 복도 끝에서 뛰어오다 학범 앞 세 걸음에서 멈췄다. “잘했지? 바로 안 안기고 물어보려고 멈췄어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok"
+        ],
+        "text": "준혁은 최단 경로 대신 돌아가는 복도를 골랐다. “이쪽이 42초 느려. 그런데 너랑 걷는 시간이 늘어나니까 합리적이야.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun"
+        ],
+        "text": "도훈은 따뜻한 캔을 학범 책상에 놓고 고개를 돌렸다. “아침밥 안 먹었을 것 같아서. 착각하지 마, 할인이라 산 거야.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum"
+        ],
+        "text": "하음은 음악실 문을 열어 둔 채 다음 음을 누르지 않았다. “네 발걸음 들리면 시작하려고 했어. 오늘 첫 박자는 네 거니까.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho"
+        ],
+        "text": "윤호는 교문 앞에서 두 손으로 가방끈을 쥐었다. “선배, 오늘은 제가 먼저 인사해도 돼요? 어제부터 계속 연습했어요.”"
+      }
+    ]
+  },
+  {
+    "id": "day11-moe-route-small-care",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-11",
+    "name": "학범",
+    "role": "독백",
+    "place": "교실 창가",
+    "text": "사소한 배려 하나가 평소의 학교를 조금 다른 색으로 바꿨다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom"
+        ],
+        "text": "현겸은 학범이 싫어하는 반찬을 자연스럽게 집어 갔다. “오늘은 내가 먼저 기억했어. 이런 건 친구도 할 수 있지만, 나는 좀 더 특별하게 하고 싶어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun"
+        ],
+        "text": "욱현은 학범의 책갈피를 말없이 반 페이지 뒤로 옮겼다. “여기부터 읽으면 어제 네가 멈춘 곳이야. 내가 대신 기억해 뒀어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong"
+        ],
+        "text": "재성은 대본 여백에 하트를 그리다 학범이 보자 바로 손으로 가렸다. “방송 사고야. 재방송은 네가 원하면 해줄게.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon"
+        ],
+        "text": "상원은 학범의 서류 더미에서 가장 무거운 것만 자기 쪽으로 끌어왔다. “이건 내가 들게. 네가 부탁하기 전에 알아차리는 건 허락받은 범위지?”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk"
+        ],
+        "text": "상욱은 음료 뚜껑을 따려다 멈추고 학범에게 내밀었다. “내가 해도 되는데, 네가 직접 할 수 있는 건 빼앗기 싫어서.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok"
+        ],
+        "text": "준혁은 학범 자리에 햇빛이 들자 커튼 각도를 12도쯤 바꿨다. “눈부심 감소. 그리고 네 얼굴은 그대로 보임. 목적 달성.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun"
+        ],
+        "text": "도훈은 쿠폰 한 장을 책 사이에 끼워 넣었다. “나중에 배고프면 써. 고맙다고 크게 말하면 압수할 거니까 조용히 웃어.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum"
+        ],
+        "text": "하음은 학범의 펜 굴러가는 소리에 맞춰 손끝으로 책상을 톡톡 두드렸다. “네가 생각할 때 나는 이 박자가 좋아. 멈춰도 기다리기 쉬워.”"
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho"
+        ],
+        "text": "윤호는 옥상 열쇠고리에 작은 벚꽃 스티커를 붙였다. “선배가 찾기 쉬우라고요. 사실은… 제가 붙인 걸 알아봐 주셨으면 해서요.”"
+      }
+    ]
+  },
+  {
+    "id": "day11-moe-route-message",
+    "type": "dialogue",
+    "mood": "confession",
+    "chapter": "day-11",
+    "name": "학범",
+    "role": "독백",
+    "place": "휴대폰 화면",
+    "text": "수업 사이 짧은 알림 하나가 하루를 다음 방과 후까지 끌고 갔다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom"
+        ],
+        "text": "현겸에게서 “점심 같이 먹을래?”라는 메시지가 왔다. 곧이어 “싫으면 말해도 돼. 그래도 나는 좋았으면 좋겠어”가 따라왔다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun"
+        ],
+        "text": "욱현은 “도서관 창가 비워 뒀어”라고만 보냈다. 잠시 뒤 “네가 안 와도 비워 둘 거야”라는 문장이 조용히 도착했다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong"
+        ],
+        "text": "재성은 “오늘 방송실 예약 완료”라고 보낸 뒤, “예약자는 학범이 웃는 얼굴 한 명”이라고 덧붙였다가 바로 지우지 않았다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon"
+        ],
+        "text": "상원은 “오늘 일정 16:10부터 비워 둠”이라고 보냈다. 마지막 줄에는 “공식 사유: 너랑 있고 싶어서”가 적혀 있었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk"
+        ],
+        "text": "상욱은 “체육관 앞에서 기다림!”이라고 보냈다가 다시 “천천히 와. 뛰어오지 마. 이번엔 내가 기다릴 차례”라고 고쳐 보냈다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok"
+        ],
+        "text": "준혁은 “네가 올 확률을 높이기 위해 의자를 하나 더 뒀어”라고 보냈다. 그 다음 메시지는 “보고 싶다는 뜻으로 해석해도 무방.”이었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun"
+        ],
+        "text": "도훈은 “매점 신메뉴 별로임”이라고 보냈다. 곧이어 “근데 네가 먹으면 맛 평가 달라질 수도 있으니까 와라”가 따라왔다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum"
+        ],
+        "text": "하음은 “오늘 음악실은 조금 느린 곡”이라고 보냈다. 그리고 “네가 들어오면 그때부터 시작할게”라는 문장이 오래 화면에 남았다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho"
+        ],
+        "text": "윤호는 “선배, 옥상 바람 좋아요”라고 보냈다. 잠시 뒤 “혼자 보기 아까워서요. 아니, 같이 보고 싶어서요”라고 솔직하게 고쳤다."
+      }
+    ]
+  },
+  {
     "id": "day11-route-gate",
     "type": "dialogue",
     "chapter": "day-11",
@@ -123,7 +321,7 @@ export const day11Scenes = [
       "quiet": "day11-hyeongyeom-morning",
       "default": "day11-hyeongyeom-morning"
     },
-    "text": "선택은 밤새 사라지지 않았다. 학범은 어제 적은 이름을 주머니에 넣고, 가장 먼저 확인하고 싶은 얼굴 쪽으로 걸었다."
+    "text": "선택은 밤새 흐려지지 않았다. 학범은 어제 적은 이름을 주머니에 넣고, 가장 먼저 확인하고 싶은 얼굴 쪽으로 걸었다."
   },
   {
     "id": "day11-hyeongyeom-morning",
@@ -133,7 +331,7 @@ export const day11Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "같은 우산",
-    "text": "현겸은 아카이브 명단을 보고도 아무 말 하지 않았다. 학범이 지나간 다른 이름들 위에 시선이 잠깐 멈췄고, 그는 우산 손잡이만 더 세게 쥐었다.",
+    "text": "현겸은 학범 아카이브 명단을 보고도 아무 말 하지 않았다. 학범이 지나간 다른 이름들 위에 시선이 잠깐 멈췄고, 그는 우산 손잡이만 더 세게 쥐었다.",
     "nextId": "day11-hyeongyeom-desk",
     "effect": {
       "target": "hyeongyeom",
@@ -253,7 +451,7 @@ export const day11Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "접힌 노트",
-    "text": "욱현은 학범이 아카이브에서 다시 펼친 페이지 번호를 먼저 말했다. 너무 낮은 목소리라 책장 넘기는 소리에 묻힐 뻔했지만, 학범은 그가 밤새 어디를 보고 있었는지 알아차렸다.",
+    "text": "욱현은 학범이 학범 아카이브에서 다시 펼친 페이지 번호를 먼저 말했다. 너무 낮은 목소리라 책장 넘기는 소리에 묻힐 뻔했지만, 학범은 그가 밤새 어디를 보고 있었는지 알아차렸다.",
     "nextId": "day11-ukhyun-desk",
     "effect": {
       "target": "ukhyun",
@@ -469,7 +667,7 @@ export const day11Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실 너머",
-    "text": "재성은 녹음 버튼에서 손을 뗀 채 “네가 고른 이름, 남들이 듣게 안 해”라고 말했다. 학범은 농담이 사라진 자리에 남은 목소리가 더 위험하게 다정하다고 느꼈다.",
+    "text": "재성은 녹음 버튼에서 손을 뗀 채 “네가 고른 이름, 남들이 듣게 안 해”라고 말했다. 학범은 농담이 비어 있던 자리에 남은 목소리가 더 위험하게 다정하다고 느꼈다.",
     "nextId": "day11-merge",
     "effect": {
       "target": "jaeseong",
@@ -492,8 +690,8 @@ export const day11Scenes = [
     "mood": "warm",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
-    "text": "상원은 어제 학범이 고른 이름이 적힌 기록지를 파일 맨 앞에 끼워 두었다. “삭제 요청은 받지 않을게.” 평소 같은 문장이었지만 끝이 조금 단단했다.",
+    "place": "문화제 기록집",
+    "text": "상원은 어제 학범이 고른 이름이 적힌 기록지를 기록집 맨 앞에 끼워 두었다. “수정 요청은 받지 않을게.” 평소 같은 문장이었지만 끝이 조금 단단했다.",
     "nextId": "day11-sangwon-desk",
     "effect": {
       "target": "sangwon",
@@ -577,7 +775,7 @@ export const day11Scenes = [
     "mood": "warm",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브 원본",
+    "place": "문화제 기록집",
     "text": "학범이 “그건 임시 기록 아니었어?”라고 묻자 상원은 펜 뚜껑을 닫았다. “임시였으면 네 손글씨까지 보관하지 않았어.”",
     "nextId": "day11-sangwon-promise"
   },
@@ -588,8 +786,8 @@ export const day11Scenes = [
     "mood": "confession",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
-    "text": "“네가 나를 선택한 증거야.” 상원은 그 말을 쓰지 않고 말했다. 지우지 않는 기록 앞에서 학범은 처음으로 누군가의 집착이 조용히 자신을 기다릴 수도 있다고 생각했다.",
+    "place": "문화제 기록집",
+    "text": "“네가 나를 선택한 기억야.” 상원은 그 말을 쓰지 않고 말했다. 지우지 않는 기록 앞에서 학범은 처음으로 누군가의 집착이 조용히 자신을 기다릴 수도 있다고 생각했다.",
     "nextId": "day11-merge",
     "effect": {
       "target": "sangwon",
@@ -731,7 +929,7 @@ export const day11Scenes = [
     "chapter": "day-11",
     "mood": "warm",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "준혁은 지도 위 한 경로를 붉은 선으로 막아 두었다. “네가 돌아갈 수 있는 길 하나를 없앴어.” 설명은 침착했지만 손끝은 자를 놓지 못했다.",
     "nextId": "day11-junhyeok-desk",
@@ -827,7 +1025,7 @@ export const day11Scenes = [
     "chapter": "day-11",
     "mood": "confession",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "“내가 그렇게 만들었어.” 준혁은 막힌 길 옆에 새 선을 그렸다. 학범은 통제라는 단어보다, 그가 처음으로 숨기지 않은 필요가 더 무겁게 다가왔다.",
     "nextId": "day11-merge",
@@ -1212,8 +1410,8 @@ export const day11Scenes = [
     "mood": "warm",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "각자의 아침은 달랐지만 결론은 같았다. 학범이 고른 이름은 단서 목록의 항목이 아니라, 오늘을 함께 시작할 사람의 자리였다.",
+    "place": "학생회 기록실",
+    "text": "각자의 아침은 달랐지만 결론은 같았다. 학범이 고른 이름은 준비 기록 목록의 항목이 아니라, 오늘을 함께 시작할 사람의 자리였다.",
     "directives": [
       {
         "type": "BCG",
@@ -1281,7 +1479,7 @@ export const day11Scenes = [
     "type": "choice",
     "choices": [
       "상대의 불안을 먼저 묻는다.",
-      "사건의 진실을 끝까지 추적한다.",
+      "문화제 준비의 진실을 끝까지 확인한다.",
       "둘 다 놓치지 않겠다고 말한다."
     ],
     "rewards": [
@@ -1314,8 +1512,8 @@ export const day11Scenes = [
     "mood": "warm",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브실",
-    "text": "학범은 증거보다 먼저 상대가 밤새 괜찮았는지 물었다. 그 한마디 때문에 아카이브실의 공기가 조금 부드러워졌다.",
+    "place": "학생회 기록실",
+    "text": "학범은 기억보다 먼저 상대가 밤새 괜찮았는지 물었다. 그 한마디 때문에 학생회 기록실의 공기가 조금 부드러워졌다.",
     "nextId": "day11-phone-night"
   },
   {
@@ -1325,8 +1523,8 @@ export const day11Scenes = [
     "mood": "warm",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브실",
-    "text": "학범은 기록의 순서를 다시 맞췄다. 마음을 정했기 때문에, 오히려 사건을 끝까지 볼 힘이 생겼다.",
+    "place": "학생회 기록실",
+    "text": "학범은 기록의 순서를 다시 맞췄다. 마음을 정했기 때문에, 오히려 문화제 준비를 끝까지 볼 힘이 생겼다.",
     "nextId": "day11-phone-night"
   },
   {
@@ -1336,8 +1534,8 @@ export const day11Scenes = [
     "mood": "warm",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브실",
-    "text": "학범은 둘 중 하나만 고르지 않겠다고 말했다. 마음도 사건도 혼자 처리하지 않는다는 선언이었다.",
+    "place": "학생회 기록실",
+    "text": "학범은 둘 중 하나만 고르지 않겠다고 말했다. 마음도 문화제 준비도 혼자 처리하지 않는다는 선언이었다.",
     "nextId": "day11-phone-night"
   },
   {
@@ -1352,7 +1550,7 @@ export const day11Scenes = [
     "messages": [
       {
         "from": "system",
-        "text": "아카이브 카드 사진이 도착했습니다.",
+        "text": "학범 아카이브 카드 사진이 도착했습니다.",
         "read": true
       },
       {
@@ -1367,7 +1565,7 @@ export const day11Scenes = [
     ],
     "replies": [
       "내일 아침에 직접 보자고 답한다.",
-      "오늘의 단서를 정리해 보낸다.",
+      "오늘의 준비 기록을 정리해 보낸다.",
       "괜히 장난스러운 이모티콘을 보낸다."
     ],
     "rewards": [
@@ -1412,7 +1610,7 @@ export const day11Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "자기 방",
-    "text": "학범은 단서를 세 줄로 정리했다. 마지막 줄에는 자신도 모르게 “혼자 하지 말기”라고 적혀 있었다.",
+    "text": "학범은 준비 기록을 세 줄로 정리했다. 마지막 줄에는 자신도 모르게 “혼자 하지 말기”라고 적혀 있었다.",
     "nextId": "day11-closing"
   },
   {

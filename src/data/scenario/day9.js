@@ -4,9 +4,9 @@ export const day9Scenes = [
     "type": "banner",
     "kind": "chapter",
     "chapter": "day-9",
-    "sectionTitle": "Day 9: 축제 준비의 소문",
+    "sectionTitle": "Day 9: 첫 번째 오해",
     "mood": "warm",
-    "text": "Day 9 · 축제 준비의 소문",
+    "text": "Day 9 · 첫 번째 오해",
     "nextId": "day9-opening",
     "directives": [
       {
@@ -23,8 +23,8 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브실",
-    "text": "축제 준비 명단이 아카이브실에 도착했다. 사라진 기록과 상관없어 보였던 축제 일정표에는, 이상하게도 학범이 조사한 아홉 명의 이름이 같은 시간대에 묶여 있었다.",
+    "place": "학생회 기록실",
+    "text": "축제 준비 명단이 학생회 기록실에 도착했다. 비어 있던 기록과 상관없어 보였던 축제 일정표에는, 이상하게도 학범이 함께 만난 아홉 명의 이름이 같은 시간대에 묶여 있었다.",
     "directives": [
       {
         "type": "BCG",
@@ -88,13 +88,94 @@ export const day9Scenes = [
     ]
   },
   {
+    "id": "day9-moe-hyeongyeom-everyone-kind",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-9",
+    "name": "현겸",
+    "role": "동급생",
+    "place": "교실 뒤편",
+    "text": "현겸은 책상 모서리를 손끝으로 문지르다 물었다. “학범아, 너는 누구에게나 이렇게 다정해? 대답하기 어렵다면 천천히 해도 돼. 그래도 난 듣고 싶어.”",
+    "effect": {
+      "target": "hyeongyeom",
+      "type": "blush"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/school-morning-hallway.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "hyeongyeom",
+        "effect": "blush",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
+    "id": "day9-moe-ukhyun-unread-sentence",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-9",
+    "name": "욱현",
+    "role": "도서위원",
+    "place": "도서관 창가",
+    "text": "욱현은 접힌 노트를 펴지 않고 학범에게 돌려주었다. “읽지 않은 문장도 보여. 그래도 오늘은 추측 안 할게. 네가 말해 주면 좋겠어.”",
+    "effect": {
+      "target": "ukhyun",
+      "type": "ellipsis"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/library-window.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "ukhyun",
+        "effect": "ellipsis",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
+    "id": "day9-moe-dohun-joke-stops",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-9",
+    "name": "도훈",
+    "role": "매점 정보통",
+    "place": "매점 앞",
+    "text": "도훈은 장난을 치려다 캔 뚜껑만 만지작거렸다. “네가 누구한테 다정한지 궁금한 거 아냐. 그냥… 나한테도 조금은 특별했으면 좋겠다는 뜻이지.”",
+    "effect": {
+      "target": "dohun",
+      "type": "blush"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/convenience-store-night.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "dohun",
+        "effect": "blush",
+        "motion": "shake"
+      }
+    ]
+  },
+  {
     "id": "day9-festival-phone",
     "type": "phone",
     "kind": "phone",
     "chapter": "day-9",
     "name": "축제 준비방",
     "role": "메시지",
-    "text": "축제 준비 단체방이 단서처럼 울렸다.",
+    "text": "축제 준비 문화제 준비 채팅방이 준비 기록처럼 울렸다.",
     "messages": [
       {
         "from": "sangwon",
@@ -249,8 +330,8 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "상원은 축제 준비 명단과 사라진 결재표를 나란히 놓았다. 두 종이의 빈칸은 서로 다른 종이인데도 같은 모양으로 비어 있었다.",
+    "place": "학생회 기록실",
+    "text": "상원은 축제 준비 명단과 비어 있던 결재표를 나란히 놓았다. 두 종이의 빈칸은 서로 다른 종이인데도 같은 모양으로 비어 있었다.",
     "nextId": "day9-merge-prep",
     "directives": [
       {
@@ -400,7 +481,7 @@ export const day9Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "축제 준비 복도",
-    "text": "축제 준비는 사건을 숨기지 않았다. 오히려 사람들을 한곳에 모아, 학범이 더 이상 선택을 미룰 수 없게 만들고 있었다.",
+    "text": "축제 준비는 문화제 준비를 숨기지 않았다. 오히려 사람들을 한곳에 모아, 학범이 더 이상 선택을 미룰 수 없게 만들고 있었다.",
     "directives": [
       {
         "type": "BCG",
@@ -545,7 +626,7 @@ export const day9Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "같은 우산",
-    "text": "“학범아, 오늘 네가 웃는 척하는 거 티 나.” 현겸의 말은 작았지만 가장 먼저 우산을 기울여 주는 사람처럼 다정했다. 학범은 그 걱정을 단서보다 먼저 받아들였다.",
+    "text": "“학범아, 오늘 네가 웃는 척하는 거 티 나.” 현겸의 말은 작았지만 가장 먼저 우산을 기울여 주는 사람처럼 다정했다. 학범은 그 걱정을 준비보다 먼저 받아들였다.",
     "variants": [
       {
         "requiredFlags": [
@@ -685,7 +766,7 @@ export const day9Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "접힌 노트",
-    "text": "학범은 욱현과 나란히 침묵을 읽었다. 사건은 누가 훔쳤느냐보다, 누가 말하지 못하게 만들었느냐를 묻는 쪽으로 기울었다."
+    "text": "학범은 욱현과 나란히 침묵을 읽었다. 문화제 준비는 누가 놀렸느냐보다, 누가 말하지 못하게 만들었느냐를 묻는 쪽으로 기울었다."
   },
   {
     "id": "day9-jaeseong-pressure-01",
@@ -797,7 +878,7 @@ export const day9Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "방송 신호",
-    "text": "학범은 재성의 농담이 어디에서 멈추는지 처음으로 들었다. 스피커 잡음 너머에는 사건보다 먼저 숨긴 마음이 있었다."
+    "text": "학범은 재성의 농담이 어디에서 멈추는지 처음으로 들었다. 스피커 잡음 너머에는 마음보다 먼저 숨긴 마음이 있었다."
   },
   {
     "id": "day9-sangwon-pressure-01",
@@ -806,8 +887,8 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
-    "text": "아카이브 원본의 수정 이력에는 상원이 모르는 공백 한 줄이 끼어 있었다. 상원은 펜을 내려놓고, 학범의 선택이 자기 기록 밖에서 조용히 바뀌는 순간을 붙잡지 못할까 두려워했다.",
+    "place": "문화제 기록집",
+    "text": "문화제 기록집의 수정 이력에는 상원이 모르는 공백 한 줄이 끼어 있었다. 상원은 펜을 내려놓고, 학범의 선택이 자기 기록 밖에서 조용히 바뀌는 순간을 붙잡지 못할까 두려워했다.",
     "directives": [
       {
         "type": "BCG",
@@ -880,8 +961,8 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
-    "text": "“학범, 오늘 누구 앞에서 웃는 척했는지 다 티 나.” 상원의 말은 장난처럼 시작했지만 끝에는 기록을 덮는 듯한 집착이 남았다. 학범은 그 걱정을 단서보다 먼저 받아들였다.",
+    "place": "문화제 기록집",
+    "text": "“학범, 오늘 누구 앞에서 웃는 척했는지 다 티 나.” 상원의 말은 장난처럼 시작했지만 끝에는 기록을 덮는 듯한 집착이 남았다. 학범은 그 걱정을 준비보다 먼저 받아들였다.",
     "variants": [
       {
         "requiredFlags": [
@@ -898,7 +979,7 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브 원본",
+    "place": "문화제 기록집",
     "text": "상원은 결재표의 숫자를 다시 세지 않았다. 대신 학범의 이름 옆에 작게 그은 선을 가리키며 “틀린 기록은 고치면 돼. 틀린 마음은 방치하면 안 돼”라고 했다."
   },
   {
@@ -908,7 +989,7 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브 원본",
+    "place": "문화제 기록집",
     "text": "학범은 상원과 있으면 모든 감정이 항목처럼 분류될 줄 알았다. 그런데 상원은 가장 중요한 칸만 비워 두고, 학범이 직접 적을 때까지 기다렸다."
   },
   {
@@ -1021,7 +1102,7 @@ export const day9Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "체육관 동선",
-    "text": "학범은 상욱의 성급함이 도망이 아니라 도착 방식이라는 걸 알았다. 누가 기록을 훔쳤든, 상욱은 학범이 뒤처지는 순간부터 이미 방향을 바꾸고 있었다."
+    "text": "학범은 상욱의 성급함이 도망이 아니라 도착 방식이라는 걸 알았다. 누가 먼저 마음을 숨겼든, 상욱은 학범이 뒤처지는 순간부터 이미 방향을 바꾸고 있었다."
   },
   {
     "id": "day9-junhyeok-pressure-01",
@@ -1029,7 +1110,7 @@ export const day9Scenes = [
     "mood": "warm",
     "chapter": "day-9",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "준혁이 펼친 동선 지도에는 가장 짧은 길 옆에 지워진 우회로가 남아 있었다. 계산은 맞았지만, 정답인 길 위에 서 있어도 학범이 자신을 선택하지 않을 수 있다는 가능성이 지도보다 선명했다.",
     "directives": [
@@ -1103,7 +1184,7 @@ export const day9Scenes = [
     "mood": "warm",
     "chapter": "day-9",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "“학범, 네 웃음은 평소보다 0.5초 늦어.” 준혁은 건조하게 말하고는 지도를 접었다. “걱정한다는 뜻이야. 번역까지 필요하진 않지?”",
     "variants": [
@@ -1121,7 +1202,7 @@ export const day9Scenes = [
     "mood": "warm",
     "chapter": "day-9",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "지도 위 빈칸",
     "text": "준혁의 지도에는 최단 경로 대신 돌아가는 선이 그려져 있었다. 그는 “이번엔 빠른 길이 아니라 네가 덜 다치는 길로 계산했어”라고 말했다."
   },
@@ -1133,7 +1214,7 @@ export const day9Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "지도 위 빈칸",
-    "text": "학범은 준혁이 숫자를 내려놓을 때 더 정확해진다는 걸 보았다. 사건의 빈칸은 논리로 좁아졌지만, 마음의 빈칸은 기다림으로만 좁아졌다."
+    "text": "학범은 준혁이 숫자를 내려놓을 때 더 정확해진다는 걸 보았다. 문화제 준비의 빈칸은 논리로 좁아졌지만, 마음의 빈칸은 기다림으로만 좁아졌다."
   },
   {
     "id": "day9-dohun-pressure-01",
@@ -1142,7 +1223,7 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "도훈",
     "role": "정보통",
-    "place": "CCTV 시간",
+    "place": "매점 쿠폰 시간",
     "text": "매점 영수증 뒷면에는 도훈이 장난삼아 붙이던 가격표가 떼어진 자국만 있었다. 그는 빈 손바닥을 보며, 농담을 걷어내면 학범에게 내밀 문장이 하나도 남지 않을까 봐 웃음을 삼켰다.",
     "directives": [
       {
@@ -1216,7 +1297,7 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "도훈",
     "role": "정보통",
-    "place": "CCTV 시간",
+    "place": "매점 쿠폰 시간",
     "text": "“학생회장님, 오늘 연기력 별로네.” 도훈은 웃으며 캔을 던졌다. “받아. 걱정해서 주는 거 아니고, 정보값 선불이야. 착각하지 말고.”",
     "variants": [
       {
@@ -1234,7 +1315,7 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "도훈",
     "role": "정보통",
-    "place": "CCTV 시간",
+    "place": "매점 쿠폰 시간",
     "text": "도훈은 편의점 영수증 뒤에 적은 농담을 찢지 못하고 있었다. “이거 웃긴 척하려고 쓴 건데, 사실 네가 혼자 계산할까 봐 무서웠어.”"
   },
   {
@@ -1244,8 +1325,8 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "학범",
     "role": "독백",
-    "place": "CCTV 시간",
-    "text": "학범은 도훈의 장난이 가벼워서가 아니라 무거운 걸 들어 올리려고 튀어 오른다는 걸 알았다. 사건은 아직 차가웠지만, 캔 따는 소리는 둘 사이를 조금 데웠다."
+    "place": "매점 쿠폰 시간",
+    "text": "학범은 도훈의 장난이 가벼워서가 아니라 무거운 걸 들어 올리려고 튀어 오른다는 걸 알았다. 문화제 준비는 아직 차가웠지만, 캔 따는 소리는 둘 사이를 조금 데웠다."
   },
   {
     "id": "day9-haeum-pressure-01",
@@ -1357,7 +1438,7 @@ export const day9Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "문소리의 박자",
-    "text": "학범은 하음 곁에서 처음으로 서두르지 않는 추리를 했다. 누가 기록을 숨겼는지는 아직 흐렸지만, 둘의 호흡은 틀린 마디를 다시 찾고 있었다."
+    "text": "학범은 하음 곁에서 처음으로 서두르지 않는 마음 확인를 했다. 누가 먼저 고백할지는 아직 흐렸지만, 둘의 호흡은 틀린 마디를 다시 찾고 있었다."
   },
   {
     "id": "day9-yunho-pressure-01",
@@ -1441,7 +1522,7 @@ export const day9Scenes = [
     "name": "윤호",
     "role": "후배 / 풍기 도우미",
     "place": "마른 종이",
-    "text": "“선배, 오늘 괜찮은 척하는 거... 조금 티 났어요.” 윤호의 말은 조심스럽게 시작했지만 끝에는 기다림이 남았다. 학범은 그 걱정을 단서보다 먼저 받아들였다.",
+    "text": "“선배, 오늘 괜찮은 척하는 거... 조금 티 났어요.” 윤호의 말은 조심스럽게 시작했지만 끝에는 기다림이 남았다. 학범은 그 걱정을 준비보다 먼저 받아들였다.",
     "variants": [
       {
         "requiredFlags": [
@@ -1478,7 +1559,7 @@ export const day9Scenes = [
     "chapter": "day-9",
     "name": "학범",
     "role": "학생회",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "축제 준비가 끝난 뒤, 학범의 기록장에는 아홉 갈래의 표시가 남았다. 다음 날이면 그중 하나를 더 분명히 선택해야 한다는 예감이, 빈칸보다 무겁게 내려앉았다.",
     "nextId": "day10-chapter-card",
     "directives": [

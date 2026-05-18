@@ -4,9 +4,9 @@ export const day8Scenes = [
     "type": "banner",
     "kind": "chapter",
     "chapter": "day-8",
-    "sectionTitle": "Day 8: 비밀 기록 조사",
+    "sectionTitle": "Day 8: 문화제 조 편성",
     "mood": "tense",
-    "text": "Day 8 · 비밀 기록 조사",
+    "text": "Day 8 · 문화제 조 편성",
     "nextId": "day8-opening",
     "directives": [
       {
@@ -23,8 +23,8 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "축제 리허설 공지가 게시판에 붙자 학교는 종이꽃 냄새와 케이블 소리로 들떴다. 아카이브의 빈 페이지도 더 이상 사건 보고서처럼 보이지 않았다. 내일을 앞둔 약속들이 그 여백을 조용히 두드렸다.",
+    "place": "학생회 기록실",
+    "text": "축제 리허설 공지가 게시판에 붙자 학교는 종이꽃 냄새와 케이블 소리로 들떴다. 기록집의 빈 페이지도 더 이상 업무표처럼 보이지 않았다. 내일을 앞둔 약속들이 그 여백을 조용히 두드렸다.",
     "directives": [
       {
         "type": "BCG",
@@ -88,13 +88,94 @@ export const day8Scenes = [
     ]
   },
   {
+    "id": "day8-moe-sangwon-pair-form",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-8",
+    "name": "상원",
+    "role": "학생회 기록 담당",
+    "place": "학생회 기록실",
+    "text": "상원은 조 편성표에서 학범 이름 옆 빈칸을 오래 바라봤다. “네가 원하지 않는 조합은 쓰지 않을게. 대신 원하는 쪽을 숨기면, 그건 내가 못 고쳐.”",
+    "effect": {
+      "target": "sangwon",
+      "type": "ellipsis"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/archive-club-room-evening.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "sangwon",
+        "effect": "ellipsis",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
+    "id": "day8-moe-sanguk-name-tag",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-8",
+    "name": "상욱",
+    "role": "운동부",
+    "place": "체육관 복도",
+    "text": "상욱은 명찰 두 개를 들고 뛰어오다 학범 앞에서 멈췄다. “네 이름 옆에 내 이름 붙이면 너무 티 나? 티 나도 좋긴 한데, 먼저 물어보려고.”",
+    "effect": {
+      "target": "sanguk",
+      "type": "heart"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/gym-corridor-evening.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "sanguk",
+        "effect": "heart",
+        "motion": "bounce"
+      }
+    ]
+  },
+  {
+    "id": "day8-moe-dohun-coupon-reserve",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-8",
+    "name": "도훈",
+    "role": "매점 정보통",
+    "place": "매점 앞",
+    "text": "도훈은 협찬 쿠폰 더미에서 학범이 좋아하는 맛만 따로 빼 두었다. “우연히 남은 거야. 네가 좋아하는 거라 남긴 건 아니고… 아, 그렇게 보지 마.”",
+    "effect": {
+      "target": "dohun",
+      "type": "blush"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/convenience-store-night.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "dohun",
+        "effect": "blush",
+        "motion": "shake"
+      }
+    ]
+  },
+  {
     "id": "day8-morning-phone",
     "type": "phone",
     "kind": "phone",
     "chapter": "day-8",
-    "name": "단체방",
+    "name": "문화제 준비 채팅방",
     "role": "메시지",
-    "text": "축제 전야 아침, 단체방에는 보고보다 약속에 가까운 말들이 도착했다.",
+    "text": "축제 전야 아침, 문화제 준비 채팅방에는 보고보다 약속에 가까운 말들이 도착했다.",
     "messages": [
       {
         "from": "sangwon",
@@ -110,7 +191,7 @@ export const day8Scenes = [
       },
       {
         "from": "hakbeom",
-        "text": "각자 고마워. 오늘 받은 말들은 단서 칸이 아니라 약속 칸에 적어 둘게."
+        "text": "각자 고마워. 오늘 받은 말들은 준비 기록 칸이 아니라 약속 칸에 적어 둘게."
       }
     ],
     "nextId": "day8-choice-morning",
@@ -125,9 +206,9 @@ export const day8Scenes = [
     "id": "day8-choice-morning",
     "type": "choice",
     "choices": [
-      "기록 쪽 단서를 먼저 정리한다.",
-      "현장 쪽 단서를 먼저 확인한다.",
-      "감정 쪽 단서를 먼저 묻는다."
+      "기록 쪽 준비 기록을 먼저 정리한다.",
+      "방과 후 쪽 준비 기록을 먼저 확인한다.",
+      "감정 쪽 준비 기록을 먼저 묻는다."
     ],
     "rewards": [
       {
@@ -174,7 +255,7 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "상원은 리허설 표 맨 아래에 “수정 금지”라고 적은 칸을 만들었다. 준혁은 가장 짧은 길 위에 작은 우회 표시를 더했다. 두 사람은 말없이, 내일 학범이 정답이 아닌 길을 골라도 지우지 않겠다고 약속했다.",
     "directives": [
       {
@@ -273,8 +354,8 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "약속은 사건의 해답처럼 한곳으로 모이지 않았다. 오히려 저마다 다른 방향에서 학범을 불렀고, 학범은 이제 모두에게 같은 대답을 돌려줄 수 없다는 사실을 알았다.",
+    "place": "학생회 기록실",
+    "text": "약속은 문화제 준비의 해답처럼 한곳으로 모이지 않았다. 오히려 저마다 다른 방향에서 학범을 불렀고, 학범은 이제 모두에게 같은 대답을 돌려줄 수 없다는 사실을 알았다.",
     "directives": [
       {
         "type": "BCG",
@@ -425,7 +506,7 @@ export const day8Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "중정 벤치",
-    "text": "우산은 더 이상 단서가 아니라 약속처럼 책상에 기대어 있었다. 학범은 그 손잡이를 보며, 누군가와 천천히 걷고 싶은 마음을 미루지 못했다.",
+    "text": "우산은 더 이상 준비 기록이 아니라 약속처럼 책상에 기대어 있었다. 학범은 그 손잡이를 보며, 누군가와 천천히 걷고 싶은 마음을 미루지 못했다.",
     "variants": [
       {
         "requiredFlags": [
@@ -594,7 +675,7 @@ export const day8Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "도서관 구석자리",
-    "text": "접히지 않은 노트는 학범의 책상 위에서 계속 펼쳐져 있었다. 욱현은 답을 재촉하지 않았지만, 사라지게 두지도 않겠다는 얼굴이었다.",
+    "text": "접히지 않은 노트는 학범의 책상 위에서 계속 펼쳐져 있었다. 욱현은 답을 재촉하지 않았지만, 흐려지게 두지도 않겠다는 얼굴이었다.",
     "variants": [
       {
         "requiredFlags": [
@@ -787,7 +868,7 @@ export const day8Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실",
-    "text": "재성은 녹음 파일을 만들지 않았다. “내일 네 표정은 저장 말고 기억할래.”"
+    "text": "재성은 녹음본을 만들지 않았다. “내일 네 표정은 저장 말고 기억할래.”"
   },
   {
     "id": "day8-jaeseong-phone",
@@ -835,8 +916,8 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "상원은 축제 동선표 아래에 학범의 선택 칸을 만들고, 그 옆에 “삭제하지 않음”이라고 썼다. “네가 고르면 내가 맞춰 적을게. 고르게 만들진 않을게.”",
+    "place": "학생회 기록실",
+    "text": "상원은 축제 동선표 아래에 학범의 선택 칸을 만들고, 그 옆에 “수정하지 않음”이라고 썼다. “네가 고르면 내가 맞춰 적을게. 고르게 만들진 않을게.”",
     "directives": [
       {
         "type": "BCG",
@@ -915,14 +996,14 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "그는 평소처럼 표를 완성하려다 학범의 빈칸 앞에서 멈췄다. 완벽함보다 신뢰를 택하는 손이 낯설게 떨렸다.",
     "variants": [
       {
         "requiredFlags": [
           "sangwon_route_seed"
         ],
-        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 아카이브 원본 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
+        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 문화제 기록집 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
       }
     ],
     "effect": {
@@ -937,7 +1018,7 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "“내 기록 밖에서 바뀌어도, 네 선택이면 남길게.” 상원은 자신에게 더 어려운 약속을 골랐다."
   },
   {
@@ -947,7 +1028,7 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "상원은 수정테이프를 학범에게 맡겼다. “내일 내가 선 넘으면 지워.”"
   },
   {
@@ -986,8 +1067,8 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "학범은 통제하지 않겠다는 말이 상원에게 얼마나 무거운지 알았다. 그래서 그 약속은 어떤 증거보다 진하게 남았다.",
+    "place": "학생회 기록실",
+    "text": "학범은 통제하지 않겠다는 말이 상원에게 얼마나 무거운지 알았다. 그래서 그 약속은 어떤 기억보다 진하게 남았다.",
     "effect": {
       "target": "sangwon",
       "type": "heart"
@@ -1164,7 +1245,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "준혁은 무대 동선의 최단 경로에 X표를 치고 관객석 뒤로 도는 선을 그렸다. “정답은 저쪽인데, 네가 있을 가능성은 이쪽이 높아.”",
     "directives": [
@@ -1244,7 +1325,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "그는 비효율이라는 말을 싫어하면서도 선을 지우지 않았다. 학범은 자신을 위해 남겨진 돌아가는 길을 오래 바라봤다.",
     "variants": [
@@ -1262,7 +1343,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "“내일은 정답보다 네 위치를 먼저 볼게.” 준혁의 약속은 건조했지만, 그래서 더 피하지 않는 말처럼 들렸다.",
     "effect": {
@@ -1276,7 +1357,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "준혁은 지도 접는 법까지 바꿨다. 펼치면 가장 먼저 보이는 곳에 학범의 자리 표시가 있었다."
   },
@@ -1315,7 +1396,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "학범은 길이 사람을 향할 수도 있다는 걸 배웠다. 준혁의 약속은 빠른 결론을 포기한 자리에 남았다."
   },
@@ -1816,7 +1897,7 @@ export const day8Scenes = [
     "mood": "tense",
     "chapter": "day-8",
     "name": "현겸",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "현겸은 같은 길을 말했고, 상원은 지우지 않을 칸을 약속했다.",
     "directives": [
@@ -1899,7 +1980,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "상원",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "걷자는 부탁과 남기겠다는 약속은 서로 달랐지만, 둘 다 학범이 내일 도망치지 않기를 바랐다."
   },
@@ -1975,7 +2056,7 @@ export const day8Scenes = [
     "mood": "tense",
     "chapter": "day-8",
     "name": "욱현",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "욱현은 늦은 답도 읽겠다고 했고, 준혁은 돌아가는 길도 보겠다고 했다.",
     "directives": [
@@ -2058,7 +2139,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "준혁",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "노트와 지도는 각자 빈 곳을 남겨 두었다. 학범이 직접 채울 자리였다."
   },
@@ -2134,7 +2215,7 @@ export const day8Scenes = [
     "mood": "tense",
     "chapter": "day-8",
     "name": "재성",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "재성은 마이크를 끄겠다고 했고, 도훈은 농담 전에 진짜로 묻겠다고 했다.",
     "directives": [
@@ -2217,7 +2298,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "도훈",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "두 사람의 목소리는 처음으로 관객 없는 곳을 향했다."
   },
@@ -2229,7 +2310,7 @@ export const day8Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "복도와 기록 사이",
-    "text": "학범은 내일 자신이 들어야 할 말들이 사건 보고가 아니라 마음의 초대라는 걸 알았다.",
+    "text": "학범은 내일 자신이 들어야 할 말들이 문화제 준비 보고가 아니라 마음의 초대라는 걸 알았다.",
     "directives": [
       {
         "type": "SCG",
@@ -2293,7 +2374,7 @@ export const day8Scenes = [
     "mood": "tense",
     "chapter": "day-8",
     "name": "상욱",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "상욱은 돌아와 기다리겠다고 했고, 윤호는 옆에 서고 싶다고 했다.",
     "directives": [
@@ -2376,7 +2457,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "윤호",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "달려오는 약속과 한 발 앞으로 나오는 부탁이 무대 뒤 조명 아래 나란히 섰다."
   },
@@ -2452,7 +2533,7 @@ export const day8Scenes = [
     "mood": "tense",
     "chapter": "day-8",
     "name": "하음",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "하음은 학범의 박자를 따르겠다고 했고, 현겸은 비 없는 길을 함께 걷자고 했다.",
     "directives": [
@@ -2535,7 +2616,7 @@ export const day8Scenes = [
     "mood": "warm",
     "chapter": "day-8",
     "name": "현겸",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "호흡과 걸음은 서로 다른 리듬이었지만, 둘 다 학범이 먼저 움직이기를 기다렸다."
   },
@@ -2609,8 +2690,8 @@ export const day8Scenes = [
     "id": "day8-choice-evening",
     "type": "choice",
     "choices": [
-      "단체방에 오늘의 결론을 공유한다.",
-      "아카이브실에 혼자 남아 다시 읽는다.",
+      "문화제 준비 채팅방에 오늘의 결론을 공유한다.",
+      "학생회 기록실에 혼자 남아 다시 읽는다.",
       "현겸에게 먼저 괜찮다고 말한다."
     ],
     "rewards": [
@@ -2658,8 +2739,8 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "상원에게 오늘의 표를 넘기자 그는 “이건 보고서가 아니라 네가 받은 말이야”라며 파일철을 닫았다. 학범은 처음으로 기록을 덜 완성해도 된다는 허락을 들었다.",
+    "place": "학생회 기록실",
+    "text": "상원에게 오늘의 표를 넘기자 그는 “이건 보고서가 아니라 네가 받은 말이야”라며 기록철을 닫았다. 학범은 처음으로 기록을 덜 완성해도 된다는 허락을 들었다.",
     "directives": [
       {
         "type": "BCG",
@@ -2685,7 +2766,7 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "축제 장식이 창문에 비치고, 학범은 빈 페이지 위에 손을 올렸다. 누구에게나 고맙다고 할 수는 있지만, 누구를 떠올리며 내일을 기다릴지는 하나씩 달라지고 있었다.",
     "directives": [
       {
@@ -2790,7 +2871,7 @@ export const day8Scenes = [
     "chapter": "day-8",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "축제 전야의 끝에서 학범은 빈 페이지 맨 위에 제목처럼 적었다. “내가 미루지 말아야 할 말.” 창밖의 리허설 조명이 꺼질 때까지, 그 문장은 오래 마르지 않았다.",
     "directives": [
       {

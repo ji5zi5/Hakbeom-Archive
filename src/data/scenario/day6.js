@@ -4,9 +4,9 @@ export const day6Scenes = [
     "type": "banner",
     "kind": "chapter",
     "chapter": "day-6",
-    "sectionTitle": "Day 6: 기록되지 않은 하루",
+    "sectionTitle": "Day 6: 시험 공부",
     "mood": "warm",
-    "text": "Day 6 · 기록되지 않은 하루",
+    "text": "Day 6 · 시험 공부",
     "nextId": "day6-opening",
     "directives": [
       {
@@ -23,8 +23,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "아카이브실 책상에 우산 물자국, 접힌 노트, 영수증, 문소리 메모가 한꺼번에 올라왔다. 학범은 남을 위해 정리한 일은 숱하게 떠올렸지만, 자신이 도움을 받은 순간은 빈칸으로 남겨 두었다는 사실을 처음 보았다.",
+    "place": "학생회 기록실",
+    "text": "중간 평가가 다가오자 학생회 기록실 책상은 문화제 기록집 대신 문제집과 정리 노트로 가득 찼다. 학범은 누구에게 어떤 도움을 받을지 고르는 일도 공부만큼 어려울 수 있다는 걸 알았다.",
     "directives": [
       {
         "type": "BCG",
@@ -88,17 +88,98 @@ export const day6Scenes = [
     ]
   },
   {
+    "id": "day6-moe-ukhyun-red-pen",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-6",
+    "name": "욱현",
+    "role": "도서위원",
+    "place": "도서관 창가",
+    "text": "욱현은 학범 문제집의 빈칸에 작은 별표만 남겼다. “틀린 곳은 여기. 네가 물어볼 때까지 기다릴게. 말 안 해도 알아보는 건… 오늘만 반칙.”",
+    "effect": {
+      "target": "ukhyun",
+      "type": "ellipsis"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/library-window.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "ukhyun",
+        "effect": "ellipsis",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
+    "id": "day6-moe-junhyeok-break-timer",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-6",
+    "name": "준혁",
+    "role": "문화제 동선 담당",
+    "place": "학생회 기록실",
+    "text": "준혁은 타이머를 7분으로 맞추고 학범 앞에 내려놨다. “집중 효율은 25분 뒤 떨어져. 그런데 네가 웃으면 오차가 생겨서, 휴식 시간을 조금 더 줘야겠어.”",
+    "effect": {
+      "target": "junhyeok",
+      "type": "chatter"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/archive-club-room-evening.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "junhyeok",
+        "effect": "chatter",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
+    "id": "day6-moe-haeum-breath-count",
+    "type": "dialogue",
+    "mood": "warm",
+    "chapter": "day-6",
+    "name": "하음",
+    "role": "음악실 담당",
+    "place": "음악실",
+    "text": "하음은 메트로놈을 켜지 않고 학범의 숨을 먼저 들었다. “문제 풀 때 숨이 빨라져. 괜찮아, 오늘은 답보다 네 박자를 먼저 맞추자.”",
+    "effect": {
+      "target": "haeum",
+      "type": "heart"
+    },
+    "directives": [
+      {
+        "type": "BCG",
+        "src": "/assets/bg/music-room-late-afternoon.png",
+        "transition": "fade-in"
+      },
+      {
+        "type": "E",
+        "target": "haeum",
+        "effect": "heart",
+        "motion": "nod"
+      }
+    ]
+  },
+  {
     "id": "day6-morning-phone",
     "type": "phone",
     "kind": "phone",
     "chapter": "day-6",
-    "name": "단체방",
+    "name": "문화제 준비 채팅방",
     "role": "메시지",
-    "text": "아침 조회 전, 아카이브 단체방에 조용한 알림이 이어졌다.",
+    "text": "아침 조회 전, 학범 아카이브 문화제 준비 채팅방에 조용한 알림이 이어졌다.",
     "messages": [
       {
         "from": "sangwon",
-        "text": "출입 기록지는 내가 가져갈게. 오늘은 네 반응도 빠뜨리지 않을 거야."
+        "text": "준비 명단지는 내가 가져갈게. 오늘은 네 반응도 빠뜨리지 않을 거야."
       },
       {
         "from": "dohun",
@@ -110,7 +191,7 @@ export const day6Scenes = [
       },
       {
         "from": "hakbeom",
-        "text": "고마워. 오늘은 단서랑 같이, 우리가 서로 어떻게 도왔는지도 적어 보자."
+        "text": "고마워. 오늘은 준비 기록이랑 같이, 우리가 서로 어떻게 도왔는지도 적어 보자."
       }
     ],
     "nextId": "day6-choice-morning",
@@ -125,9 +206,9 @@ export const day6Scenes = [
     "id": "day6-choice-morning",
     "type": "choice",
     "choices": [
-      "기록 쪽 단서를 먼저 정리한다.",
-      "현장 쪽 단서를 먼저 확인한다.",
-      "감정 쪽 단서를 먼저 묻는다."
+      "기록 쪽 준비 기록을 먼저 정리한다.",
+      "방과 후 쪽 준비 기록을 먼저 확인한다.",
+      "감정 쪽 준비 기록을 먼저 묻는다."
     ],
     "rewards": [
       {
@@ -174,8 +255,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "상원은 출입 기록과 영수증 시간을 한 줄에 맞춰 붙였고, 준혁은 지도 가장자리에 일부러 돌아가는 길을 그렸다. “정답만 좁히지 말고 네가 숨 돌릴 자리도 남겨.” 학범은 빨간 펜이 처음으로 자신을 몰아세우지 않는다고 느꼈다.",
+    "place": "학생회 기록실",
+    "text": "상원은 준비 명단과 영수증 시간을 한 줄에 맞춰 붙였고, 준혁은 지도 가장자리에 일부러 돌아가는 길을 그렸다. “정답만 좁히지 말고 네가 숨 돌릴 자리도 남겨.” 학범은 빨간 펜이 처음으로 자신을 몰아세우지 않는다고 느꼈다.",
     "directives": [
       {
         "type": "BCG",
@@ -208,7 +289,7 @@ export const day6Scenes = [
     "name": "상욱",
     "role": "운동부",
     "place": "체육관 복도",
-    "text": "상욱은 체육관 창고 상자를 번쩍 들어 올리다 뒤쪽에 끼어 있던 봉투를 찾아냈고, 도훈은 복도 끝에서 CCTV 담당자에게 받은 시간을 흔들었다. 윤호는 문밖에서 젖은 종이를 말리다가 학범이 부르자 그제야 안으로 들어왔다.",
+    "text": "상욱은 체육관 창고 상자를 번쩍 들어 올리다 뒤쪽에 끼어 있던 초대장을 찾아냈고, 도훈은 복도 끝에서 매점 담당자에게 받은 시간을 흔들었다. 윤호는 문밖에서 젖은 종이를 말리다가 학범이 부르자 그제야 안으로 들어왔다.",
     "directives": [
       {
         "type": "BCG",
@@ -273,8 +354,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "정리표는 사건의 방향만 보여 주지 않았다. 누가 무엇을 들고 왔는지보다, 학범이 누구 앞에서 어깨를 내려놓았는지가 더 선명하게 남았다.",
+    "place": "학생회 기록실",
+    "text": "정리표는 문화제 준비의 방향만 보여 주지 않았다. 누가 무엇을 들고 왔는지보다, 학범이 누구 앞에서 어깨를 내려놓았는지가 더 선명하게 남았다.",
     "directives": [
       {
         "type": "BCG",
@@ -345,7 +426,7 @@ export const day6Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "중정 벤치",
-    "text": "현겸은 젖은 우산 자국을 닦을 수건을 가져와 책상 아래에 말없이 깔았다. “네가 또 아침을 건너뛴 것 같아서.” 빵 봉지가 증거물 사이에 놓이자, 학범은 도움에도 온도가 있다는 걸 알았다.",
+    "text": "현겸은 젖은 우산 자국을 닦을 수건을 가져와 책상 아래에 말없이 깔았다. “네가 또 아침을 건너뛴 것 같아서.” 빵 봉지가 기억물 사이에 놓이자, 학범은 도움에도 온도가 있다는 걸 알았다.",
     "directives": [
       {
         "type": "BCG",
@@ -425,7 +506,7 @@ export const day6Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "중정 벤치",
-    "text": "우산 손잡이에 묻은 물방울은 사건의 방향보다 학범이 얼마나 자주 혼자 버텼는지를 보여 주었다. 현겸은 결론을 재촉하지 않고, 빵을 다 먹을 때까지 옆자리를 비워 두지 않았다.",
+    "text": "우산 손잡이에 묻은 물방울은 문화제 준비의 방향보다 학범이 얼마나 자주 혼자 버텼는지를 보여 주었다. 현겸은 결론을 재촉하지 않고, 빵을 다 먹을 때까지 옆자리를 비워 두지 않았다.",
     "variants": [
       {
         "requiredFlags": [
@@ -466,7 +547,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "현겸",
     "role": "메시지",
-    "text": "현겸에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "현겸에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "hyeongyeom",
@@ -496,7 +577,7 @@ export const day6Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "중정 벤치",
-    "text": "현겸이 남긴 수건 냄새가 아직 책상에 있었다. 학범은 사건이 끝나기 전에도 누군가는 자신을 먼저 먹이고, 쉬게 하고, 기다릴 수 있다는 사실을 받아들였다.",
+    "text": "현겸이 남긴 수건 냄새가 아직 책상에 있었다. 학범은 문화제 준비가 끝나기 전에도 누군가는 자신을 먼저 먹이고, 쉬게 하고, 기다릴 수 있다는 사실을 받아들였다.",
     "effect": {
       "target": "hyeongyeom",
       "type": "ellipsis"
@@ -635,7 +716,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "욱현",
     "role": "메시지",
-    "text": "욱현에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "욱현에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "ukhyun",
@@ -755,7 +836,7 @@ export const day6Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실",
-    "text": "스피커 잡음 사이에서 어제의 발소리가 분리되자 재성은 과장되게 박수를 쳤다. 그 장난 덕분에 학범은 처음으로 단서를 보며 웃었다.",
+    "text": "스피커 잡음 사이에서 어제의 발소리가 분리되자 재성은 과장되게 박수를 쳤다. 그 장난 덕분에 학범은 처음으로 준비 기록을 보며 웃었다.",
     "variants": [
       {
         "requiredFlags": [
@@ -787,7 +868,7 @@ export const day6Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실",
-    "text": "재성은 녹음 파일 제목을 ‘학범 회장님 금지된 한숨’으로 저장하려다 지웠다. 대신 “나중에 네가 듣고 괜찮을 이름으로 해”라고 했다."
+    "text": "재성은 녹음본 제목을 ‘학범 회장님 금지된 한숨’으로 저장하려다 지웠다. 대신 “나중에 네가 듣고 괜찮을 이름으로 해”라고 했다."
   },
   {
     "id": "day6-jaeseong-phone",
@@ -796,11 +877,11 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "재성",
     "role": "메시지",
-    "text": "재성에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "재성에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "jaeseong",
-        "text": "복도 소음 파일 보냈다. 네 한숨은 편집했으니 안심해."
+        "text": "복도 소음 녹음본 보냈다. 네 한숨은 편집했으니 안심해."
       },
       {
         "from": "hakbeom",
@@ -835,8 +916,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "상원은 증거를 지나치게 반듯하게 분류하다가 학범의 표정 앞에서 펜을 멈췄다. “이건 사실란에 넣어도 될까, 아니면 네가 말할 때까지 비워 둘까.”",
+    "place": "학생회 기록실",
+    "text": "상원은 기억을 지나치게 반듯하게 분류하다가 학범의 표정 앞에서 펜을 멈췄다. “이건 사실란에 넣어도 될까, 아니면 네가 말할 때까지 비워 둘까.”",
     "directives": [
       {
         "type": "BCG",
@@ -915,14 +996,14 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "파일철은 완벽했지만 학범의 반응 칸만 비어 있었다. 상원은 그 빈칸을 불편해하면서도 억지로 채우지 않았다.",
+    "place": "학생회 기록실",
+    "text": "기록철은 완벽했지만 학범의 반응 칸만 비어 있었다. 상원은 그 빈칸을 불편해하면서도 억지로 채우지 않았다.",
     "variants": [
       {
         "requiredFlags": [
           "sangwon_route_seed"
         ],
-        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 아카이브 원본 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
+        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 문화제 기록집 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
       }
     ],
     "effect": {
@@ -937,7 +1018,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "“네가 어떤 순서로 흔들렸는지도 놓치고 싶지 않아.” 상원의 말은 다정함과 집착 사이에 있었고, 학범은 그 경계까지 함께 기록했다."
   },
   {
@@ -947,8 +1028,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "상원은 수정테이프를 내려놓고 “오늘 네가 받은 도움은 원본으로 남겨”라고 했다. 틀린 글씨를 견디는 얼굴이 평소보다 어려워 보였다."
+    "place": "학생회 기록실",
+    "text": "상원은 수정테이프를 내려놓고 “오늘 네가 받은 도움은 기록집으로 남겨”라고 했다. 틀린 글씨를 견디는 얼굴이 평소보다 어려워 보였다."
   },
   {
     "id": "day6-sangwon-phone",
@@ -957,7 +1038,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "메시지",
-    "text": "상원에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "상원에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "sangwon",
@@ -969,7 +1050,7 @@ export const day6Scenes = [
       },
       {
         "from": "sangwon",
-        "text": "어렵지만 해볼게. 원본은 원본답게 남겨야 하니까."
+        "text": "어렵지만 해볼게. 기록집은 처음 마음답게 남겨야 하니까."
       }
     ],
     "directives": [
@@ -986,8 +1067,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
-    "text": "정리된 파일 속에서 유일하게 삐뚤어진 줄이 학범의 눈에 들어왔다. 상원이 남긴 도움은 완벽한 표가 아니라, 지우지 않은 반응이었다.",
+    "place": "학생회 기록실",
+    "text": "정리된 기록집 속에서 유일하게 삐뚤어진 줄이 학범의 눈에 들어왔다. 상원이 남긴 도움은 완벽한 표가 아니라, 지우지 않은 반응이었다.",
     "effect": {
       "target": "sangwon",
       "type": "heart"
@@ -1001,7 +1082,7 @@ export const day6Scenes = [
     "name": "상욱",
     "role": "운동부",
     "place": "체육관 복도",
-    "text": "상욱은 창고 상자를 옮기다 뒤에 끼어 있던 봉투를 찾아냈다. “봐, 힘쓰는 것도 쓸모 있지?” 웃음은 컸지만, 학범이 놀라자 바로 손을 멈췄다.",
+    "text": "상욱은 창고 상자를 옮기다 뒤에 끼어 있던 초대장을 찾아냈다. “봐, 힘쓰는 것도 쓸모 있지?” 웃음은 컸지만, 학범이 놀라자 바로 손을 멈췄다.",
     "directives": [
       {
         "type": "BCG",
@@ -1085,7 +1166,7 @@ export const day6Scenes = [
     "name": "상욱",
     "role": "운동부",
     "place": "체육관 복도",
-    "text": "봉투에는 축제 배치표 조각이 들어 있었다. 상욱은 당장 뛰어나가려다가 학범의 숨이 가쁜 걸 보고, 처음으로 출발선을 뒤로 물렸다.",
+    "text": "초대장에는 체육관 이벤트 배치표가 들어 있었다. 상욱은 당장 뛰어나가려다가 학범의 숨이 가쁜 걸 보고, 처음으로 출발선을 뒤로 물렸다.",
     "variants": [
       {
         "requiredFlags": [
@@ -1113,7 +1194,7 @@ export const day6Scenes = [
     "name": "상욱",
     "role": "운동부",
     "place": "체육관 복도",
-    "text": "상욱은 남은 상자를 혼자 들지 않고 학범에게 가벼운 파일 하나만 맡겼다. “같이 하는 표시. 무거운 건 내가 들고.”",
+    "text": "상욱은 남은 상자를 혼자 들지 않고 학범에게 가벼운 정리표 하나만 맡겼다. “같이 하는 표시. 무거운 건 내가 들고.”",
     "effect": {
       "target": "sanguk",
       "type": "heart"
@@ -1126,11 +1207,11 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상욱",
     "role": "메시지",
-    "text": "상욱에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "상욱에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "sanguk",
-        "text": "봉투 찾은 거 봤지? 나 오늘 꽤 쓸모 있었지?"
+        "text": "초대장 찾은 거 봤지? 나 오늘 꽤 쓸모 있었지?"
       },
       {
         "from": "hakbeom",
@@ -1156,7 +1237,7 @@ export const day6Scenes = [
     "name": "상욱",
     "role": "운동부",
     "place": "체육관 복도",
-    "text": "체육관 복도 끝에서 학범은 봉투보다 상욱이 멈춘 순간을 더 오래 기억했다. 도움은 달려오는 것뿐 아니라, 기다리는 것일 수도 있었다."
+    "text": "체육관 복도 끝에서 학범은 초대장보다 상욱이 멈춘 순간을 더 오래 기억했다. 도움은 달려오는 것뿐 아니라, 기다리는 것일 수도 있었다."
   },
   {
     "id": "day6-junhyeok-beat-01",
@@ -1164,7 +1245,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "준혁은 지도 위 최단 경로를 지우고 작은 우회를 그렸다. “효율은 떨어지지만 네가 사람을 덜 마주치는 길.” 계산이 처음으로 학범의 피로를 기준으로 삼았다.",
     "directives": [
@@ -1244,7 +1325,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "우회로 옆에는 예상 소요 시간이 적혀 있었다. 준혁은 감정 변수를 싫어한다고 말하면서도, 그 변수를 위해 자를 다시 댔다.",
     "variants": [
@@ -1262,7 +1343,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "“정답만 찾으면 네가 빠질 가능성이 높아.” 무심한 문장이었지만, 학범은 그 안에 자신을 포함시키려는 의도를 읽었다.",
     "effect": {
@@ -1276,7 +1357,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
     "text": "준혁은 지도를 접지 않고 학범 쪽으로 돌려 놓았다. “선택은 네가 해. 나는 길이 닫히지 않게 해 둘게.”"
   },
@@ -1287,7 +1368,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "준혁",
     "role": "메시지",
-    "text": "준혁에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "준혁에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "junhyeok",
@@ -1315,9 +1396,9 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "준혁",
-    "role": "자료 조사 담당",
+    "role": "문화제 동선 담당",
     "place": "도서관 지도 테이블",
-    "text": "학범은 돌아가는 선을 손가락으로 따라갔다. 준혁의 도움은 길을 줄이는 대신, 학범이 사라지지 않는 쪽으로 길을 남겼다."
+    "text": "학범은 돌아가는 선을 손가락으로 따라갔다. 준혁의 도움은 길을 줄이는 대신, 학범이 흐려지지 않는 쪽으로 길을 남겼다."
   },
   {
     "id": "day6-dohun-beat-01",
@@ -1327,7 +1408,7 @@ export const day6Scenes = [
     "name": "도훈",
     "role": "정보통",
     "place": "밤의 편의점",
-    "text": "도훈은 편의점 CCTV 시간을 받아 왔지만 어떤 부탁을 했는지는 끝내 말하지 않았다. “정보값은 영업비밀. 대신 너 점심값은 내가 냈다 치자.”",
+    "text": "도훈은 편의점 매점 쿠폰 시간을 받아 왔지만 어떤 부탁을 했는지는 끝내 말하지 않았다. “정보값은 영업마지막 장. 대신 너 점심값은 내가 냈다 치자.”",
     "directives": [
       {
         "type": "BCG",
@@ -1429,7 +1510,7 @@ export const day6Scenes = [
     "name": "도훈",
     "role": "정보통",
     "place": "밤의 편의점",
-    "text": "“착각하지 마. 네가 쓰러지면 조사 귀찮아져서 그래.” 도훈의 말끝은 비뚤었고, 손에 쥐여 준 캔은 차갑지 않게 데워져 있었다."
+    "text": "“착각하지 마. 네가 쓰러지면 준비 귀찮아져서 그래.” 도훈의 말끝은 비뚤었고, 손에 쥐여 준 캔은 차갑지 않게 데워져 있었다."
   },
   {
     "id": "day6-dohun-beat-04",
@@ -1439,7 +1520,7 @@ export const day6Scenes = [
     "name": "도훈",
     "role": "정보통",
     "place": "밤의 편의점",
-    "text": "도훈은 CCTV 캡처를 넘기며 “오늘은 외상”이라고 했다. 학범이 이유를 묻자, 그는 잠깐 눈을 피하고 “고마워할 틈은 줘야지”라고 했다."
+    "text": "도훈은 매점 협찬표를 넘기며 “오늘은 외상”이라고 했다. 학범이 이유를 묻자, 그는 잠깐 눈을 피하고 “고마워할 틈은 줘야지”라고 했다."
   },
   {
     "id": "day6-dohun-phone",
@@ -1448,11 +1529,11 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "도훈",
     "role": "메시지",
-    "text": "도훈에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "도훈에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "dohun",
-        "text": "CCTV 값은 외상. 밥값은 내가 이긴 걸로 해."
+        "text": "매점 협찬표 값은 외상. 밥값은 내가 이긴 걸로 해."
       },
       {
         "from": "hakbeom",
@@ -1478,7 +1559,7 @@ export const day6Scenes = [
     "name": "도훈",
     "role": "정보통",
     "place": "밤의 편의점",
-    "text": "학범은 영수증을 증거물 봉투가 아니라 노트 사이에 넣었다. 도훈의 도움은 늘 거래처럼 왔지만, 계산서에는 마음이 빠져 있었다.",
+    "text": "학범은 영수증을 기억 상자가 아니라 노트 사이에 넣었다. 도훈의 도움은 늘 거래처럼 왔지만, 계산서에는 마음이 빠져 있었다.",
     "effect": {
       "target": "dohun",
       "type": "chatter"
@@ -1617,7 +1698,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "하음",
     "role": "메시지",
-    "text": "하음에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "하음에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "haeum",
@@ -1647,7 +1728,7 @@ export const day6Scenes = [
     "name": "하음",
     "role": "음악실 담당",
     "place": "해질녘 음악실",
-    "text": "학범은 문소리보다 자기 호흡이 먼저 적힌 메모를 보았다. 하음의 도움은 사건을 맞추기 전에, 학범의 박자를 되찾게 했다."
+    "text": "학범은 문소리보다 자기 호흡이 먼저 적힌 메모를 보았다. 하음의 도움은 문화제 준비를 맞추기 전에, 학범의 박자를 되찾게 했다."
   },
   {
     "id": "day6-yunho-beat-01",
@@ -1657,7 +1738,7 @@ export const day6Scenes = [
     "name": "윤호",
     "role": "후배 / 풍기 도우미",
     "place": "비 갠 옥상",
-    "text": "윤호는 아카이브실 밖에서 젖은 종이를 말리고 있었다. 학범이 이름을 부르자 그제야 들어와 “선배가 부르면 들어가도 되는 줄 알았어요”라고 했다.",
+    "text": "윤호는 학생회 기록실 밖에서 젖은 종이를 말리고 있었다. 학범이 이름을 부르자 그제야 들어와 “선배가 부르면 들어가도 되는 줄 알았어요”라고 했다.",
     "directives": [
       {
         "type": "BCG",
@@ -1778,7 +1859,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "윤호",
     "role": "메시지",
-    "text": "윤호에게서 정리한 단서보다 조용한 안부가 먼저 도착했다.",
+    "text": "윤호에게서 정리한 준비보다 조용한 안부가 먼저 도착했다.",
     "messages": [
       {
         "from": "yunho",
@@ -1808,7 +1889,7 @@ export const day6Scenes = [
     "name": "윤호",
     "role": "후배 / 풍기 도우미",
     "place": "비 갠 옥상",
-    "text": "학범은 윤호가 문턱을 넘은 순간을 단서 옆에 적었다. 도움은 기다림에서 시작됐지만, 오늘은 한 걸음 안으로 들어왔다."
+    "text": "학범은 윤호가 문턱을 넘은 순간을 준비 기록 옆에 적었다. 도움은 기다림에서 시작됐지만, 오늘은 한 걸음 안으로 들어왔다."
   },
   {
     "id": "day6-pair-hyeongyeom-sangwon-01",
@@ -1816,7 +1897,7 @@ export const day6Scenes = [
     "mood": "tense",
     "chapter": "day-6",
     "name": "현겸",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "현겸은 학범의 식은 빵 봉지를 먼저 치웠고, 상원은 그 시간이 기록표에 비어 있음을 짚었다.",
     "directives": [
@@ -1899,7 +1980,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "상원",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "한 사람은 몸을 챙겼고, 한 사람은 빈칸을 지켰다. 학범은 도움의 모양이 달라도 자신을 향할 수 있다는 걸 배웠다."
   },
@@ -1911,7 +1992,7 @@ export const day6Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "복도와 기록 사이",
-    "text": "아카이브실 책상 위에는 수건과 파일철이 나란히 놓였다. 그 둘 사이에서 학범의 하루가 조금 덜 흐릿해졌다.",
+    "text": "학생회 기록실 책상 위에는 수건과 기록철이 나란히 놓였다. 그 둘 사이에서 학범의 하루가 조금 덜 흐릿해졌다.",
     "directives": [
       {
         "type": "SCG",
@@ -1975,7 +2056,7 @@ export const day6Scenes = [
     "mood": "tense",
     "chapter": "day-6",
     "name": "욱현",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "욱현은 글씨 눌림을 보았고, 준혁은 지도 위 동선을 다시 계산했다.",
     "directives": [
@@ -2058,7 +2139,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "준혁",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "노트의 떨림과 지도 우회로가 만났을 때, 빠진 시간은 도망이 아니라 망설임에 가까워졌다."
   },
@@ -2134,7 +2215,7 @@ export const day6Scenes = [
     "mood": "tense",
     "chapter": "day-6",
     "name": "재성",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "재성은 복도 소음을 골라냈고, 도훈은 편의점 화면 시간을 맞췄다.",
     "directives": [
@@ -2217,7 +2298,7 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "도훈",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "둘의 농담은 시끄러웠지만, 그 사이에 학범이 웃을 틈과 먹을 틈이 생겼다."
   },
@@ -2229,7 +2310,7 @@ export const day6Scenes = [
     "name": "학범",
     "role": "독백",
     "place": "복도와 기록 사이",
-    "text": "학범은 장난 뒤에 숨은 걱정을 증거 봉투가 아니라 자기 노트에 적었다.",
+    "text": "학범은 장난 뒤에 숨은 걱정을 기억 상자가 아니라 자기 노트에 적었다.",
     "directives": [
       {
         "type": "SCG",
@@ -2293,7 +2374,7 @@ export const day6Scenes = [
     "mood": "tense",
     "chapter": "day-6",
     "name": "상욱",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "상욱은 상자를 들었고, 윤호는 문밖에서 종이를 말렸다.",
     "directives": [
@@ -2376,9 +2457,9 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "윤호",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
-    "text": "빠른 손과 오래 기다린 손이 같은 봉투를 학범 앞에 놓았다."
+    "text": "빠른 손과 오래 기다린 손이 같은 초대장를 학범 앞에 놓았다."
   },
   {
     "id": "day6-pair-sanguk-yunho-03",
@@ -2452,7 +2533,7 @@ export const day6Scenes = [
     "mood": "tense",
     "chapter": "day-6",
     "name": "하음",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
     "text": "하음은 박자를 낮췄고, 현겸은 빵 봉지를 다시 밀어 주었다.",
     "directives": [
@@ -2535,9 +2616,9 @@ export const day6Scenes = [
     "mood": "warm",
     "chapter": "day-6",
     "name": "현겸",
-    "role": "조사 페어",
+    "role": "준비 페어",
     "place": "복도와 기록 사이",
-    "text": "숨을 고르는 일과 배를 채우는 일이 단서 정리보다 먼저 올 수도 있었다."
+    "text": "숨을 고르는 일과 배를 채우는 일이 준비 기록 정리보다 먼저 올 수도 있었다."
   },
   {
     "id": "day6-pair-haeum-hyeongyeom-03",
@@ -2609,8 +2690,8 @@ export const day6Scenes = [
     "id": "day6-choice-evening",
     "type": "choice",
     "choices": [
-      "단체방에 오늘의 결론을 공유한다.",
-      "아카이브실에 혼자 남아 다시 읽는다.",
+      "문화제 준비 채팅방에 오늘의 결론을 공유한다.",
+      "학생회 기록실에 혼자 남아 다시 읽는다.",
       "현겸에게 먼저 괜찮다고 말한다."
     ],
     "rewards": [
@@ -2658,7 +2739,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "상원",
     "role": "학생회 기록 담당",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "상원이 새 표를 완성하자 학범은 마지막 칸에 자기 글씨를 더했다. “도움을 받은 일.” 상원은 그 줄만큼은 고치지 않고 빈 여백을 넓게 남겨 두었다.",
     "directives": [
       {
@@ -2685,8 +2766,8 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
-    "text": "아카이브실에 혼자 남은 학범은 오늘 받은 빵 봉지와 메모, 지도 조각을 나란히 놓았다. 해결하지 못한 단서보다, 돌려받은 호의가 더 오래 손에 남았다.",
+    "place": "학생회 기록실",
+    "text": "학생회 기록실에 혼자 남은 학범은 오늘 받은 빵 봉지와 메모, 지도 조각을 나란히 놓았다. 해결하지 못한 준비보다, 돌려받은 호의가 더 오래 손에 남았다.",
     "directives": [
       {
         "type": "BCG",
@@ -2790,7 +2871,7 @@ export const day6Scenes = [
     "chapter": "day-6",
     "name": "학범",
     "role": "독백",
-    "place": "아카이브실",
+    "place": "학생회 기록실",
     "text": "빈칸 정리의 끝에서 학범은 기록장 아래에 한 줄을 적었다. “도움을 받는 것도 기록해야 한다.” 펜 끝이 멈춘 자리에, 처음으로 자기 몫의 하루가 남았다.",
     "directives": [
       {

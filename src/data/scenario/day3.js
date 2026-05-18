@@ -4,9 +4,9 @@ export const day3Scenes = [
       type: 'banner',
       kind: 'chapter',
       chapter: 'day-3',
-      sectionTitle: 'Day 3: 비가 그친 뒤의 선택지',
+      sectionTitle: 'Day 3: 점심시간 선택',
       mood: 'confession',
-      text: 'Day 3 · 비가 그친 뒤에도 남은 약속',
+      text: 'Day 3 · 점심시간 선택',
       nextId: 'day3-morning-message',
       directives: [
         { type: 'BGM', cue: 'bgmWarm', fadeMs: 700 },
@@ -117,6 +117,49 @@ export const day3Scenes = [
         { type: 'BCG', src: '/assets/bg/student-council-room-evening.png', transition: 'fade-in' }
       ]
     },
+  {
+      id: 'day3-moe-lunch-hyeongyeom',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '현겸',
+      role: '동급생',
+      place: '교실 창가',
+      text: '현겸은 학범이 젓가락을 멈춘 반찬을 보고 작게 웃었다. “싫어하는 거 아직도 그대로네. 나한테 넘겨. 대신 내일은 네가 좋아하는 걸 하나 알려줘.”',
+      effect: { target: 'hyeongyeom', type: 'heart' },
+      directives: [
+        { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-ukhyun',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '욱현',
+      role: '도서위원',
+      place: '도서관 옆 벤치',
+      text: '욱현은 아무 말 없이 물병을 학범 쪽으로 밀었다. 학범이 고맙다고 하자 그는 시선을 노트에 둔 채 말했다. “목소리 조금 잠겼어. 알아차린 것뿐이야.”',
+      effect: { target: 'ukhyun', type: 'ellipsis' },
+      directives: [
+        { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-dohun',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '도훈',
+      role: '매점 정보통',
+      place: '매점 앞',
+      text: '도훈은 마지막 복숭아 음료를 학범 손에 밀어 넣고 괜히 고개를 돌렸다. “너 나랑 먹으려고 일부러 늦게 온 거지? 아니면 말고. 근데 이건 네 거야.”',
+      effect: { target: 'dohun', type: 'blush' },
+      directives: [
+        { type: 'E', target: 'dohun', effect: 'blush', motion: 'shake' }
+      ]
+    },
+
   {
       id: 'choice-day3-route-focus',
       type: 'choice',
