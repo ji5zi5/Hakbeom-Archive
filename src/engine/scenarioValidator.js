@@ -22,7 +22,13 @@ function getNormalFlowTargets(items, index) {
   if (!item || item.terminal || item.previewOnly) return [];
 
   if (item.endingNext) return Object.values(item.endingNext).filter(Boolean);
-  if (item.type === 'choice' || item.type === 'phone') return asArray(item.next || item.choiceNext);
+  if (item.type === 'choice') return asArray(item.next || item.choiceNext);
+  if (item.type === 'phone') {
+    const replyTargets = asArray(item.next || item.choiceNext);
+    if (replyTargets.length > 0) return replyTargets;
+    if (item.nextId) return [item.nextId];
+    return items[index + 1]?.id ? [items[index + 1].id] : [];
+  }
   if (item.nextId) return [item.nextId];
   return items[index + 1]?.id ? [items[index + 1].id] : [];
 }

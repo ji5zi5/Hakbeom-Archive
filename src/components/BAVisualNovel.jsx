@@ -3,7 +3,7 @@ import { resolveCharacterAsset } from '../data/characterProfiles.js';
 import { routeConfig } from '../data/routeConfig.js';
 import { getChapterInfo } from '../engine/chapterEngine.js';
 import { applyDirectorItem, resolveSoundCue, safeClassName } from '../engine/directorEngine.js';
-import { createSavePayload, normalizeSavePayload } from '../engine/saveCodec.js';
+import { createSavePayload, normalizeSavePayload, normalizeSaveSummary } from '../engine/saveCodec.js';
 import { buildSaveSummary } from '../engine/saveSummary.js';
 import { normalizePhoneMessages, normalizePhoneReplies } from '../engine/phoneEngine.js';
 import {
@@ -35,6 +35,7 @@ const CHOICE_ROW_LAYOUTS = {
 };
 const TYPE_INTERVAL_MS = 22;
 const AUTO_DELAY_MS = 1250;
+const BACKGROUND_TRANSITION_MS = 560;
 const EMPTY_CHARACTER = {};
 const SAVE_STORAGE_KEY = 'hakbeomlove.saveSlots.v1';
 const SETTINGS_STORAGE_KEY = 'hakbeomlove.settings.v1';
@@ -154,6 +155,26 @@ function playLoopAudio(src, volume = 0.6, existingAudio = null) {
     return audio;
   } catch {
     return existingAudio;
+  }
+}
+
+function syncLoopAudio(audioState, bgmVolume, bgmAudioRef, ambientAudioRefs) {
+  const ambientVolume = Math.max(0, Math.min(1, bgmVolume * 0.72));
+
+  bgmAudioRef.current = playLoopAudio(audioState.bgm?.src || '', bgmVolume, bgmAudioRef.current);
+
+  const activeAmbientIds = new Set((audioState.ambient || []).map((cue) => cue.id));
+  for (const cue of audioState.ambient || []) {
+    const existing = ambientAudioRefs.current.get(cue.id) || null;
+    const nextAudio = playLoopAudio(cue.src, ambientVolume * ((cue.volume ?? 100) / 100), existing);
+    if (nextAudio) ambientAudioRefs.current.set(cue.id, nextAudio);
+  }
+
+  for (const [id, audio] of ambientAudioRefs.current.entries()) {
+    if (!activeAmbientIds.has(id)) {
+      stopAudio(audio);
+      ambientAudioRefs.current.delete(id);
+    }
   }
 }
 
@@ -321,10 +342,13 @@ export function BAVisualNovel({
   const loggedKeyRef = useRef('');
   const bgmAudioRef = useRef(null);
   const ambientAudioRefs = useRef(new Map());
+  const loopAudioReadyRef = useRef(false);
+  const soundEffectsReadyRef = useRef(false);
 
   const item = scenario[index] ?? scenario[0];
   const mode = item?.type ?? 'dialogue';
   const sceneBackgroundSrc = directorState.backgroundSrc || item?.backgroundSrc || backgroundSrc;
+  const sceneBackgroundTransition = directorState.backgroundTransition || 'fade-in';
   const sceneCharacters = directorState.characters;
   const sceneOverlays = directorState.overlays;
   const fullText = resolveItemText(item, gameState);
@@ -371,6 +395,7 @@ export function BAVisualNovel({
   }, [directorDefaults, scenario]);
 
   const startNewGame = useCallback(() => {
+    playAudio(sounds.confirm || sounds.click, settings.seVolume / 100);
     resetToIndex(initialIndex);
     setMenuOpen(false);
     setBacklogOpen(false);
@@ -379,8 +404,7 @@ export function BAVisualNovel({
     setSettingsOpen(false);
     setGalleryOpen(false);
     setLog([]);
-    setRewardFeedback(null);
-  }, [initialIndex, resetToIndex]);
+  }, [initialIndex, resetToIndex, settings.seVolume, sounds.click, sounds.confirm]);
 
   const saveGame = useCallback((slot = QUICK_SAVE_SLOT) => {
     const saved = persistSaveSlot(slot, buildSavePayload({
@@ -413,7 +437,6 @@ export function BAVisualNovel({
     setSaveLoadMode(null);
     setSettingsOpen(false);
     setGalleryOpen(false);
-    setRewardFeedback(null);
     return true;
   }, [directorDefaults, initialIndex, scenario, settings]);
 
@@ -437,7 +460,7 @@ export function BAVisualNovel({
   const goNextRaw = useCallback(() => {
     setMenuOpen(false);
     const currentItem = scenario[index];
-    if (currentItem?.type === 'choice' || currentItem?.type === 'phone') return;
+    if (currentItem?.type === 'choice' || (currentItem?.type === 'phone' && getItemChoices(currentItem).length > 0)) return;
     const targetIndex = resolveNextIndex({
       scenario,
       index,
@@ -586,6 +609,7 @@ export function BAVisualNovel({
     const route = resolveEndingRoute(gameState, episodeInfo.endingRules || []);
     if (!route) return;
     setEnding((current) => (current?.id === route.id ? current : route));
+    if (item.routeGate) return;
     setGameState((current) => current.endings?.includes(route.id)
       ? current
       : { ...current, endings: [...(current.endings || []), route.id] });
@@ -625,7 +649,9 @@ export function BAVisualNovel({
   }, [fullText, index, mode, settings.textSpeedMs]);
 
   useEffect(() => {
-    if (item?.se) playAudio(item.se, settings.seVolume / 100);
+    if (!soundEffectsReadyRef.current) return;
+    const itemCue = resolveSoundCue(item?.se, sounds);
+    if (itemCue) playAudio(itemCue, settings.seVolume / 100);
     directorState.soundCues
       .map((cue) => resolveSoundCue(cue, sounds))
       .filter(Boolean)
@@ -635,24 +661,37 @@ export function BAVisualNovel({
   useEffect(() => {
     const audioState = directorState.audio || { bgm: null, ambient: [] };
     const bgmVolume = settings.bgmVolume / 100;
-    const ambientVolume = Math.max(0, Math.min(1, bgmVolume * 0.72));
-
-    bgmAudioRef.current = playLoopAudio(audioState.bgm?.src || '', bgmVolume, bgmAudioRef.current);
-
-    const activeAmbientIds = new Set((audioState.ambient || []).map((cue) => cue.id));
-    for (const cue of audioState.ambient || []) {
-      const existing = ambientAudioRefs.current.get(cue.id) || null;
-      const nextAudio = playLoopAudio(cue.src, ambientVolume * ((cue.volume ?? 100) / 100), existing);
-      if (nextAudio) ambientAudioRefs.current.set(cue.id, nextAudio);
+    if (screen !== 'game' || !loopAudioReadyRef.current) {
+      stopAudio(bgmAudioRef.current);
+      bgmAudioRef.current = null;
+      for (const audio of ambientAudioRefs.current.values()) stopAudio(audio);
+      ambientAudioRefs.current.clear();
+      return;
     }
+    syncLoopAudio(audioState, bgmVolume, bgmAudioRef, ambientAudioRefs);
+  }, [directorState.audio?.key, screen, settings.bgmVolume]);
 
-    for (const [id, audio] of ambientAudioRefs.current.entries()) {
-      if (!activeAmbientIds.has(id)) {
-        stopAudio(audio);
-        ambientAudioRefs.current.delete(id);
-      }
-    }
-  }, [directorState.audio?.key, settings.bgmVolume]);
+  useEffect(() => {
+    const retryLoopAudioPlayback = () => {
+      soundEffectsReadyRef.current = true;
+      loopAudioReadyRef.current = true;
+      if (screen !== 'game') return;
+      syncLoopAudio(
+        directorState.audio || { bgm: null, ambient: [] },
+        settings.bgmVolume / 100,
+        bgmAudioRef,
+        ambientAudioRefs
+      );
+    };
+
+    window.addEventListener('pointerdown', retryLoopAudioPlayback, { capture: true });
+    window.addEventListener('keydown', retryLoopAudioPlayback, { capture: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', retryLoopAudioPlayback, { capture: true });
+      window.removeEventListener('keydown', retryLoopAudioPlayback, { capture: true });
+    };
+  }, [directorState.audio?.key, screen, settings.bgmVolume]);
 
   useEffect(() => () => {
     stopAudio(bgmAudioRef.current);
@@ -685,10 +724,11 @@ export function BAVisualNovel({
 
   useEffect(() => {
     window.clearTimeout(autoTimerRef.current);
-    if (!auto || mode === 'choice' || mode === 'phone' || typing || skipOpen || backlogOpen || uiHidden) return undefined;
+    const replyPhoneScene = mode === 'phone' && getItemChoices(item).length > 0;
+    if (!auto || mode === 'choice' || replyPhoneScene || typing || skipOpen || backlogOpen || uiHidden) return undefined;
     autoTimerRef.current = window.setTimeout(goNextRaw, settings.autoDelayMs || AUTO_DELAY_MS);
     return () => window.clearTimeout(autoTimerRef.current);
-  }, [auto, backlogOpen, goNextRaw, index, mode, settings.autoDelayMs, skipOpen, typing, uiHidden]);
+  }, [auto, backlogOpen, goNextRaw, index, item, mode, settings.autoDelayMs, skipOpen, typing, uiHidden]);
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -762,6 +802,7 @@ export function BAVisualNovel({
             visible={mode === 'dialogue'}
             uiHidden={uiHidden}
             backgroundSrc={sceneBackgroundSrc}
+            backgroundTransition={sceneBackgroundTransition}
             characters={sceneCharacters}
             overlays={sceneOverlays}
             item={item}
@@ -776,6 +817,7 @@ export function BAVisualNovel({
             visible={mode === 'banner'}
             uiHidden={uiHidden}
             backgroundSrc={sceneBackgroundSrc}
+            backgroundTransition={sceneBackgroundTransition}
             characters={sceneCharacters}
             overlays={sceneOverlays}
             text={typedText}
@@ -785,6 +827,7 @@ export function BAVisualNovel({
             visible={mode === 'phone'}
             uiHidden={uiHidden}
             backgroundSrc={sceneBackgroundSrc}
+            backgroundTransition={sceneBackgroundTransition}
             characters={sceneCharacters}
             overlays={sceneOverlays}
             item={item}
@@ -796,6 +839,7 @@ export function BAVisualNovel({
             visible={mode === 'choice'}
             uiHidden={uiHidden}
             backgroundSrc={sceneBackgroundSrc}
+            backgroundTransition={sceneBackgroundTransition}
             characters={sceneCharacters}
             overlays={sceneOverlays}
             choices={item?.type === 'choice' ? getItemChoices(item) : []}
@@ -878,7 +922,6 @@ export function BAVisualNovel({
               setSkipOpen(false);
               setMenuOpen(false);
               setLog([]);
-              setRewardFeedback(null);
               setDirectorState(replayDirectorState(scenario, targetIndex, directorDefaults));
               setIndex(targetIndex);
               setScreen('game');
@@ -977,17 +1020,52 @@ function Defs() {
   );
 }
 
-function SceneBackground({ backgroundSrc, transition }) {
+function SceneBackground({ backgroundSrc, transition = 'fade-in' }) {
+  const [previousSrc, setPreviousSrc] = useState('');
+  const [transitionIndex, setTransitionIndex] = useState(0);
+  const lastSrcRef = useRef(backgroundSrc);
+
+  useEffect(() => {
+    if (lastSrcRef.current === backgroundSrc) return undefined;
+
+    const previous = lastSrcRef.current;
+    lastSrcRef.current = backgroundSrc;
+    setPreviousSrc(previous || '');
+    setTransitionIndex((current) => current + 1);
+
+    const cleanupTimer = window.setTimeout(() => {
+      setPreviousSrc('');
+    }, BACKGROUND_TRANSITION_MS);
+
+    return () => window.clearTimeout(cleanupTimer);
+  }, [backgroundSrc]);
+
+  const transitionClass = safeClassName(transition || 'fade-in');
+
   return (
-    <image
-      className={`scene-bg transition-${safeClassName(transition)}`}
-      href={backgroundSrc}
-      x="0"
-      y="0"
-      width="1129"
-      height="524"
-      preserveAspectRatio="xMidYMid slice"
-    />
+    <g className={`scene-background scene-background-${transitionClass}`}>
+      {previousSrc && (
+        <image
+          className="scene-bg scene-bg-previous"
+          href={previousSrc}
+          x="0"
+          y="0"
+          width="1129"
+          height="524"
+          preserveAspectRatio="xMidYMid slice"
+        />
+      )}
+      <image
+        key={`${backgroundSrc}-${transitionIndex}`}
+        className="scene-bg scene-bg-active"
+        href={backgroundSrc}
+        x="0"
+        y="0"
+        width="1129"
+        height="524"
+        preserveAspectRatio="xMidYMid slice"
+      />
+    </g>
   );
 }
 
@@ -1001,7 +1079,7 @@ function DirectorOverlays({ overlays = [] }) {
           width="1129"
           height="524"
           fill={overlay.color || '#000'}
-          opacity={overlay.opacity ?? 0.28}
+          fillOpacity={overlay.opacity ?? 0.28}
         />
       ))}
     </g>
@@ -1026,10 +1104,10 @@ function DialogueTextLines({ text, visibleCount = safeText(text).length }) {
   );
 }
 
-function DialogueScene({ visible, uiHidden, backgroundSrc, characters, overlays, item, fullText, text, roleX, speakerNameRef, onNext }) {
+function DialogueScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters, overlays, item, fullText, text, roleX, speakerNameRef, onNext }) {
   return (
     <g className="scene scene-dialogue" style={{ display: visible ? 'inline' : 'none' }}>
-      <SceneBackground backgroundSrc={backgroundSrc} />
+      <SceneBackground backgroundSrc={backgroundSrc} transition={backgroundTransition} />
       <DirectorOverlays overlays={overlays} />
       <CharacterLayer characters={characters} />
       {!uiHidden && (
@@ -1080,10 +1158,10 @@ function DialogueScene({ visible, uiHidden, backgroundSrc, characters, overlays,
   );
 }
 
-function BannerScene({ visible, uiHidden, backgroundSrc, characters = [], overlays = [], text }) {
+function BannerScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters = [], overlays = [], text }) {
   return (
     <g className="scene scene-banner" style={{ display: visible ? 'inline' : 'none' }}>
-      <SceneBackground backgroundSrc={backgroundSrc} />
+      <SceneBackground backgroundSrc={backgroundSrc} transition={backgroundTransition} />
       <DirectorOverlays overlays={overlays} />
       <CharacterLayer characters={characters} />
       {!uiHidden && (
@@ -1099,13 +1177,13 @@ function BannerScene({ visible, uiHidden, backgroundSrc, characters = [], overla
   );
 }
 
-function PhoneMessageScene({ visible, uiHidden, backgroundSrc, characters = [], overlays = [], item, text, onChoose }) {
+function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters = [], overlays = [], item, text, onChoose }) {
   const messages = normalizePhoneMessages(item);
   const replies = normalizePhoneReplies(item);
 
   return (
     <g className="scene scene-phone" style={{ display: visible ? 'inline' : 'none' }}>
-      <SceneBackground backgroundSrc={backgroundSrc} />
+      <SceneBackground backgroundSrc={backgroundSrc} transition={backgroundTransition} />
       <DirectorOverlays overlays={overlays} />
       <CharacterLayer characters={characters} />
       {!uiHidden && (
@@ -1151,12 +1229,12 @@ function PhoneMessageScene({ visible, uiHidden, backgroundSrc, characters = [], 
   );
 }
 
-function ChoiceScene({ visible, uiHidden, backgroundSrc, characters = [], overlays = [], choices = [], onChoose }) {
+function ChoiceScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters = [], overlays = [], choices = [], onChoose }) {
   const rows = getChoiceRows(choices);
 
   return (
     <g className="scene scene-choice" style={{ display: visible ? 'inline' : 'none' }}>
-      <SceneBackground backgroundSrc={backgroundSrc} />
+      <SceneBackground backgroundSrc={backgroundSrc} transition={backgroundTransition} />
       <DirectorOverlays overlays={overlays} />
       <CharacterLayer characters={characters} />
       {!uiHidden && (
@@ -1395,10 +1473,13 @@ function TitleScreen({ open, canContinue, onStart, onContinue, onLoad, onGallery
     <div className="title-screen" aria-hidden={open ? 'false' : 'true'}>
       <div className="title-bg-stripe" aria-hidden="true" />
       <div className="title-brand">
+        <div className="title-memory-card" aria-hidden="true">
+          <img className="title-memory-photo" src="/assets/character/hakbeom-title.png" alt="" aria-hidden="true" />
+          <span className="title-memory-card-line" />
+          <span className="title-memory-card-line" />
+        </div>
         <img className="title-logo-image" src="/assets/ui/hakbeom-archive-logo.png" alt="학범 아카이브" />
         <h1 className="title-logo-heading">학범 아카이브</h1>
-        <p className="title-kicker">Hakbeom Archive Visual Novel</p>
-        <p className="title-subtitle">비 오는 방과 후, 현겸과 시작되는 프롤로그</p>
       </div>
       <div className="title-menu" role="menu" aria-label="타이틀 메뉴">
         <button type="button" role="menuitem" onClick={onStart}>START</button>
@@ -1407,7 +1488,6 @@ function TitleScreen({ open, canContinue, onStart, onContinue, onLoad, onGallery
         <button type="button" role="menuitem" onClick={onGallery}>GALLERY</button>
         <button type="button" role="menuitem" onClick={onConfig}>CONFIG</button>
       </div>
-      <p className="title-footer">Hakbeom Archive / Prologue</p>
     </div>
   );
 }
@@ -1423,24 +1503,57 @@ function ChapterCard({ info }) {
   );
 }
 
+function getRouteDisplayName(routeId) {
+  if (!routeId || routeId === 'common') return '공통';
+  return routeConfig.affectionTargets.find((target) => target.id === routeId)?.name || routeId;
+}
+
+function getChapterDisplayTitle(chapterId) {
+  if (!chapterId) return '';
+  return routeConfig.chapterItems.find((chapter) => chapter.id === chapterId)?.title || chapterId;
+}
+
+function formatArchiveMeta(chapterId, routeId, hint) {
+  return [
+    getChapterDisplayTitle(chapterId),
+    getRouteDisplayName(routeId),
+    safeText(hint)
+  ].filter(Boolean).join(' · ');
+}
+
 function GalleryModal({ open, gameState, onClose, onReplay }) {
   const unlockedGallery = new Set(gameState.unlockedGallery || []);
   const unlockedRecollections = new Set(gameState.unlockedRecollections || []);
+  const galleryUnlockedCount = routeConfig.galleryItems.filter((item) => unlockedGallery.has(item.id)).length;
+  const recollectionUnlockedCount = routeConfig.recollectionItems.filter((item) => unlockedRecollections.has(item.id)).length;
 
   return (
     <div className="ba-modal-layer gallery-panel" aria-hidden={open ? 'false' : 'true'}>
       <div className="ba-modal-card gallery-card" role="dialog" aria-modal="true" aria-label="갤러리">
         <div className="ba-modal-head">
-          <span className="ba-modal-title">GALLERY</span>
+          <span className="ba-modal-title">ARCHIVE ALBUM</span>
           <button className="ba-modal-close" type="button" onClick={onClose} aria-label="닫기">×</button>
+        </div>
+        <div className="gallery-overview" aria-label="아카이브 해금 현황">
+          <p>학범 아카이브에 기록된 CG와 회상을 확인합니다.</p>
+          <div className="gallery-counts">
+            <span>CG {galleryUnlockedCount}/{routeConfig.galleryItems.length}</span>
+            <span>RECOLLECTION {recollectionUnlockedCount}/{routeConfig.recollectionItems.length}</span>
+          </div>
         </div>
         <div className="gallery-section">
           <h3>CG</h3>
           <div className="gallery-grid">
             {routeConfig.galleryItems.map((galleryItem) => {
               const unlocked = unlockedGallery.has(galleryItem.id);
+              const archiveMeta = formatArchiveMeta(galleryItem.chapter, galleryItem.routeId, galleryItem.hint);
               return (
-                <div key={galleryItem.id} className={`gallery-tile ${unlocked ? 'unlocked' : 'locked'}`}>
+                <div
+                  key={galleryItem.id}
+                  className={`gallery-tile ${unlocked ? 'unlocked' : 'locked'}`}
+                  title={archiveMeta}
+                  aria-label={`${unlocked ? galleryItem.title : '잠긴 CG'} ${archiveMeta}`}
+                >
                   {unlocked && galleryItem.src && <img src={galleryItem.src} alt="" />}
                   <strong>{unlocked ? galleryItem.title : 'LOCKED'}</strong>
                 </div>
@@ -1453,15 +1566,18 @@ function GalleryModal({ open, gameState, onClose, onReplay }) {
           <div className="recollection-list">
             {routeConfig.recollectionItems.map((recollectionItem) => {
               const unlocked = unlockedRecollections.has(recollectionItem.id);
+              const archiveMeta = formatArchiveMeta(recollectionItem.chapter, recollectionItem.routeId, recollectionItem.hint);
               return (
                 <button
                   key={recollectionItem.id}
                   type="button"
                   className={`recollection-item ${unlocked ? 'unlocked' : 'locked'}`}
+                  title={archiveMeta}
+                  aria-label={`${unlocked ? recollectionItem.title : '잠긴 회상'} ${archiveMeta}`}
                   disabled={!unlocked}
                   onClick={() => onReplay?.(recollectionItem.startId)}
                 >
-                  {unlocked ? recollectionItem.title : '잠긴 회상'}
+                  <span className="recollection-title">{unlocked ? recollectionItem.title : 'LOCKED'}</span>
                 </button>
               );
             })}
@@ -1486,7 +1602,15 @@ function SaveLoadModal({ mode, slots, onSave, onLoad, onClose }) {
         <div className="save-slot-list">
           {slotIds.map((slot) => {
             const payload = slots?.[slot];
+            const summary = normalizeSaveSummary(payload?.summary);
             const protectedSlot = mode === 'save' && slot === AUTO_SAVE_SLOT;
+            const payloadTitle = safeText(payload?.title);
+            const payloadLine = safeText(payload?.line);
+            const title = summary.chapterTitle || payloadTitle || '빈 슬롯';
+            const line = summary.linePreview || payloadLine || (protectedSlot ? '자동 저장 전용' : '저장된 장면이 없습니다.');
+            const chapterLabel = summary.chapterLabel || summary.chapter || 'NO DATA';
+            const routeLabel = summary.routeLabel || summary.affectionLabel || '-';
+            const routeProgressText = summary.routeProgressText || summary.affectionLabel || '-';
             return (
               <button
                 key={slot}
@@ -1496,16 +1620,21 @@ function SaveLoadModal({ mode, slots, onSave, onLoad, onClose }) {
                 onClick={() => (mode === 'save' ? onSave(slot) : onLoad(slot))}
               >
                 <span className="save-slot-thumb" aria-hidden="true">
-                  {payload?.summary?.thumbnail && <img src={payload.summary.thumbnail} alt="" />}
+                  {summary.thumbnail && <img src={summary.thumbnail} alt="" />}
                 </span>
                 <span className="save-slot-main">
                   <span className="save-slot-name">{slotLabel(slot)}</span>
-                  <span className="save-slot-title">{payload?.summary?.chapterTitle || payload?.title || '빈 슬롯'}</span>
-                  <span className="save-slot-line">{payload?.summary?.linePreview || payload?.line || (protectedSlot ? '자동 저장 전용' : '저장된 장면이 없습니다.')}</span>
+                  <span className="save-slot-meta">
+                    <span className="save-slot-chapter">{chapterLabel}</span>
+                    <span className={`save-slot-route ${summary.routeLocked ? 'locked' : ''}`}>{routeLabel}</span>
+                  </span>
+                  <span className="save-slot-title">{title}</span>
+                  <span className="save-slot-line">{line}</span>
                 </span>
                 <span className="save-slot-side">
-                  <span className="save-slot-affection">{payload?.summary?.affectionLabel || '-'}</span>
-                  <span className="save-slot-date">{payload?.savedAt ? new Date(payload.savedAt).toLocaleString() : '-'}</span>
+                  <span className="save-slot-affection">{routeProgressText}</span>
+                  {summary.routeLocked && <span className="save-slot-lock">ROUTE LOCK</span>}
+                  <span className="save-slot-date">{formatSaveDate(payload?.savedAt)}</span>
                 </span>
               </button>
             );
@@ -1520,6 +1649,12 @@ function slotLabel(slot) {
   if (slot === AUTO_SAVE_SLOT) return 'AUTO';
   if (slot === QUICK_SAVE_SLOT) return 'QUICK';
   return slot.replace('slot-', 'SLOT ');
+}
+
+function formatSaveDate(value) {
+  if (!value) return '-';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString();
 }
 
 function ConfigModal({ open, settings, onChange, onClose }) {

@@ -7,12 +7,18 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node tests/ui-contract.test.mjs"
+    "test": "node tests/ui-contract.test.mjs",
+    "capture:vn": "node scripts/capture-vn-regression.mjs",
+    "test:story-lines": "node scripts/check-scenario-line-count.mjs",
+    "qa:vn": "node scripts/qa-vn-flow.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "vite": "^8.0.13"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
   }
 }

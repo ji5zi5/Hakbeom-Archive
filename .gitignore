@@ -13,6 +13,7 @@ dist/
 
 # OMX/runtime state
 .omx/
+.superpowers/
 
 # Test/browser artifacts
 playwright-report/
@@ -32,3 +33,7 @@ pnpm-debug.log*
 # Local visual/reference uploads kept outside source assets
 /image*.png
 /hyungyeom.png
+/hakbeom.png
+.stitch/designs/
+# Local raw source audio packs; selected shipped assets live under public/assets/
+sounds/

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
@@ -13,16 +13,18 @@ import {
 import { getChapterInfo, shouldShowChapterCard } from '../src/engine/chapterEngine.js';
 import { applyDirectorItem, getMoodOverlay } from '../src/engine/directorEngine.js';
 import { normalizePhoneMessages, normalizePhoneReplies } from '../src/engine/phoneEngine.js';
-import { normalizeSavePayload } from '../src/engine/saveCodec.js';
+import { normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCodec.js';
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
 import { findReplayPath, resolveNextIndex } from '../src/engine/vnEngine.js';
+import { resolveDominantRoute, resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
 
 const app = readFileSync('src/App.jsx', 'utf8');
 const indexHtml = readFileSync('index.html', 'utf8');
 const styles = readFileSync('src/styles.css', 'utf8');
 const routeConfig = readFileSync('src/data/routeConfig.js', 'utf8');
+const packageJson = readFileSync('package.json', 'utf8');
 const vnState = readFileSync('src/utils/vnState.js', 'utf8');
 const vnText = readFileSync('src/utils/vnText.js', 'utf8');
 const directorEngine = readFileSync('src/engine/directorEngine.js', 'utf8');
@@ -34,6 +36,45 @@ const vnEngine = readFileSync('src/engine/vnEngine.js', 'utf8');
 const phoneEngine = readFileSync('src/engine/phoneEngine.js', 'utf8');
 const chapterEngine = readFileSync('src/engine/chapterEngine.js', 'utf8');
 const regressionCapture = readFileSync('scripts/capture-vn-regression.mjs', 'utf8');
+const vnFlowQa = existsSync('scripts/qa-vn-flow.mjs')
+  ? readFileSync('scripts/qa-vn-flow.mjs', 'utf8')
+  : '';
+
+assert.match(
+  packageJson,
+  /"playwright":\s*"\^1\.60\.0"[\s\S]*"capture:vn":\s*"node scripts\/capture-vn-regression\.mjs"|"capture:vn":\s*"node scripts\/capture-vn-regression\.mjs"[\s\S]*"playwright":\s*"\^1\.60\.0"/,
+  'Playwright should be installed and exposed through the VN capture script.'
+);
+assert.match(
+  packageJson,
+  /"qa:vn":\s*"node scripts\/qa-vn-flow\.mjs"/,
+  'Package scripts should expose reproducible VN flow QA.'
+);
+assert.match(
+  vnFlowQa,
+  /vn-flow-qa\.json[\s\S]*title-start[\s\S]*choice-approach[\s\S]*phone-reply[\s\S]*save-load[\s\S]*gallery[\s\S]*ending/,
+  'VN flow QA should cover title start, choice, phone reply, save/load, gallery, and ending smoke paths.'
+);
+assert.match(
+  vnFlowQa,
+  /assetErrors[\s\S]*playRejects[\s\S]*\/assets\/bgm\//,
+  'VN flow QA should record audio asset errors, playback rejections, and reject BGM usage.'
+);
+assert.match(
+  packageJson,
+  /"test:story-lines":\s*"node scripts\/check-scenario-line-count\.mjs"/,
+  'Longform expansion should expose a scenario line-count contract script.'
+);
+assert.match(
+  regressionCapture,
+  /LOCAL_PLAYWRIGHT_LIB_DIR[\s\S]*LD_LIBRARY_PATH/,
+  'VN capture should load repo-local Playwright browser libraries when system packages are unavailable.'
+);
+assert.match(
+  readFileSync('scripts/check-scenario-line-count.mjs', 'utf8'),
+  /MIN_SCENARIO_SOURCE_LINES \|\| 10_000[\s\S]*Scenario source line count/,
+  'Scenario line-count script should enforce the 10,000-line longform target.'
+);
 
 function readPngSize(path) {
   const buffer = readFileSync(path);
@@ -60,6 +101,11 @@ assert.match(
   styles,
   /\.viewport\s*\{[\s\S]*?width\s*:\s*100vw[\s\S]*?height\s*:\s*100dvh[\s\S]*?display\s*:\s*grid[\s\S]*?place-items\s*:\s*center/i,
   'Viewport should be a full-screen frame that centers the game stage.'
+);
+assert.match(
+  styles,
+  /html,\s*body\s*\{[\s\S]*?background\s*:\s*#000[\s\S]*?\.viewport\s*\{[\s\S]*?background\s*:\s*#000/i,
+  'Outer viewport should use a black letterbox frame so it does not blend into in-game backgrounds.'
 );
 
 assert.match(
@@ -110,6 +156,16 @@ const directorApplySource = topLevelFunctionSource(directorEngine, 'applyDirecto
 const directorMoodSource = topLevelFunctionSource(directorEngine, 'getMoodOverlay');
 const replayCandidateSource = topLevelFunctionSource(vnEngine, 'getReplayCandidateSteps');
 const replayDirectorSource = topLevelFunctionSource(vnEngine, 'replayDirectorState');
+
+function readScenarioSourceTree() {
+  const parts = [readFileSync('src/data/scenario.js', 'utf8')];
+  if (existsSync('src/data/scenario')) {
+    for (const fileName of readdirSync('src/data/scenario').filter((file) => file.endsWith('.js')).sort()) {
+      parts.push(readFileSync(`src/data/scenario/${fileName}`, 'utf8'));
+    }
+  }
+  return parts.join('\n');
+}
 
 for (const requiredSystemSymbol of [
   'const SAVE_STORAGE_KEY',
@@ -236,11 +292,70 @@ assert.match(
   /playLoopAudio\(audioState\.bgm\?\.src \|\| '', bgmVolume, bgmAudioRef\.current\)[\s\S]*directorState\.audio\?\.key[\s\S]*settings\.bgmVolume/,
   'BAVisualNovel should react to director audio changes and BGM volume settings.'
 );
+assert.match(
+  component,
+  /function syncLoopAudio\([\s\S]*?playLoopAudio\(audioState\.bgm\?\.src \|\| '', bgmVolume, bgmAudioRef\.current\)[\s\S]*?ambientAudioRefs\.current/,
+  'Looping BGM and ambient playback should be centralized so autoplay recovery uses the same code path as audio state changes.'
+);
+assert.match(
+  component,
+  /const loopAudioReadyRef = useRef\(false\)[\s\S]*if \(screen !== 'game' \|\| !loopAudioReadyRef\.current\)[\s\S]*const retryLoopAudioPlayback = \(\) => \{[\s\S]*loopAudioReadyRef\.current = true[\s\S]*if \(screen !== 'game'\) return[\s\S]*syncLoopAudio\([\s\S]*?window\.addEventListener\('pointerdown', retryLoopAudioPlayback[\s\S]*?window\.addEventListener\('keydown', retryLoopAudioPlayback/,
+  'BAVisualNovel should unlock and retry BGM/ambient playback only after a user gesture in gameplay.'
+);
+assert.match(
+  component,
+  /const soundEffectsReadyRef = useRef\(false\)[\s\S]*if \(!soundEffectsReadyRef\.current\) return;[\s\S]*const retryLoopAudioPlayback = \(\) => \{[\s\S]*soundEffectsReadyRef\.current = true/,
+  'BAVisualNovel should suppress scene SFX autoplay until the first user gesture unlocks audio.'
+);
 
 assert.doesNotMatch(
   component,
   /<ConfigRange label="BGM 준비중"[\s\S]*disabled/,
   'BGM config should be enabled after BGM playback exists.'
+);
+
+const expectedSoundCues = [
+  ['click', '/assets/se/ui-click.ogg'],
+  ['choice', '/assets/se/ui-choice.ogg'],
+  ['confirm', '/assets/se/ui-confirm.ogg'],
+  ['message', '/assets/se/phone-message.ogg'],
+  ['heart', '/assets/se/heart.ogg'],
+  ['promise', '/assets/se/promise.ogg'],
+  ['question', '/assets/se/question.ogg'],
+  ['chatter', '/assets/se/chatter.ogg'],
+  ['blush', '/assets/se/blush.ogg'],
+  ['voice-soft', '/assets/se/voice-soft.ogg'],
+  ['rain-step', '/assets/se/rain-step.ogg']
+];
+
+for (const [cue, assetPath] of expectedSoundCues) {
+  const cueKey = cue.includes('-') ? `['"]${cue}['"]` : cue;
+  assert.match(
+    app,
+    new RegExp(`${cueKey}:\\s*['"]${assetPath.replaceAll('/', '\\/')}['"]`),
+    `App sounds map should wire ${cue} to ${assetPath}.`
+  );
+  assert.ok(
+    existsSync(`public${assetPath}`),
+    `Expected audio asset ${assetPath} should exist under public/assets.`
+  );
+}
+
+for (const placeholderBgmPath of [
+  'public/assets/bgm/rainy-after-school.ogg',
+  'public/assets/bgm/warm-promise.ogg',
+  'public/assets/bgm/rain-loop.ogg'
+]) {
+  assert.equal(
+    existsSync(placeholderBgmPath),
+    false,
+    `${placeholderBgmPath} should not ship until a production-length loop replaces the placeholder.`
+  );
+}
+
+assert.ok(
+  existsSync('public/assets/se/KENNEY_CC0_LICENSES.txt'),
+  'Imported Kenney audio should keep a license/credit file in public/assets/se.'
 );
 
 assert.match(
@@ -272,6 +387,41 @@ assert.match(
   /function GalleryModal\([\s\S]*?routeConfig\.galleryItems[\s\S]*?unlockedGallery[\s\S]*?gallery-tile/,
   'Gallery modal should render routeConfig gallery items and locked/unlocked state.'
 );
+assert.match(
+  component,
+  /galleryUnlockedCount[\s\S]*?recollectionUnlockedCount[\s\S]*?ARCHIVE ALBUM[\s\S]*?gallery-counts/,
+  'Gallery modal should present archive-album framing with CG and recollection unlock counts.'
+);
+assert.match(
+  component,
+  /const archiveMeta = formatArchiveMeta\(galleryItem\.chapter,\s*galleryItem\.routeId,\s*galleryItem\.hint\)[\s\S]*?title=\{archiveMeta\}[\s\S]*?aria-label=\{\`\$\{unlocked \? galleryItem\.title : '잠긴 CG'\} \$\{archiveMeta\}`\}/,
+  'Gallery tiles should hide dense chapter/route/hint copy visually while keeping it available as compact title/aria metadata.'
+);
+assert.match(
+  component,
+  /const archiveMeta = formatArchiveMeta\(recollectionItem\.chapter,\s*recollectionItem\.routeId,\s*recollectionItem\.hint\)[\s\S]*?aria-label=\{\`\$\{unlocked \? recollectionItem\.title : '잠긴 회상'\} \$\{archiveMeta\}`\}[\s\S]*?disabled=\{!unlocked\}[\s\S]*?onReplay\?\.\(recollectionItem\.startId\)/,
+  'Recollection items should keep dense metadata hidden in labels while preserving locked replay protection.'
+);
+assert.doesNotMatch(
+  component,
+  /gallery-tile-meta|gallery-lock-hint|recollection-meta/,
+  'Collection cards should not render dense visible metadata/hint rows that overlap inside small cards.'
+);
+assert.doesNotMatch(
+  styles,
+  /\.gallery-tile-meta|\.gallery-lock-hint|\.recollection-meta/,
+  'Collection CSS should not keep stale dense metadata/hint selectors after hiding the visual info.'
+);
+assert.doesNotMatch(
+  styles,
+  /\.gallery-tile\.locked::after\s*\{[\s\S]*?content:\s*["']LOCKED["']/i,
+  'Locked gallery tiles should not duplicate the visible LOCKED label through a pseudo-element.'
+);
+assert.match(
+  styles,
+  /\.gallery-tile\.locked strong\s*\{[\s\S]*?background:\s*rgba\(20,\s*34,\s*49,\s*\.70\)/i,
+  'Locked gallery tiles should style the single DOM label as the visible locked badge.'
+);
 
 assert.match(
   component,
@@ -293,8 +443,13 @@ assert.match(
 
 assert.match(
   regressionCapture,
-  /gallery[\s\S]*?ending/,
-  'VN regression capture script should cover gallery and ending smoke states.'
+  /save-modal[\s\S]*?load-modal[\s\S]*?gallery[\s\S]*?ending/,
+  'VN regression capture script should cover SAVE/LOAD, gallery, and ending smoke states.'
+);
+assert.match(
+  regressionCapture,
+  /choice-approach[\s\S]*phone-evening-message[\s\S]*settings-modal[\s\S]*ending-good/,
+  'VN regression capture should include QA-critical choice, phone, settings, and ending screens.'
 );
 
 assert.match(
@@ -370,11 +525,51 @@ assert.match(
   /\.director-overlay[\s\S]*?pointer-events\s*:\s*none/i,
   'Director overlays should render as non-interactive BA-style BCG/E layers.'
 );
+assert.match(
+  component,
+  /function DirectorOverlays\([\s\S]*?fillOpacity=\{overlay\.opacity \?\? 0\.28\}/,
+  'Director overlays should use fillOpacity so fade-in CSS cannot override subtle overlay strength and hide the background.'
+);
+assert.doesNotMatch(
+  component,
+  /className=\{`director-overlay[\s\S]*?opacity=\{overlay\.opacity \?\? 0\.28\}/,
+  'Director overlays should not use SVG opacity presentation attributes with shared fade-in classes.'
+);
 
 assert.match(
   styles,
   /\.transition-fade-in[\s\S]*?animation:\s*baFadeIn/i,
   'SCG/BCG fade-in transition should be available.'
+);
+
+assert.match(
+  visualNovelSource,
+  /const sceneBackgroundTransition = directorState\.backgroundTransition \|\| 'fade-in'/,
+  'Game scenes should carry director BCG transition metadata into rendering.'
+);
+
+assert.match(
+  component,
+  /function SceneBackground\(\{ backgroundSrc,\s*transition = 'fade-in' \}\)[\s\S]*?previousSrc[\s\S]*?scene-bg-previous[\s\S]*?scene-bg-active/,
+  'SceneBackground should keep the previous BCG layer long enough to cross-fade instead of swapping abruptly.'
+);
+
+assert.match(
+  component,
+  /<SceneBackground backgroundSrc=\{backgroundSrc\} transition=\{backgroundTransition\} \/>/,
+  'Scene components should pass the background transition to the SVG background renderer.'
+);
+
+assert.match(
+  styles,
+  /\.scene-bg-active\s*\{[\s\S]*?animation:\s*baBackgroundCrossFade/i,
+  'New BCG layers should animate in with a dedicated background cross-fade.'
+);
+
+assert.match(
+  styles,
+  /@keyframes baBackgroundCrossFade[\s\S]*?opacity:\s*0[\s\S]*?opacity:\s*1[\s\S]*?@keyframes baBackgroundFadeOut[\s\S]*?opacity:\s*1[\s\S]*?opacity:\s*\.18/i,
+  'Background cross-fade keyframes should fade the new image in while easing the previous image out.'
 );
 
 assert.match(
@@ -445,7 +640,7 @@ assert.match(
 
 assert.match(
   dialogueSceneSource,
-  /backgroundSrc,\s*characters,\s*overlays[\s\S]*?<SceneBackground backgroundSrc=\{backgroundSrc\}[\s\S]*?<DirectorOverlays overlays=\{overlays\}[\s\S]*?<CharacterLayer characters=\{characters\}/,
+  /backgroundSrc,\s*backgroundTransition,\s*characters,\s*overlays[\s\S]*?<SceneBackground backgroundSrc=\{backgroundSrc\} transition=\{backgroundTransition\} \/>[\s\S]*?<DirectorOverlays overlays=\{overlays\}[\s\S]*?<CharacterLayer characters=\{characters\}/,
   'DialogueScene should render director-managed BCG overlays and persistent SCG characters.'
 );
 
@@ -551,6 +746,42 @@ assert.doesNotMatch(
   'Title screen should no longer show the old Hakbeom Love/HB placeholder branding.'
 );
 
+assert.doesNotMatch(
+  component,
+  /title-kicker|title-subtitle|title-footer|Hakbeom Archive Visual Novel|Hakbeom Archive \/ Prologue/,
+  'Title screen should keep the main menu cinematic and logo-led, without subtitle/tagline/footer copy.'
+);
+
+assert.match(
+  component,
+  /className="title-memory-card"/,
+  'Title screen should include a subtle non-text protagonist memory motif instead of explanatory subtitle copy.'
+);
+assert.match(
+  component,
+  /<img\s+className="title-memory-photo"\s+src="\/assets\/character\/hakbeom-title\.png"\s+alt=""\s+aria-hidden="true"\s+\/>/,
+  'Title memory motif should use the supplied Hakbeom cutout as a subtle title-screen photo card.'
+);
+assert.ok(
+  existsSync('public/assets/character/hakbeom-title.png'),
+  'Hakbeom title-screen cutout should be served from the public character asset directory.'
+);
+assert.deepEqual(
+  readPngSize('public/assets/character/hakbeom-title.png'),
+  { width: 536, height: 632 },
+  'Hakbeom title-screen cutout should be alpha-trimmed so the photo card has no empty lower crop area.'
+);
+assert.match(
+  styles,
+  /\.title-memory-photo\s*\{[\s\S]*?inset:\s*3%[\s\S]*?object-fit:\s*contain/i,
+  'Title memory photo should contain the full face inside the card instead of cropping it.'
+);
+assert.match(
+  styles,
+  /\.title-memory-card-line\s*\{[\s\S]*?display:\s*none/i,
+  'Title memory card should not reserve visible empty text-line space below the supplied photo.'
+);
+
 assert.match(
   indexHtml,
   /<title>Hakbeom Archive<\/title>/,
@@ -571,14 +802,14 @@ assert.match(
 
 assert.match(
   styles,
-  /\.title-brand\s*\{[\s\S]*?backdrop-filter:\s*blur\([\d.]+px\)[\s\S]*?border-radius:\s*clamp/i,
-  'Title brand area should be a polished glass panel around the supplied logo.'
+  /\.title-brand\s*\{[\s\S]*?pointer-events:\s*none[\s\S]*?\.title-memory-card\s*\{/i,
+  'Title brand area should integrate the logo directly into the scene with a non-text memory motif, not a giant glass card.'
 );
 
 assert.match(
   styles,
-  /\.title-menu\s*\{[\s\S]*?backdrop-filter:\s*blur\([\d.]+px\)[\s\S]*?border-radius:\s*clamp/i,
-  'Title menu should be styled as a glass navigation dock, not plain floating buttons.'
+  /\.title-menu\s*\{[\s\S]*?right:\s*clamp\([\s\S]*?bottom:\s*clamp\([\s\S]*?background:\s*transparent/i,
+  'Title menu should be a lower-right slim cinematic stack instead of a bulky glass navigation dock.'
 );
 
 assert.match(
@@ -614,8 +845,8 @@ assert.doesNotMatch(
 
 assert.doesNotMatch(
   component,
-  /rewardFeedback|affection-feedback|선택이 기록됨/,
-  'Choice rewards should update state silently instead of showing "recorded" toast feedback.'
+  /rewardFeedback|setRewardFeedback|affection-feedback|선택이 기록됨/i,
+  'Choice rewards should update state silently without stale reward-feedback state or recorded toast feedback.'
 );
 
 assert.match(
@@ -634,6 +865,21 @@ assert.match(
   component,
   /className="save-slot-thumb"[\s\S]*className="save-slot-affection"/,
   'Save slots should render thumbnail and affection metadata.'
+);
+assert.match(
+  component,
+  /normalizeSaveSummary\(payload\?\.summary\)[\s\S]*?save-slot-chapter[\s\S]*?save-slot-route[\s\S]*?save-slot-lock/,
+  'Save slots should render normalized chapter, route, and real route-lock display fields instead of raw localStorage summaries.'
+);
+assert.match(
+  component,
+  /const payloadTitle = safeText\(payload\?\.title\);[\s\S]*?const payloadLine = safeText\(payload\?\.line\);[\s\S]*?summary\.chapterTitle \|\| payloadTitle[\s\S]*?summary\.linePreview \|\| payloadLine/,
+  'Save slots should sanitize old-save title and line fallbacks before rendering localStorage values.'
+);
+assert.match(
+  styles,
+  /\.save-slot-route\.locked[\s\S]*?\.save-slot-lock/,
+  'Save/load route-lock state should be styled inside the sub-screen card only.'
 );
 
 assert.match(
@@ -678,10 +924,10 @@ assert.match(
   'App should expose ?id=... so 1-choice and 2-choice examples can be previewed directly.'
 );
 
-assert.match(
+assert.doesNotMatch(
   app,
-  /bgmRain:[\s\S]*'\/assets\/bgm\/rainy-after-school\.mp3'/,
-  'App should expose named BGM cues to the VN runtime.'
+  /\/assets\/bgm\//,
+  'App should not wire short placeholder BGM/ambient loops into the VN runtime.'
 );
 
 assert.match(
@@ -690,7 +936,105 @@ assert.match(
   'App should use the generated PNG VN background bundle as the default background.'
 );
 
-const scenarioSource = readFileSync('src/data/scenario.js', 'utf8');
+const scenarioSource = readScenarioSourceTree();
+
+function displayedStoryTexts() {
+  return scenario.flatMap((item) => {
+    if (item.kind === 'chapter') return [];
+    const texts = [];
+    if (item.text) texts.push({ id: item.id, text: item.text });
+    for (const [index, message] of (item.messages || []).entries()) {
+      if (message.text) texts.push({ id: `${item.id}.messages[${index}]`, text: message.text });
+    }
+    return texts;
+  });
+}
+
+function assertNoDisplayedStoryPattern(pattern, label) {
+  const hits = displayedStoryTexts().filter((entry) => pattern.test(entry.text));
+  assert.deepEqual(
+    hits.map((entry) => entry.id),
+    [],
+    `${label}: ${hits.map((entry) => `${entry.id}: ${entry.text}`).join('\n')}`
+  );
+}
+
+function assertNoLongDuplicateDisplayedTexts(label) {
+  const seen = new Map();
+  for (const entry of displayedStoryTexts()) {
+    const normalized = entry.text.replace(/\s+/g, ' ').trim();
+    if (normalized.length < 70) continue;
+    if (!seen.has(normalized)) seen.set(normalized, []);
+    seen.get(normalized).push(entry.id);
+  }
+  const duplicates = [...seen.entries()].filter(([, ids]) => ids.length > 1);
+  assert.deepEqual(
+    duplicates.map(([text, ids]) => `${ids.join(', ')}: ${text}`),
+    [],
+    label
+  );
+}
+
+function normalizeRouteTemplateText(text) {
+  return text
+    .replace(/현겸|욱현|재성|상원|상욱|준혁|도훈|하음|윤호/g, '<NAME>')
+    .replace(/hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho/g, '<ID>')
+    .replace(/같은 우산|접힌 노트|방송실 너머|방송 신호|아카이브 원본|체육관 동선|지도 위 빈칸|밤의 편의점|문소리의 잔향|비 갠 옥상/g, '<MOTIF>')
+    .replace(/우산|노트|마이크|명단|실밥|지도|영수증|박자|종이/g, '<OBJECT>')
+    .replace(/비닐 포장지|대본 여백|방송 대본|결재표|도착 시간표|최단 경로표|가격표|박자표|안전 표지판/g, '<TRIGGER>')
+    .replace(/빗물 냄새|연필 자국|스피커 잡음|정정 잉크|체육관 먼지|지도 잉크|캔 따는 소리|피아노 잔향|옥상 바람/g, '<SENSE>')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function assertNoNormalizedRouteTemplateDuplicates(label) {
+  const seen = new Map();
+  for (const entry of displayedStoryTexts()) {
+    const normalized = normalizeRouteTemplateText(entry.text);
+    if (normalized.length < 70) continue;
+    if (!seen.has(normalized)) seen.set(normalized, []);
+    seen.get(normalized).push(entry.id);
+  }
+  const duplicates = [...seen.entries()].filter(([, ids]) => ids.length > 1);
+  assert.deepEqual(
+    duplicates.map(([text, ids]) => `${ids.join(', ')}: ${text}`),
+    [],
+    label
+  );
+}
+
+assert.match(
+  readFileSync('src/data/scenario.js', 'utf8'),
+  /export \{ episodeInfo, scenario \} from '\.\/scenario\/index\.js';/,
+  'Scenario facade should re-export the modular scenario pack.'
+);
+assert.ok(
+  existsSync('src/data/scenario/day4.js') && existsSync('src/data/scenario/index.js'),
+  'Longform scenario content should be split into modules before Batch 2 expansion.'
+);
+
+const storyExpansionPlanPath = 'docs/story-expansion-plan.md';
+assert.ok(existsSync(storyExpansionPlanPath), 'Story expansion plan should exist for the longform Season 1 roadmap.');
+const storyExpansionPlan = readFileSync(storyExpansionPlanPath, 'utf8');
+assert.match(
+  storyExpansionPlan,
+  /90\s*분|90-minute|2\s*[–-]\s*3\s*시간|2\s*[–-]\s*3\s*hour/i,
+  'Story expansion plan should define a 90-minute minimum and 2–3 hour preferred Season 1 target.'
+);
+for (const routeName of ['현겸', '욱현', '재성', '상원', '상욱', '준혁', '도훈', '하음', '윤호']) {
+  assert.match(storyExpansionPlan, new RegExp(routeName), `Story expansion plan should include route target ${routeName}.`);
+}
+
+assert.match(
+  readFileSync('docs/scenario-authoring.md', 'utf8'),
+  /route lock|route-lock|루트락|3개|placeholder|누락|generated background|배경 provenance|manifest/i,
+  'Scenario authoring guide should document longform route locks, placeholder photos, <=3 choices, and generated background provenance.'
+);
+assert.match(
+  readFileSync('docs/development-guide.md', 'utf8'),
+  /post-Batch-1|Batch 1|모듈화|dominant route|대표 루트|save summary|저장 요약/i,
+  'Development guide should document the post-Batch-1 modularization checkpoint and dominant-route save summary expectation.'
+);
 
 assert.match(
   scenarioSource,
@@ -722,7 +1066,13 @@ const generatedBackgrounds = [
   'school-gate-rain',
   'school-morning-hallway',
   'library-window',
-  'broadcast-room'
+  'broadcast-room',
+  'archive-club-room-evening',
+  'school-courtyard-blue-hour',
+  'gym-corridor-evening',
+  'music-room-late-afternoon',
+  'convenience-store-night',
+  'rooftop-after-rain'
 ];
 
 assert.ok(
@@ -878,6 +1228,147 @@ assert.match(
 
 assert.match(
   scenarioSource,
+  /id:\s*'choice-promise'[\s\S]*?next:\s*\['season1-bridge-after-promise'\]/,
+  'Promise choice should enter the Season 1 bridge instead of ending immediately.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'season1-bridge-after-promise'[\s\S]*?id:\s*'choice-season1-continue'[\s\S]*?next:\s*\['day4-chapter-card',\s*'ending-promise'\]/,
+  'Season 1 bridge should offer continuing to Day 4 or closing through the existing ending gate.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'day4-chapter-card'[\s\S]*?chapter:\s*'day-4'[\s\S]*?아카이브실의 새 이름들/,
+  'Scenario should add a reachable Day 4 longform chapter card.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'day4-archive-close'[\s\S]*?nextId:\s*'day5-chapter-card'/,
+  'Day 4 should continue into Day 5 after Batch 2 expansion instead of falling back to the early ending.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'day5-chapter-card'[\s\S]*?chapter:\s*'day-5'[\s\S]*?여섯 갈래의 방과 후/,
+  'Scenario should add a reachable Day 5 route-seed chapter card.'
+);
+for (const routeName of ['상원', '상욱', '준혁', '도훈', '하음', '윤호']) {
+  assert.match(scenarioSource, new RegExp(`name:\\s*'${routeName}'|${routeName}`), `Day 4 story should introduce ${routeName}.`);
+}
+assert.match(
+  scenarioSource,
+  /id:\s*'choice-day4-focus-a'[\s\S]*?choices:\s*\[[\s\S]*?상원[\s\S]*?상욱[\s\S]*?준혁[\s\S]*?next:\s*\[[\s\S]*?day4-sangwon-focus[\s\S]*?day4-sanguk-focus[\s\S]*?day4-junhyeok-focus/,
+  'Day 4 should split the first three new route focus options into a 3-choice screen.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'choice-day4-focus-b'[\s\S]*?choices:\s*\[[\s\S]*?도훈[\s\S]*?하음[\s\S]*?윤호[\s\S]*?next:\s*\[[\s\S]*?day4-dohun-focus[\s\S]*?day4-haeum-focus[\s\S]*?day4-yunho-focus/,
+  'Day 4 should split the second three new route focus options into a 3-choice screen.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'choice-day5-school-shift'[\s\S]*?choices:\s*\[[\s\S]*?상원[\s\S]*?상욱[\s\S]*?준혁[\s\S]*?next:\s*\[[\s\S]*?day5-sangwon-archive-desk[\s\S]*?day5-sanguk-gym-start[\s\S]*?day5-junhyeok-library-corner/,
+  'Day 5 should deepen the first three route seeds with a 3-choice screen.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*'choice-day5-after-school-shift'[\s\S]*?choices:\s*\[[\s\S]*?도훈[\s\S]*?하음[\s\S]*?윤호[\s\S]*?next:\s*\[[\s\S]*?day5-dohun-store-arrival[\s\S]*?day5-haeum-music-room[\s\S]*?day5-yunho-rooftop/,
+  'Day 5 should deepen the second three route seeds with a 3-choice screen.'
+);
+assert.match(
+  scenarioSource,
+  /id:\s*['"]day5-season-hook['"][\s\S]*?nextId:\s*['"]day6-chapter-card['"]/,
+  'Day 5 should continue into Day 6 after the common-route expansion.'
+);
+for (const day of [6, 7, 8]) {
+  assert.ok(
+    scenario.some((item) => item.id === `day${day}-chapter-card` && item.chapter === `day-${day}`),
+    `Scenario should include a reachable Day ${day} common-route expansion chapter.`
+  );
+}
+assert.ok(
+  scenario.some((item) => item.id === 'day8-closing' && item.nextId === 'day9-chapter-card'),
+  'Day 8 should continue into Day 9 after the route-pressure expansion.'
+);
+for (const day of [9, 10]) {
+  assert.ok(
+    scenario.some((item) => item.id === `day${day}-chapter-card` && item.chapter === `day-${day}`),
+    `Scenario should include a reachable Day ${day} route-pressure chapter.`
+  );
+}
+assert.ok(
+  scenario.some((item) => item.id === 'day10-closing' && item.nextId === 'day11-chapter-card'),
+  'Day 10 should continue into locked-route payoff chapters after the route lock is established.'
+);
+for (const routeId of ['hyeongyeom', 'ukhyun', 'jaeseong', 'sangwon', 'sanguk', 'junhyeok', 'dohun', 'haeum', 'yunho']) {
+  assert.ok(
+    scenario.some((item) => (item.rewards || []).some((reward) => (reward.flags || []).includes(`route_lock_${routeId}`))),
+    `Day 10 route-lock setup should include explicit route_lock_${routeId}.`
+  );
+  assert.ok(
+    (episodeInfo.endingRules || []).some((rule) => rule.id === routeId && (rule.flags || []).includes(`route_lock_${routeId}`)),
+    `Episode ending rules should resolve route_lock_${routeId} into a deterministic route id.`
+  );
+}
+assert.ok(
+  scenario.filter((item) => item.id?.startsWith('day10-choice-lock-')).every((item) => (item.choices || []).length <= 3),
+  'Day 10 route-lock choices should use 3x3 grouping instead of a 9-option choice.'
+);
+for (const day of [11, 12, 13, 14]) {
+  assert.ok(
+    scenario.some((item) => item.id === `day${day}-chapter-card` && item.chapter === `day-${day}`),
+    `Scenario should include a reachable Day ${day} locked-route payoff chapter.`
+  );
+  const gate = scenario.find((item) => item.id === `day${day}-route-gate`);
+  assert.ok(gate?.endingGate, `Day ${day} should route deterministically through the locked route gate.`);
+  assert.equal(gate?.routeGate, true, `Day ${day} route gate should not unlock a terminal ending early.`);
+  for (const routeId of ['hyeongyeom', 'ukhyun', 'jaeseong', 'sangwon', 'sanguk', 'junhyeok', 'dohun', 'haeum', 'yunho']) {
+    assert.ok(
+      gate.endingNext?.[routeId]?.startsWith(`day${day}-${routeId}-`),
+      `Day ${day} route gate should include a ${routeId} payoff branch.`
+    );
+  }
+}
+assert.ok(
+  scenario.some((item) => item.id === 'day14-closing' && item.nextId === 'ending-promise'),
+  'Day 14 should reconnect to the existing ending gate after the longform payoff.'
+);
+for (const endingId of ['ending-hyeongyeom', 'ending-sangwon', 'ending-sanguk', 'ending-junhyeok', 'ending-dohun', 'ending-haeum', 'ending-yunho']) {
+  assert.ok(
+    scenario.some((item) => item.id === endingId && item.terminal === true),
+    `${endingId} should be a terminal locked-route ending.`
+  );
+}
+for (const backgroundName of ['archive-club-room-evening', 'school-courtyard-blue-hour', 'gym-corridor-evening']) {
+  assert.match(
+    scenarioSource,
+    new RegExp(`/assets/bg/${backgroundName}\\.png`),
+    `Scenario should connect required Batch 1 background ${backgroundName} through BCG directives.`
+  );
+  assert.match(
+    forgeManifest,
+    new RegExp(`"id":\\s*"${backgroundName}"[\\s\\S]*?"promptPath"`),
+    `Background manifest should include provenance for ${backgroundName}.`
+  );
+}
+for (const backgroundName of ['music-room-late-afternoon', 'convenience-store-night', 'rooftop-after-rain']) {
+  assert.match(
+    scenarioSource,
+    new RegExp(`/assets/bg/${backgroundName}\\.png`),
+    `Scenario should connect required Batch 2 background ${backgroundName} through BCG directives.`
+  );
+  assert.match(
+    forgeManifest,
+    new RegExp(`"id":\\s*"${backgroundName}"[\\s\\S]*?"promptPath"`),
+    `Background manifest should include provenance for ${backgroundName}.`
+  );
+}
+const runtimeChoices = scenario.filter((item) => item.type === 'choice' && !item.previewOnly);
+for (const item of runtimeChoices) {
+  assert.ok((item.choices || []).length <= 3, `${item.id} should not exceed the current 3-choice layout contract.`);
+}
+
+assert.match(
+  scenarioSource,
   /endingRules:\s*\[[\s\S]*?id:\s*'good'[\s\S]*?affection:\s*\{ hyeongyeom:\s*6 \}[\s\S]*?id:\s*'normal'/,
   'Episode metadata should define dating-sim ending rules.'
 );
@@ -896,7 +1387,7 @@ assert.match(
 
 assert.match(
   scenarioSource,
-  /id:\s*'ending-promise'[\s\S]*?endingGate:\s*true/,
+  /['"]?id['"]?\s*:\s*['"]ending-promise['"][\s\S]*?['"]?endingGate['"]?\s*:\s*true/,
   'Final scene should trigger ending resolution.'
 );
 
@@ -922,6 +1413,43 @@ assert.doesNotMatch(
   scenarioSource,
   /현겸와|현겸는/,
   'Scenario should use natural Korean particles for 현겸.'
+);
+
+assert.doesNotMatch(
+  scenarioSource,
+  /리본가|리본를|리본는|호출음가|호출음를|실밥가|실밥를|12분가|12분를|박자을|박자은|명단가|명단를|명단는|종이을|노트은|노트을|신호은|복도은|지도은|장난기이|장난기은|온기이|온기은|논리이|논리은|의리이|의리은|윤호아/,
+  'Generated route payoff prose should not keep template-produced Korean particle errors.'
+);
+
+assertNoDisplayedStoryPattern(
+  /Day\s*\d+의|Day\s*\d+ 조사|Day\s*\d+ 기록표/,
+  'Displayed story prose should not expose meta day labels outside chapter cards.'
+);
+assertNoDisplayedStoryPattern(
+  /첫 단서가 되었다|같은 질문을 다른 목소리|축제 준비물 사이에서 자기 이름이 적힌 작은 표식|옥상 바람이 잠깐 멈춘 것 같았다/,
+  'Displayed story prose should not contain generated route-template setup lines.'
+);
+assertNoDisplayedStoryPattern(
+  /에게서 충돌이 가라앉은 뒤, 쉽게 보내지 못한 문장들이 남았다/,
+  'Route phone scenes should not reuse the same generated post-conflict message setup.'
+);
+assertNoDisplayedStoryPattern(
+  /같은 방향을 보고 있다는 증거|사라진 원본 이야기를 듣자마자 표정을 굳혔다|축제 인파 너머에서 .* 기다리고 있었다/,
+  'Route payoff scenes should not reuse generated crisis/festival scaffolding.'
+);
+assertNoDisplayedStoryPattern(
+  /이 사건, 누가 꾸민 건지 이제 알|내가 고른 건 단서가 아니라 너야|무대 뒤에서 학범은 .* 같은 대사를 세 번 연습했다/,
+  'Confession and truth scenes should be individually authored per route.'
+);
+assertNoDisplayedStoryPattern(
+  /윤호이|호출음는|실밥는|12분는/,
+  'Displayed story prose should not contain known generated particle errors.'
+);
+assertNoLongDuplicateDisplayedTexts(
+  'Displayed story prose should not contain long exact duplicate paragraphs; repeated route scaffolds must be rewritten.'
+);
+assertNoNormalizedRouteTemplateDuplicates(
+  'Displayed story prose should not contain route-name-swapped template paragraphs.'
 );
 
 assert.doesNotMatch(
@@ -988,6 +1516,18 @@ assert.match(
   visualNovelSource,
   /const targetIndex = resolveNextIndex\(\{[\s\S]*?endingRules: episodeInfo\.endingRules \|\| \[\][\s\S]*?\}\);[\s\S]*?if \(targetIndex < 0\) return;[\s\S]*?jumpToIndex\(targetIndex\)/,
   'goNextRaw should use the no-wrap next resolver and stop on terminal ending lines.'
+);
+
+assert.match(
+  visualNovelSource,
+  /currentItem\?\.type === 'phone' && getItemChoices\(currentItem\)\.length > 0/,
+  'Message-only phone cutscenes should advance like dialogue; only reply phone scenes should block for input.'
+);
+
+assert.match(
+  visualNovelSource,
+  /replyPhoneScene = mode === 'phone' && getItemChoices\(item\)\.length > 0[\s\S]*?mode === 'choice' \|\| replyPhoneScene/,
+  'Auto mode should pause only on reply phone scenes, not message-only phone cutscenes.'
 );
 
 assert.match(
@@ -1121,7 +1661,7 @@ assert.match(
 
 assert.match(
   scenarioSource,
-  /endingNext:\s*\{[\s\S]*ukhyun:\s*'ending-ukhyun'[\s\S]*jaeseong:\s*'ending-jaeseong'/,
+  /['"]?endingNext['"]?\s*:\s*\{[\s\S]*['"]?ukhyun['"]?\s*:\s*['"]ending-ukhyun['"][\s\S]*['"]?jaeseong['"]?\s*:\s*['"]ending-jaeseong['"]/,
   'Ending gate should route to Ukhyun and Jaeseong endings.'
 );
 
@@ -1133,20 +1673,20 @@ assert.match(
 
 assert.match(
   scenarioSource,
-  /id:\s*'phone-vibration'[\s\S]*?type:\s*'banner'[\s\S]*?현겸에게서 온 메시지[\s\S]*?id:\s*'choice-reply-tone'[\s\S]*?오늘 고마웠다고 바로 답장한다[\s\S]*?조금 뜸을 들였다가 장난스럽게 답한다/,
+  /id:\s*'phone-vibration'[\s\S]*?type:\s*'banner'[\s\S]*?현겸에게서 (?:온 메시지|메시지가 왔다)[\s\S]*?id:\s*'choice-reply-tone'[\s\S]*?오늘 고마웠다고 바로 답장한다[\s\S]*?조금 뜸을 들였다가 장난스럽게 답한다/,
   'Scenario should include a modern VN-like phone/message beat with a meaningful reply-tone choice.'
 );
 
 assert.match(
   scenarioSource,
-  /id:\s*'ending-promise'[\s\S]*?endingGate:\s*true[\s\S]*?endingNext:\s*\{[\s\S]*?good:\s*'ending-good'[\s\S]*?normal:\s*'ending-normal'[\s\S]*?quiet:\s*'ending-quiet'/,
+  /['"]?id['"]?\s*:\s*['"]ending-promise['"][\s\S]*?['"]?endingGate['"]?\s*:\s*true[\s\S]*?['"]?endingNext['"]?\s*:\s*\{[\s\S]*?['"]?good['"]?\s*:\s*['"]ending-good['"][\s\S]*?['"]?normal['"]?\s*:\s*['"]ending-normal['"][\s\S]*?['"]?quiet['"]?\s*:\s*['"]ending-quiet['"]/,
   'Ending gate should branch into route-specific ending text instead of one repeated final line.'
 );
 
 for (const endingId of ['ending-good', 'ending-normal', 'ending-quiet']) {
   assert.match(
     scenarioSource,
-    new RegExp(`id:\\s*'${endingId}'[\\s\\S]*?terminal:\\s*true`),
+    new RegExp(`['"]?id['"]?\\s*:\\s*['"]${endingId}['"][\\s\\S]*?['"]?terminal['"]?\\s*:\\s*true`),
     `${endingId} should be terminal so advancing cannot wrap back to the opening.`
   );
 }
@@ -1154,7 +1694,7 @@ for (const endingId of ['ending-good', 'ending-normal', 'ending-quiet']) {
 for (const endingId of ['ending-ukhyun', 'ending-jaeseong']) {
   assert.match(
     scenarioSource,
-    new RegExp(`id:\\s*'${endingId}'[\\s\\S]*?terminal:\\s*true`),
+    new RegExp(`['"]?id['"]?\\s*:\\s*['"]${endingId}['"][\\s\\S]*?['"]?terminal['"]?\\s*:\\s*true`),
     `${endingId} should be terminal so heroine route endings cannot wrap back to the opening.`
   );
 }
@@ -1217,9 +1757,48 @@ assert.doesNotMatch(
   /strictEnding:\s*false|Array\.from\(\{ length: maxIndex \+ 1 \}/,
   'Replay should not use non-strict ending fallback or linear fallback that can construct impossible ending branches.'
 );
+assert.match(
+  replayDirectorSource,
+  /previewOnly[\s\S]*?\[maxIndex\]/,
+  'Preview-only capture targets should render directly instead of forcing an impossible normal-flow replay search.'
+);
+assert.match(
+  visualNovelSource,
+  /item\.routeGate[\s\S]*?return[\s\S]*?setGameState/,
+  'Non-terminal route gates should resolve route navigation without marking terminal endings as unlocked.'
+);
 
 const validation = validateScenario(scenario, routeConfigData);
 assert.deepEqual(validation.errors, [], `scenario validator errors: ${validation.errors.join('\n')}`);
+
+const messageOnlyPhoneScenario = [
+  {
+    id: 'start',
+    type: 'phone',
+    text: 'message',
+    messages: [{ from: 'dohun', text: '확인했어.' }],
+    nextId: 'end'
+  },
+  { id: 'end', type: 'dialogue', text: 'end', terminal: true }
+];
+const messageOnlyPhoneValidation = validateScenario(messageOnlyPhoneScenario, routeConfigData);
+assert.deepEqual(
+  messageOnlyPhoneValidation.errors,
+  [],
+  'Message-only phone cutscenes should be valid and reachable through nextId.'
+);
+const messageOnlyPhoneReplayPath = findReplayPath(
+  messageOnlyPhoneScenario,
+  1,
+  0,
+  createInitialGameState(),
+  { routeConfig: routeConfigData }
+);
+assert.deepEqual(
+  messageOnlyPhoneReplayPath,
+  [0, 1],
+  'Replay should traverse message-only phone cutscenes through nextId.'
+);
 
 const ambiguousPhoneValidation = validateScenario([
   {
@@ -1297,6 +1876,32 @@ const cappedMultiHeroineState = applyRouteRewards(
 assert.equal(cappedMultiHeroineState.affection.ukhyun, 10);
 assert.equal(cappedMultiHeroineState.affection.jaeseong, 10);
 
+const dominantRoute = resolveDominantRoute(
+  {
+    affection: { hyeongyeom: 4, sangwon: 6, haeum: 6 },
+    flags: ['sangwon_route_seed', 'haeum_route_seed']
+  },
+  routeConfigData
+);
+assert.equal(dominantRoute.id, 'sangwon', 'Dominant route should use route priority when affection/flags tie.');
+const explicitRouteLock = resolveRouteLock(
+  {
+    affection: { sangwon: 8, yunho: 8 },
+    flags: ['sangwon_route_seed', 'yunho_route_seed', 'route_lock_yunho']
+  },
+  routeConfigData
+);
+assert.equal(explicitRouteLock.id, 'yunho', 'Explicit latest route lock flag should win over static priority.');
+assert.equal(explicitRouteLock.reason, 'explicit-lock');
+const thresholdRouteLock = resolveRouteLock(
+  { affection: { sangwon: 6 }, flags: ['sangwon_route_seed'] },
+  routeConfigData
+);
+assert.equal(thresholdRouteLock.reason, 'threshold', 'Seeded route at threshold should lock through threshold semantics.');
+const fallbackRouteLock = resolveRouteLock({ affection: {}, flags: [] }, routeConfigData);
+assert.equal(fallbackRouteLock.id, 'common', 'Route lock should fall back to the common route when no route is eligible.');
+assert.equal(fallbackRouteLock.reason, 'fallback');
+
 const normalizedByItem = normalizeSavePayload(
   { version: 1, index: 9999, itemId: scenario[2].id, gameState: {}, settings: {}, directorState: null, log: [] },
   { scenario, fallbackIndex: 0 }
@@ -1334,6 +1939,74 @@ const normalizedSummarySave = normalizeSavePayload(
 );
 assert.equal(normalizedSummarySave.summary.chapterTitle, 'Day 1');
 assert.equal(normalizedSummarySave.summary.affectionValue, 3);
+assert.equal(normalizedSummarySave.summary.routeLocked, false);
+
+const normalizedRichSummarySave = normalizeSavePayload(
+  {
+    version: 1,
+    index: 0,
+    itemId: scenario[0].id,
+    summary: {
+      chapterTitle: 'Day 1',
+      chapterLabel: 'Day 1: 비 오는 방과 후',
+      linePreview: 'line',
+      affectionTarget: 'sangwon',
+      affectionLabel: '같은 우산의 약속',
+      affectionValue: 6,
+      routeId: 'sangwon',
+      routeName: '상원',
+      routeLabel: '상원 루트 확정',
+      routeLocked: true,
+      routeProgressText: '상원 · 루트 확정',
+      thumbnail: '/assets/bg/archive-club-room-evening.png'
+    },
+    gameState: {},
+    settings: {},
+    directorState: null,
+    log: []
+  },
+  { scenario, fallbackIndex: 0 }
+);
+assert.deepEqual(
+  normalizedRichSummarySave.summary,
+  {
+    itemId: '',
+    chapter: '',
+    chapterTitle: 'Day 1',
+    chapterLabel: 'Day 1: 비 오는 방과 후',
+    linePreview: 'line',
+    affectionTarget: 'sangwon',
+    affectionValue: 6,
+    affectionLabel: '같은 우산의 약속',
+    routeId: 'sangwon',
+    routeName: '상원',
+    routeLabel: '상원 루트 확정',
+    routeLocked: true,
+    routeProgressText: '상원 · 루트 확정',
+    thumbnail: '/assets/bg/archive-club-room-evening.png'
+  },
+  'Save codec should preserve normalized route/chapter display metadata for sub-screen cards.'
+);
+assert.deepEqual(
+  normalizeSaveSummary({ routeLocked: 'yes', routeName: 123, affectionValue: 'bad' }),
+  {
+    itemId: '',
+    chapter: '',
+    chapterTitle: '',
+    chapterLabel: '',
+    linePreview: '',
+    affectionTarget: '',
+    affectionValue: 0,
+    affectionLabel: '',
+    routeId: '',
+    routeName: '',
+    routeLabel: '',
+    routeLocked: false,
+    routeProgressText: '',
+    thumbnail: ''
+  },
+  'Corrupt save-summary display values should normalize to safe defaults.'
+);
 
 const normalizedClampedSave = normalizeSavePayload(
   {
@@ -1476,15 +2149,124 @@ const saveSummaryResult = buildSaveSummary({
 });
 assert.equal(saveSummaryResult.itemId, 'day2-rooftop');
 assert.equal(saveSummaryResult.chapterTitle, 'Day 2: 옥상');
+assert.equal(saveSummaryResult.chapterLabel, 'Day 2: 우산을 돌려주는 아침');
 assert.equal(saveSummaryResult.linePreview, '오늘도 우산 가져왔어.');
 assert.equal(saveSummaryResult.affectionLabel, '같은 우산의 약속');
+assert.equal(saveSummaryResult.routeId, 'hyeongyeom');
+assert.equal(saveSummaryResult.routeName, '현겸');
+assert.equal(saveSummaryResult.routeLocked, false);
+assert.equal(saveSummaryResult.routeProgressText, '현겸 · 같은 우산의 약속');
 assert.equal(saveSummaryResult.thumbnail, '/assets/ui/image0_13_6.jpg');
+
+const multiRouteSaveSummary = buildSaveSummary({
+  item: { id: 'day4-route-test', chapter: 'day-4', sectionTitle: 'Day 4', text: '상원이 기록을 건넸다.' },
+  gameState: { affection: { hyeongyeom: 4, sangwon: 7 }, flags: ['sangwon_route_seed'] },
+  routeConfig: routeConfigData,
+  backgroundSrc: '/assets/bg/archive-club-room-evening.png'
+});
+assert.equal(multiRouteSaveSummary.affectionTarget, 'sangwon');
+assert.equal(multiRouteSaveSummary.affectionValue, 7);
+assert.equal(multiRouteSaveSummary.routeId, 'sangwon');
+assert.equal(multiRouteSaveSummary.routeName, '상원');
+assert.equal(multiRouteSaveSummary.routeLabel, '상원 루트 확정');
+assert.equal(multiRouteSaveSummary.routeLocked, true);
+assert.equal(multiRouteSaveSummary.routeProgressText, '상원 · 루트 확정');
 
 assert.equal(characterProfiles.hyeongyeom.name, '현겸');
 assert.equal(resolveCharacterAsset({ id: 'hyeongyeom', expression: 'smile' }), '/assets/character/hyungyeom.png');
 assert.equal(resolveCharacterAsset({ id: 'missing', src: '/assets/character/custom.png' }), '/assets/character/custom.png');
 assert.equal(characterProfiles.ukhyun.name, '욱현');
 assert.equal(characterProfiles.jaeseong.name, '재성');
+
+const routeArchetypeContracts = [
+  {
+    routeId: 'hyeongyeom',
+    archetype: '정실 순애',
+    voicePattern: /담백|조심|가까워/,
+    prosePattern: /우산|돌아갈 자리|여기가 내 자리/
+  },
+  {
+    routeId: 'ukhyun',
+    archetype: '무표정 쿨데레',
+    voicePattern: /짧게|관찰/,
+    prosePattern: /접힌 노트|무표정|답장은 짧게|웃는 척, 티 나/
+  },
+  {
+    routeId: 'jaeseong',
+    archetype: '능글 플러팅',
+    voicePattern: /농담|직진/,
+    prosePattern: /방송|마이크|표정 방송사고|생방송/
+  },
+  {
+    routeId: 'sangwon',
+    archetype: '기록집착 얀데레',
+    voicePattern: /기록|통제/,
+    prosePattern: /틀리게 기록|누구를 골랐는지|흔들린 기록|선택을 자기 장부|네가 고른 순서|선택한 흔적|기록하지 않으면/
+  },
+  {
+    routeId: 'sanguk',
+    archetype: '직진 댕댕이',
+    voicePattern: /솔직|뛰어드는/,
+    prosePattern: /먼저 뛰|같이 뛰|몸이 먼저|직진/
+  },
+  {
+    routeId: 'junhyeok',
+    archetype: '무심한 두뇌파',
+    voicePattern: /논리|농담/,
+    prosePattern: /지도|경로|정답 처리|계산/
+  },
+  {
+    routeId: 'dohun',
+    archetype: '장난치는 츤데레',
+    voicePattern: /장난|정보통/,
+    prosePattern: /장난|정보값|착각하지|표정 관리 실패/
+  },
+  {
+    routeId: 'haeum',
+    archetype: '치유계',
+    voicePattern: /기다려|박자/,
+    prosePattern: /박자|숨|호흡|천천히/
+  },
+  {
+    routeId: 'yunho',
+    archetype: '후배 선배집착',
+    voicePattern: /선배/,
+    prosePattern: /선배|후배/
+  }
+];
+
+for (const { routeId, archetype, voicePattern, prosePattern } of routeArchetypeContracts) {
+  const profile = characterProfiles[routeId];
+  assert.equal(profile.archetype, archetype, `${profile.name} should declare the expected route archetype.`);
+  assert.match(profile.voice, voicePattern, `${profile.name} voice contract should match its archetype.`);
+  assert.ok(
+    scenario.some((item) => item.name === profile.name && prosePattern.test(item.text || '')),
+    `${profile.name} route prose should express the ${archetype} archetype.`
+  );
+}
+
+const longformRouteTargets = [
+  ['sangwon', '상원'],
+  ['sanguk', '상욱'],
+  ['junhyeok', '준혁'],
+  ['dohun', '도훈'],
+  ['haeum', '하음'],
+  ['yunho', '윤호']
+];
+for (const [routeId, routeName] of longformRouteTargets) {
+  assert.match(
+    routeConfig,
+    new RegExp(`id:\\s*'${routeId}'[\\s\\S]*?name:\\s*'${routeName}'`),
+    `Route config should include longform route target ${routeName}.`
+  );
+  assert.ok(characterProfiles[routeId], `Character profile should include placeholder-safe profile for ${routeName}.`);
+  assert.equal(characterProfiles[routeId].baseSrc, '', `${routeName} should not reference a missing character PNG before photos are supplied.`);
+}
+assert.match(
+  routeConfig,
+  /routePriority:\s*\[[\s\S]*'hyeongyeom'[\s\S]*'sangwon'[\s\S]*'haeum'[\s\S]*'yunho'[\s\S]*'ukhyun'[\s\S]*'jaeseong'[\s\S]*'junhyeok'[\s\S]*'sanguk'[\s\S]*'dohun'/,
+  'Route config should define deterministic route priority for longform tie-breaks.'
+);
 
 const phoneMessages = normalizePhoneMessages({
   name: '현겸',
@@ -1507,6 +2289,11 @@ assert.match(scenarioValidator, /messages[\s\S]*phone message text is required/)
 assert.match(component, /function playAudio\(src, volume = 0\.65\)/);
 assert.match(component, /audio\.volume = Math\.max\(0, Math\.min\(1, volume\)\)/);
 assert.match(component, /settings\.seVolume \/ 100/);
+assert.match(
+  component,
+  /const itemCue = resolveSoundCue\(item\?\.se,\s*sounds\);[\s\S]*?if \(itemCue\) playAudio\(itemCue,\s*settings\.seVolume \/ 100\)/,
+  'Top-level item.se values should resolve through the sounds map instead of trying to load raw cue names.'
+);
 assert.match(component, /<ConfigRange label="BGM 볼륨"[\s\S]*?settings\.bgmVolume/);
 assert.match(component, /onKeyDown=\{createKeyboardActivationHandler\(/);
 assert.match(component, /const currentExpression = character\.expression \|\| 'normal'/);

@@ -1,0 +1,225 @@
+import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+
+const BASE_URL = process.env.VN_QA_BASE_URL || process.argv[2] || 'http://127.0.0.1:5173';
+const OUT_PATH = process.env.VN_QA_OUT_PATH || '.omx/state/vn-flow-qa.json';
+const VIEWPORT = { width: 1129, height: 524 };
+const LOCAL_PLAYWRIGHT_LIB_DIRS = [
+  path.resolve('.deps/playwright-libs/root/usr/lib/x86_64-linux-gnu'),
+  path.resolve('.omx/tmp/playwright-libs/usr/lib/x86_64-linux-gnu')
+];
+
+const availableLocalLibDirs = LOCAL_PLAYWRIGHT_LIB_DIRS.filter((dir) => existsSync(dir));
+if (availableLocalLibDirs.length > 0) {
+  process.env.LD_LIBRARY_PATH = [
+    ...availableLocalLibDirs,
+    process.env.LD_LIBRARY_PATH || ''
+  ].filter(Boolean).join(':');
+}
+
+function buildUrl(query) {
+  const url = new URL(BASE_URL);
+  const params = new URLSearchParams(query.replace(/^\?/, ''));
+  params.forEach((value, key) => url.searchParams.set(key, value));
+  return url.toString();
+}
+
+async function waitForOpenPanel(page, selector) {
+  await page.locator(`${selector}[aria-hidden="false"]`).waitFor({ state: 'visible' });
+}
+
+async function visibleSvgScene(page, selector) {
+  await page.waitForSelector(selector);
+  return page.locator(selector).first().evaluate((node) => getComputedStyle(node).display !== 'none');
+}
+
+async function clickFirstVisible(locators) {
+  for (const locator of locators) {
+    const count = await locator.count();
+    for (let index = 0; index < count; index += 1) {
+      const candidate = locator.nth(index);
+      if (await candidate.isVisible().catch(() => false)) {
+        await candidate.click();
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+async function main() {
+  const { chromium } = await import('playwright');
+  await mkdir(path.dirname(OUT_PATH), { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  page.setDefaultTimeout(6000);
+
+  const consoleErrors = [];
+  const assetErrors = [];
+  const audioEvents = [];
+  const checks = [];
+
+  await page.exposeFunction('__pushVnQaAudioEvent', (event) => audioEvents.push(event));
+  await page.addInitScript(() => {
+    const NativeAudio = window.Audio;
+    window.Audio = function patchedAudio(src = '') {
+      const audio = new NativeAudio(src);
+      const record = (event, extra = {}) => {
+        const entry = {
+          event,
+          src: audio.currentSrc || audio.getAttribute('src') || src || '',
+          loop: audio.loop,
+          volume: audio.volume,
+          href: window.location.href,
+          time: Math.round(performance.now()),
+          ...extra
+        };
+        window.__pushVnQaAudioEvent?.(entry);
+      };
+      const nativePlay = audio.play.bind(audio);
+      audio.play = () => {
+        record('play-call');
+        const result = nativePlay();
+        if (result?.then) {
+          result.then(
+            () => record('play-resolve'),
+            (error) => record('play-reject', { error: error?.name || error?.message || String(error) })
+          );
+        }
+        return result;
+      };
+      return audio;
+    };
+    window.Audio.prototype = NativeAudio.prototype;
+  });
+
+  page.on('console', (message) => {
+    if (['error', 'warning'].includes(message.type())) {
+      consoleErrors.push({ type: message.type(), text: message.text() });
+    }
+  });
+  page.on('pageerror', (error) => consoleErrors.push({ type: 'pageerror', text: error.message }));
+  page.on('response', (response) => {
+    const url = response.url();
+    if (/\/assets\/(se|bgm)\//.test(url) && response.status() >= 400) {
+      assetErrors.push({ status: response.status(), url });
+    }
+  });
+
+  async function check(label, fn) {
+    const startAudio = audioEvents.length;
+    try {
+      await fn();
+      checks.push({ label, status: 'passed', audioEvents: audioEvents.slice(startAudio) });
+    } catch (error) {
+      checks.push({ label, status: 'failed', message: error?.message || String(error), audioEvents: audioEvents.slice(startAudio) });
+    }
+  }
+
+  await check('title-start', async () => {
+    await page.goto(buildUrl('?screen=title'), { waitUntil: 'networkidle' });
+    await waitForOpenPanel(page, '.title-screen');
+    await page.getByRole('menuitem', { name: 'START' }).click();
+    await page.waitForTimeout(350);
+    assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'dialogue scene should be visible after START');
+    await page.locator('.speaker-name').first().waitFor({ state: 'attached' });
+  });
+
+  await check('choice-approach', async () => {
+    await page.goto(buildUrl('?screen=game&id=choice-approach'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.choice-row');
+    assert.equal(await visibleSvgScene(page, '.scene-choice'), true, 'choice scene should be visible');
+    await page.locator('.choice-row').first().click();
+    await page.waitForTimeout(350);
+    assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'choice should advance into dialogue');
+  });
+
+  await check('phone-reply', async () => {
+    await page.goto(buildUrl('?screen=game&id=phone-evening-message'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.phone-reply');
+    assert.equal(await visibleSvgScene(page, '.scene-phone'), true, 'phone scene should be visible');
+    await page.locator('.phone-reply').first().click();
+    await page.waitForTimeout(350);
+    assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'phone reply should advance into dialogue');
+  });
+
+  await check('save-load', async () => {
+    await page.goto(buildUrl('?screen=game&id=opening'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.game');
+    await page.getByRole('button', { name: 'SAVE' }).click();
+    await waitForOpenPanel(page, '.save-load-panel');
+    await page.locator('.save-load-panel[aria-hidden="false"] .save-slot:not([disabled])').first().click();
+    await clickFirstVisible([
+      page.locator('.save-load-panel[aria-hidden="false"] .ba-modal-close'),
+      page.getByRole('button', { name: '닫기' })
+    ]);
+    await page.getByRole('button', { name: 'LOAD' }).click();
+    await waitForOpenPanel(page, '.save-load-panel');
+    await clickFirstVisible([
+      page.locator('.save-load-panel[aria-hidden="false"] .ba-modal-close'),
+      page.getByRole('button', { name: '닫기' })
+    ]);
+  });
+
+  await check('gallery', async () => {
+    await page.goto(buildUrl('?screen=title'), { waitUntil: 'networkidle' });
+    await waitForOpenPanel(page, '.title-screen');
+    await page.getByRole('menuitem', { name: 'GALLERY' }).click();
+    await waitForOpenPanel(page, '.gallery-panel');
+    await page.locator('.gallery-card').getByText(/ARCHIVE ALBUM/).waitFor();
+    await page.locator('.gallery-tile').first().waitFor();
+  });
+
+  await check('settings', async () => {
+    await page.goto(buildUrl('?screen=title'), { waitUntil: 'networkidle' });
+    await waitForOpenPanel(page, '.title-screen');
+    await page.getByRole('menuitem', { name: 'CONFIG' }).click();
+    await waitForOpenPanel(page, '.config-panel');
+    await page.locator('.config-card').getByText(/CONFIG/).waitFor();
+    await page.locator('.config-row').first().waitFor();
+  });
+
+  await check('ending', async () => {
+    await page.goto(buildUrl('?screen=game&id=ending-good'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.game');
+    await page.waitForTimeout(250);
+    assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'ending dialogue should be visible');
+    await page.locator('.speaker-role').first().waitFor({ state: 'attached' });
+  });
+
+  await browser.close();
+
+  const playRejects = audioEvents.filter((event) => event.event === 'play-reject');
+  // Reject /assets/bgm/ usage: this project currently ships SFX only.
+  const bgmEvents = audioEvents.filter((event) => /\/assets\/bgm\//.test(event.src));
+  const failedChecks = checks.filter((check) => check.status !== 'passed');
+  const result = {
+    checkedAt: new Date().toISOString(),
+    baseUrl: BASE_URL,
+    checks,
+    consoleErrors,
+    assetErrors,
+    playRejects,
+    bgmEvents
+  };
+
+  await writeFile(OUT_PATH, JSON.stringify(result, null, 2));
+
+  assert.deepEqual(failedChecks, [], 'VN QA checks should all pass.');
+  assert.deepEqual(assetErrors, [], 'VN QA should not have missing audio assets.');
+  assert.deepEqual(playRejects, [], 'VN QA should not have rejected audio playback.');
+  assert.deepEqual(bgmEvents, [], 'VN QA should not play BGM/ambient placeholder assets.');
+
+  console.log(JSON.stringify({
+    outPath: OUT_PATH,
+    checks: checks.map(({ label, status }) => ({ label, status })),
+    assetErrors: assetErrors.length,
+    playRejects: playRejects.length,
+    bgmEvents: bgmEvents.length
+  }, null, 2));
+}
+
+await main();

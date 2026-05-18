@@ -1,0 +1,147 @@
+export const day2Scenes = [
+  {
+      id: 'day2-chapter-card',
+      type: 'banner',
+      kind: 'chapter',
+      chapter: 'day-2',
+      sectionTitle: 'Day 2: 우산을 돌려주는 아침',
+      mood: 'warm',
+      text: 'Day 2 · 우산을 돌려주는 아침',
+      nextId: 'day2-morning',
+      directives: [
+        { type: 'BGM', cue: 'bgmWarm', fadeMs: 900 },
+        { type: 'STOP_AMBIENT', id: 'ambientRain' }
+      ]
+    },
+  {
+      id: 'day2-morning',
+      type: 'banner',
+      chapter: 'day-2',
+      text: '다음 날 아침, 학범은 평소보다 일찍 등교했다. 회의 자료를 핑계로 삼았지만, 신발장 쪽에서 젖지 않은 우산을 들고 있을 현겸을 먼저 떠올렸다.',
+      summary: '돌려받는 것은 우산이고, 이어지는 것은 어제 미처 다 하지 못한 말이다.',
+      directives: [
+        { type: 'BCG', src: '/assets/bg/school-morning-hallway.png', transition: 'fade-in' }
+      ],
+      nextId: 'day2-morning-message'
+    },
+  {
+      id: 'day2-morning-message',
+      type: 'phone',
+      chapter: 'day-2',
+      kind: 'phone',
+      name: '현겸',
+      role: '메시지',
+      text: '우산 말려뒀어. 접는 선까지 똑바로 맞췄으니까 확인하러 와.',
+      messages: [
+        { from: 'hyeongyeom', text: '우산 말려뒀어.', read: true },
+        { from: 'hyeongyeom', text: '접는 선까지 똑바로 맞췄으니까 확인하러 와.', read: true },
+        { from: 'hakbeom', text: '학생회 물품 검수처럼 들리는데.', read: true },
+        { from: 'hyeongyeom', text: '', pending: true }
+      ],
+      replies: [
+        '갈게. 기다려.',
+        '학생회장 일정 확인 후 승인.'
+      ],
+      rewards: [
+        { affection: { hyeongyeom: 2 }, flags: ['day2_direct_reply', 'warm_reply'] },
+        { affection: { hyeongyeom: 1 }, flags: ['day2_playful_reply'] }
+      ],
+      next: ['day2-rooftop-direct', 'day2-rooftop-playful'],
+      directives: [
+        { type: 'SE', cue: 'message' }
+      ]
+    },
+  {
+      id: 'day2-rooftop-direct',
+      type: 'dialogue',
+      chapter: 'day-2',
+      name: '학범',
+      role: '점심시간',
+      place: '옥상 앞 계단',
+      text: '답장을 보내자마자 학범은 오전 회의록의 오탈자를 세 번이나 놓쳤다. 기다리겠다는 말은 짧았는데, 그 말이 하루의 중심을 옮겨 놓았다.',
+      nextId: 'day2-hallway'
+    },
+  {
+      id: 'day2-rooftop-playful',
+      type: 'dialogue',
+      chapter: 'day-2',
+      name: '학범',
+      role: '점심시간',
+      place: '옥상 앞 계단',
+      text: '장난으로 답했는데도 휴대폰을 뒤집어 놓을 수 없었다. 현겸이 웃으며 우산 손잡이를 내미는 장면이, 수업 종보다 먼저 머릿속에 울렸다.',
+      nextId: 'day2-hallway'
+    },
+  {
+      id: 'day2-hallway',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '현겸',
+      role: '동급생',
+      place: '아침 복도',
+      text: '학범아. 우산 여기. 어제처럼 젖은 곳 하나 없이 말렸어. 그런데 네가 먼저 와 있으면, 내가 돌려주러 온 티가 너무 나잖아.',
+      variants: [
+        {
+          requiredFlags: ['shared_umbrella'],
+          text: '어제 같이 썼던 우산이 생각나서, 접을 때마다 손이 느려졌어. 현겸은 아무렇지 않은 척했지만 손잡이 끝을 놓지 않았다.'
+        },
+        {
+          requiredFlags: ['playful_reply'],
+          text: '어제 답장 때문에 웃다가 잠깐 멈췄어. 장난인 줄 아는데, 그래도 기다리게 되더라.'
+        },
+        {
+          flags: ['message_waiting'],
+          text: '학범아. 네가 기다린다고 했으니까 확인하러 왔어. 우산 반납보다 그쪽이 더 궁금했거든.'
+        },
+        {
+          flags: ['message_tease'],
+          text: '학범아. 우산 보관료가 웃음이라며? 아침 첫 정산은 좀 부끄러운데, 그래도 받아갈 거지?'
+        }
+      ],
+      effect: { target: 'hyeongyeom', type: 'blush' },
+      directives: [
+        { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'smile' },
+        { type: 'E', target: 'hyeongyeom', effect: 'blush', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day2-lunch-note',
+      type: 'dialogue',
+      chapter: 'day-2',
+      name: '학범',
+      role: '독백',
+      place: '점심시간',
+      text: '현겸은 우산을 돌려준 뒤에도 바로 돌아서지 않았다. 빈 손이 어색한지 교복 소매를 만지작거렸고, 학범은 그 손에 다시 무언가 쥐여주고 싶어졌다.',
+      variants: [
+        {
+          flags: ['warm_reply'],
+          text: '현겸은 우산을 돌려준 뒤에도 학범의 책상 옆에 조금 더 머물렀다. 따뜻한 답장을 받은 사람처럼, 눈이 마주칠 때마다 먼저 웃어주었다.'
+        },
+        {
+          flags: ['playful_reply'],
+          text: '현겸은 우산을 돌려준 뒤에도 학범의 책상 근처를 지나쳤다 돌아왔다. 어제의 장난을 떠올리는지, 말끝마다 웃음을 삼켰다.'
+        }
+      ]
+    },
+  {
+      id: 'day2-after-school',
+      type: 'dialogue',
+      mood: 'confession',
+      chapter: 'day-2',
+      name: '현겸',
+      role: '동급생',
+      place: '방과 후 복도',
+      text: '오늘은 비 안 오네. 그래도 하굣길 같이 걸어도 돼? 우산을 돌려줬다고 어제 일이 끝나버리면, 좀 아쉬울 것 같아서.',
+      variants: [
+        {
+          flags: ['day2_direct_reply'],
+          text: '오늘은 비 안 오네. 그래도 같이 걸어도 돼? 아침에 기다려준 얼굴이 하루 종일 자꾸 생각났어.'
+        },
+        {
+          flags: ['day2_playful_reply'],
+          text: '오늘은 비 안 오네. 그래도 같이 걸어도 돼? 학생회장 승인서에 유효기간은 안 적혀 있었잖아.'
+        }
+      ],
+      nextId: 'day3-chapter-card'
+    }
+];

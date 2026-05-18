@@ -81,16 +81,26 @@ function normalizeSettings(value) {
   return settings;
 }
 
-function normalizeSaveSummary(value) {
+function normalizeBoolean(value) {
+  return value === true;
+}
+
+export function normalizeSaveSummary(value) {
   const summary = isPlainObject(value) ? value : {};
   return {
     itemId: typeof summary.itemId === 'string' ? summary.itemId : '',
     chapter: typeof summary.chapter === 'string' ? summary.chapter : '',
     chapterTitle: typeof summary.chapterTitle === 'string' ? summary.chapterTitle : '',
+    chapterLabel: typeof summary.chapterLabel === 'string' ? summary.chapterLabel : '',
     linePreview: typeof summary.linePreview === 'string' ? summary.linePreview : '',
     affectionTarget: typeof summary.affectionTarget === 'string' ? summary.affectionTarget : '',
     affectionValue: Number.isFinite(Number(summary.affectionValue)) ? Number(summary.affectionValue) : 0,
     affectionLabel: typeof summary.affectionLabel === 'string' ? summary.affectionLabel : '',
+    routeId: typeof summary.routeId === 'string' ? summary.routeId : '',
+    routeName: typeof summary.routeName === 'string' ? summary.routeName : '',
+    routeLabel: typeof summary.routeLabel === 'string' ? summary.routeLabel : '',
+    routeLocked: normalizeBoolean(summary.routeLocked),
+    routeProgressText: typeof summary.routeProgressText === 'string' ? summary.routeProgressText : '',
     thumbnail: typeof summary.thumbnail === 'string' ? summary.thumbnail : ''
   };
 }

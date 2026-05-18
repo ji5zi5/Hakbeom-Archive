@@ -1,16 +1,37 @@
 import { mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 const DEFAULT_BASE_URL = process.env.VN_CAPTURE_BASE_URL || process.argv[2] || 'http://127.0.0.1:5173';
 const DEFAULT_OUT_DIR = process.env.VN_CAPTURE_OUT_DIR || process.argv[3] || '.omx/visual/vn-regression';
 const VIEWPORT = { width: 1129, height: 524 };
 const OPTIONAL = process.env.VN_CAPTURE_OPTIONAL === '1';
+const LOCAL_PLAYWRIGHT_LIB_DIRS = [
+  path.resolve('.deps/playwright-libs/root/usr/lib/x86_64-linux-gnu'),
+  path.resolve('.omx/tmp/playwright-libs/usr/lib/x86_64-linux-gnu')
+];
+
+const availableLocalLibDirs = LOCAL_PLAYWRIGHT_LIB_DIRS.filter((dir) => existsSync(dir));
+if (availableLocalLibDirs.length > 0) {
+  process.env.LD_LIBRARY_PATH = [
+    ...availableLocalLibDirs,
+    process.env.LD_LIBRARY_PATH || ''
+  ].filter(Boolean).join(':');
+}
 
 const captures = [
   { name: 'title', query: '?screen=title' },
   { name: 'dialogue', query: '?screen=game&mode=dialogue' },
+  { name: 'choice-approach', query: '?screen=game&id=choice-approach' },
+  { name: 'phone-evening-message', query: '?screen=game&id=phone-evening-message' },
   { name: 'phone-message', query: '?screen=game&id=day2-morning-message' },
   { name: 'reply-choice', query: '?screen=game&id=choice-reply-tone' },
+  { name: 'day5-music-room', query: '?screen=game&id=day5-haeum-music-room' },
+  { name: 'day5-store', query: '?screen=game&id=day5-dohun-store-arrival' },
+  { name: 'day5-rooftop', query: '?screen=game&id=day5-yunho-rooftop' },
+  { name: 'save-modal', query: '?screen=game&id=opening', clickButton: 'SAVE' },
+  { name: 'load-modal', query: '?screen=title', clickMenuItem: 'LOAD' },
+  { name: 'settings-modal', query: '?screen=title', clickMenuItem: 'CONFIG' },
   { name: 'gallery', query: '?screen=title', clickText: 'GALLERY' },
   { name: 'ending-good', query: '?screen=game&id=ending-good' }
 ];
@@ -59,8 +80,11 @@ async function main() {
       try {
         await page.goto(url, { waitUntil: 'networkidle', timeout: 10000 });
         await page.waitForSelector('.game', { state: 'visible' });
-        if (capture.clickText) {
-          await page.getByRole('menuitem', { name: capture.clickText }).click();
+        if (capture.clickMenuItem || capture.clickText) {
+          await page.getByRole('menuitem', { name: capture.clickMenuItem || capture.clickText }).click();
+        }
+        if (capture.clickButton) {
+          await page.getByRole('button', { name: capture.clickButton }).click();
         }
         await page.waitForTimeout(250);
         await page.screenshot({ path: outPath });

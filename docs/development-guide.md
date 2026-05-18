@@ -19,7 +19,7 @@ npm run build
 npm audit --audit-level=moderate
 ```
 
-시각 레이아웃을 건드렸다면 dev server를 켠 뒤 `scripts/capture-*.mjs` 계열 스크립트로 스크린샷을 확인한다. Playwright는 현재 필수 의존성이 아니므로, 캡처 스크립트는 로컬 환경에 Playwright가 준비된 경우에만 사용한다.
+시각 레이아웃을 건드렸다면 dev server를 켠 뒤 `scripts/capture-*.mjs` 계열 스크립트로 스크린샷을 확인한다. Playwright는 devDependency로 설치되어 있으므로, 새 환경에서는 `npm install` 후 필요하면 `npx playwright install chromium`으로 브라우저 바이너리를 준비한다. Linux에서 브라우저 런타임 라이브러리가 없으면 `npx playwright install-deps chromium`을 실행해야 하며, 이 명령은 시스템 패키지 설치 권한이 필요할 수 있다.
 
 ## 프로젝트 구조
 
@@ -209,3 +209,19 @@ Tested: npm test; npm run build
 3. `saveCodec`에 명시적인 version migration 분기 추가.
 4. `tests/ui-contract.test.mjs`의 regex 비중을 줄이고 semantic tests를 늘리기.
 5. Playwright visual test를 정식 devDependency/script로 둘지 결정.
+
+## Season 1 Longform Expansion Notes
+
+- Batch 1 이후 `src/data/scenario.js`가 약 1,400–1,600줄에 가까워지거나 둘 이상의 작업자가 서로 다른 챕터를 병렬 편집해야 하면, Batch 2 전에 `src/data/scenario/` 모듈 구조로 분리한다.
+- Batch 1 checkpoint (2026-05-18): `src/data/scenario.js` is 1,400 lines after Day 4, so Batch 2 should start by modularizing scenario data before adding Day 5.
+- Batch 2 checkpoint (2026-05-18): scenario content now lives in `src/data/scenario/day*.js` plus `endings.js`; keep `src/data/scenario.js` as the public facade so existing imports stay stable.
+- 10k-line contract: longform work is not complete until `npm run test:story-lines` reports at least 10,000 total source lines across `src/data/scenario.js` and `src/data/scenario/*.js`. The 2026-05-18 Ralph authorial rewrite currently verifies 19,775 scenario source lines.
+- Day 11–14 route payoff uses `endingGate` scenes with `routeGate: true` as deterministic route gates. Keep `route_lock_<id>` ending rules before legacy good/normal/quiet rules, do not record route gates as terminal ending unlocks, and keep replay target scoring aware of ending gates so long scenarios do not make `findReplayPath()` explore every branch first.
+- 저장 요약은 장기적으로 단일 `affectionTarget`이 아니라 dominant route / 대표 루트를 보여줘야 한다. 여러 호감도가 동시에 존재하면 `resolveDominantRoute()`의 tie-break 기준을 따른다.
+- route lock, dominant-route save summary, generated background manifest는 Season 1 확장의 핵심 계약이므로 테스트 없이 수정하지 않는다.
+
+## Visual Regression Capture
+
+- Playwright is installed as a dev dependency and exposed through `npm run capture:vn`.
+- If the host lacks Chromium libraries and sudo is unavailable, keep local extracted packages under `.deps/playwright-libs/`; `scripts/capture-vn-regression.mjs` prepends that path to `LD_LIBRARY_PATH` automatically.
+- Run a Vite dev server first, then capture with `VN_CAPTURE_BASE_URL=http://127.0.0.1:<port> npm run capture:vn`.

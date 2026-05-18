@@ -1,0 +1,28 @@
+Selected audio assets in this project are copied from Kenney audio packs placed under /sounds.
+
+Source packs:
+- Kenney UI SFX Set
+- Kenney Interface Sounds
+- Kenney Digital Audio
+- Kenney RPG Audio
+- Kenney Impact Sounds
+- Kenney Music Jingles
+
+License: Creative Commons Zero (CC0)
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Kenney license files state these assets may be used in personal and commercial projects. Credit to Kenney / www.kenney.nl is appreciated but not mandatory.
+
+Cue mapping:
+- ui-click.ogg: kenney_ui-audio/Audio/click1.ogg
+- ui-choice.ogg: kenney_interface-sounds/Audio/select_003.ogg
+- ui-confirm.ogg: kenney_interface-sounds/Audio/confirmation_001.ogg
+- ui-close.ogg: kenney_interface-sounds/Audio/close_001.ogg
+- phone-message.ogg: kenney_digital-audio/Audio/twoTone1.ogg
+- heart.ogg: kenney_digital-audio/Audio/powerUp3.ogg
+- promise.ogg: kenney_music-jingles/Audio/Pizzicato jingles/jingles_PIZZI03.ogg
+- question.ogg: kenney_interface-sounds/Audio/question_001.ogg
+- chatter.ogg: kenney_interface-sounds/Audio/tick_002.ogg
+- blush.ogg: kenney_digital-audio/Audio/highUp.ogg
+- voice-soft.ogg: kenney_rpg-audio/Audio/cloth2.ogg
+- rain-step.ogg: kenney_impact-sounds/Audio/footstep_concrete_001.ogg

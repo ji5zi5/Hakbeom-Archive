@@ -73,6 +73,66 @@
       "sha256": "034e24e25452a60ee47abd9cecab2e80875e72a7b7f95a015d38eb2faea03939",
       "bytes": 764425,
       "promptPath": "public/assets/bg/broadcast-room.prompt.txt"
+    },
+    {
+      "id": "archive-club-room-evening",
+      "path": "public/assets/bg/archive-club-room-evening.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0a1ed14acedf084b016a0a8c1469648191b0409d1a0d0c34b5.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "0f54ceb80b153f2fa4566a0f4e0a5cc638022023fc6701312c9ccf7777449fcd",
+      "bytes": 796782,
+      "promptPath": "public/assets/bg/archive-club-room-evening.prompt.txt"
+    },
+    {
+      "id": "school-courtyard-blue-hour",
+      "path": "public/assets/bg/school-courtyard-blue-hour.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0a1ed14acedf084b016a0a8c515bac819196f578adee617440.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "c24dff012169826e45cb58cb062ed06ae1d8dce60614f61636b2b5c66ab83227",
+      "bytes": 1000246,
+      "promptPath": "public/assets/bg/school-courtyard-blue-hour.prompt.txt"
+    },
+    {
+      "id": "gym-corridor-evening",
+      "path": "public/assets/bg/gym-corridor-evening.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0a1ed14acedf084b016a0a8cce26088191831e2ab7392bbcf1.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "e7069d169b080ce727a2e4a33469767b91a198dd0b7a15a11c06c2650a967d89",
+      "bytes": 811530,
+      "promptPath": "public/assets/bg/gym-corridor-evening.prompt.txt"
+    },
+    {
+      "id": "music-room-late-afternoon",
+      "path": "public/assets/bg/music-room-late-afternoon.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_063cd8e50e2355cb016a0a91aa354c81918ba48ad5072b51e0.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "34f3cd20c6afaf66de099e32486a555f94d5a02e8dbe99d1665770e4d5c43b14",
+      "bytes": 742770,
+      "promptPath": "public/assets/bg/music-room-late-afternoon.prompt.txt"
+    },
+    {
+      "id": "convenience-store-night",
+      "path": "public/assets/bg/convenience-store-night.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_063cd8e50e2355cb016a0a91d86424819193ac82bc0edacd0a.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "6add903bf1ce4e62856370883c683068289409e237f81eb07d2951414da99ca4",
+      "bytes": 920255,
+      "promptPath": "public/assets/bg/convenience-store-night.prompt.txt"
+    },
+    {
+      "id": "rooftop-after-rain",
+      "path": "public/assets/bg/rooftop-after-rain.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_063cd8e50e2355cb016a0a9207c890819196fbdf1cc1e15c32.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "9b0c2166b8b06762734293d292279b58786a1ca782ee701334407f088db381a2",
+      "bytes": 1011613,
+      "promptPath": "public/assets/bg/rooftop-after-rain.prompt.txt"
     }
   ]
 }
