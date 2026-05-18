@@ -11,6 +11,30 @@ export const characterProfiles = {
       surprised: '/assets/character/hyungyeom.png',
       quiet: '/assets/character/hyungyeom.png'
     }
+  },
+  ukhyun: {
+    id: 'ukhyun',
+    name: '욱현',
+    baseSrc: '',
+    expressions: {
+      normal: '',
+      smile: '',
+      blush: '',
+      serious: '',
+      quiet: ''
+    }
+  },
+  jaeseong: {
+    id: 'jaeseong',
+    name: '재성',
+    baseSrc: '',
+    expressions: {
+      normal: '',
+      smile: '',
+      blush: '',
+      confident: '',
+      quiet: ''
+    }
   }
 };
 

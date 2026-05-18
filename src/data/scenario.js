@@ -5,6 +5,18 @@ export const episodeInfo = {
   skipToId: 'ending-promise',
   endingRules: [
     {
+      id: 'ukhyun',
+      title: '욱현 엔딩: 접힌 노트의 답장',
+      affection: { ukhyun: 3 },
+      flags: ['ukhyun_route']
+    },
+    {
+      id: 'jaeseong',
+      title: '재성 엔딩: 방송실 너머의 목소리',
+      affection: { jaeseong: 3 },
+      flags: ['jaeseong_route']
+    },
+    {
       id: 'good',
       title: '굿 엔딩: 같은 우산의 약속',
       affection: { hyeongyeom: 6 },
@@ -663,6 +675,171 @@ export const scenario = [
     ]
   },
   {
+    id: 'choice-day3-route-focus',
+    type: 'choice',
+    choices: [
+      '현겸에게 남은 말을 전한다.',
+      '욱현이 놓고 간 노트를 따라간다.',
+      '재성이 보낸 호출에 답한다.'
+    ],
+    rewards: [
+      { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_route_focus'] },
+      { affection: { ukhyun: 2 }, flags: ['ukhyun_route'] },
+      { affection: { jaeseong: 2 }, flags: ['jaeseong_route'] }
+    ],
+    next: ['choice-day3-distance', 'ukhyun-route-start', 'jaeseong-route-start']
+  },
+  {
+    id: 'ukhyun-route-start',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '욱현',
+    role: '도서위원',
+    place: '도서관 창가',
+    text: '학범아, 이 노트 네 거 맞지? 일부러 놓고 간 건 아니겠지만… 돌려줄 핑계가 생긴 건 조금 좋았어.',
+    effect: { target: 'ukhyun', type: 'ellipsis' },
+    directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+      { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
+      { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
+    ]
+  },
+  {
+    id: 'ukhyun-note-memory',
+    type: 'dialogue',
+    mood: 'tense',
+    chapter: 'day-3',
+    name: '학범',
+    role: '독백',
+    place: '도서관 창가',
+    text: '노트 사이에는 학범이 잊고 있던 학생회 회의 메모가 끼워져 있었다. 그런데 마지막 줄에는 욱현의 글씨로 작은 문장이 덧붙어 있었다.',
+    variants: [
+      {
+        requiredFlags: ['student_council_help'],
+        text: '노트 사이에는 학생회 회의 메모가 끼워져 있었다. 욱현은 학범이 놓친 부분까지 조용히 표시해두고, 마지막 줄에 작은 문장을 남겼다.'
+      }
+    ]
+  },
+  {
+    id: 'choice-ukhyun-promise',
+    type: 'choice',
+    choices: [
+      '노트 답장은 직접 말하겠다고 한다.',
+      '고맙다는 말을 노트에 적어 돌려준다.'
+    ],
+    rewards: [
+      { affection: { ukhyun: 2 }, flags: ['ukhyun_direct_answer'] },
+      { affection: { ukhyun: 1 }, flags: ['ukhyun_note_answer'] }
+    ],
+    next: ['ukhyun-direct-answer', 'ukhyun-note-answer']
+  },
+  {
+    id: 'ukhyun-direct-answer',
+    type: 'dialogue',
+    mood: 'confession',
+    chapter: 'day-3',
+    name: '학범',
+    role: '학생회',
+    text: '글씨로 남기면 또 도망칠 것 같아서. 욱현아, 네가 기다려준 거 직접 고맙다고 말하고 싶었어.',
+    effect: { target: 'ukhyun', type: 'heart' },
+    directives: [
+      { type: 'SCG', id: 'ukhyun', action: 'update', expression: 'blush' },
+      { type: 'E', target: 'ukhyun', effect: 'heart', motion: 'zoom', se: 'promise' }
+    ],
+    nextId: 'ending-promise'
+  },
+  {
+    id: 'ukhyun-note-answer',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '욱현',
+    role: '도서위원',
+    text: '답장을 노트에 적어주는 사람은 처음 봐. 그래도 학범답다. 조용한데, 이상하게 오래 남아.',
+    effect: { target: 'ukhyun', type: 'blush' },
+    directives: [
+      { type: 'SCG', id: 'ukhyun', action: 'update', expression: 'smile' },
+      { type: 'E', target: 'ukhyun', effect: 'blush', motion: 'nod' }
+    ],
+    nextId: 'ending-promise'
+  },
+  {
+    id: 'jaeseong-route-start',
+    type: 'dialogue',
+    mood: 'tense',
+    chapter: 'day-3',
+    name: '재성',
+    role: '방송부',
+    place: '방송실 앞',
+    text: '학범, 학생회장 맞지? 방송 장비 점검 좀 도와줘. 아니… 사실은 네 목소리로 확인하고 싶은 게 있어.',
+    effect: { target: 'jaeseong', type: 'question' },
+    directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+      { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
+      { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
+    ]
+  },
+  {
+    id: 'jaeseong-broadcast-room',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '학범',
+    role: '독백',
+    place: '방송실',
+    text: '재성은 마이크 볼륨을 낮추고도 학범의 목소리에 귀를 기울였다. 농담처럼 시작한 호출이, 어느새 둘만 듣는 고백 연습처럼 느껴졌다.',
+    variants: [
+      {
+        requiredFlags: ['direct_compliment'],
+        text: '재성은 학범이 솔직하게 말하는 순간을 기억하는 듯했다. 마이크 너머로 들리는 숨소리까지 장난스럽게 받아 적었다.'
+      }
+    ]
+  },
+  {
+    id: 'choice-jaeseong-signal',
+    type: 'choice',
+    choices: [
+      '마이크를 끄고 직접 말한다.',
+      '방송 멘트처럼 장난스럽게 답한다.'
+    ],
+    rewards: [
+      { affection: { jaeseong: 2 }, flags: ['jaeseong_direct_signal'] },
+      { affection: { jaeseong: 1 }, flags: ['jaeseong_playful_signal'] }
+    ],
+    next: ['jaeseong-direct-signal', 'jaeseong-playful-signal']
+  },
+  {
+    id: 'jaeseong-direct-signal',
+    type: 'dialogue',
+    mood: 'confession',
+    chapter: 'day-3',
+    name: '학범',
+    role: '학생회',
+    text: '방송으로는 못 하겠어. 재성아, 이건 너한테만 들려주고 싶은 말이니까.',
+    effect: { target: 'jaeseong', type: 'heart' },
+    directives: [
+      { type: 'SCG', id: 'jaeseong', action: 'update', expression: 'blush' },
+      { type: 'E', target: 'jaeseong', effect: 'heart', motion: 'zoom', se: 'promise' }
+    ],
+    nextId: 'ending-promise'
+  },
+  {
+    id: 'jaeseong-playful-signal',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-3',
+    name: '재성',
+    role: '방송부',
+    text: '방송 멘트치고는 심장에 너무 직접 꽂히는데? 학범, 그런 식이면 내가 다음 호출도 기대하잖아.',
+    effect: { target: 'jaeseong', type: 'chatter' },
+    directives: [
+      { type: 'SCG', id: 'jaeseong', action: 'update', expression: 'smile' },
+      { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
+    ],
+    nextId: 'ending-promise'
+  },
+  {
     id: 'choice-day3-distance',
     type: 'choice',
     choices: [
@@ -753,14 +930,58 @@ export const scenario = [
     place: '빗속의 교문',
     endingGate: true,
     endingNext: {
+      ukhyun: 'ending-ukhyun',
+      jaeseong: 'ending-jaeseong',
       good: 'ending-good',
       normal: 'ending-normal',
       quiet: 'ending-quiet'
     },
     text: '그럼 약속이다. 내일은 내가 먼저 기다릴게.',
+    variants: [
+      {
+        requiredFlags: ['ukhyun_route'],
+        text: '욱현아, 다음 답장은 내가 먼저 할게. 노트가 아니라 직접.'
+      },
+      {
+        requiredFlags: ['jaeseong_route'],
+        text: '재성아, 다음엔 네가 부르기 전에 내가 먼저 찾아갈게.'
+      }
+    ],
     effect: { target: 'hyeongyeom', type: 'heart' },
     directives: [
-      { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' }
+      { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' },
+      { type: 'E', target: 'ukhyun', effect: 'heart', motion: 'nod' },
+      { type: 'E', target: 'jaeseong', effect: 'heart', motion: 'nod' }
+    ]
+  },
+  {
+    id: 'ending-ukhyun',
+    terminal: true,
+    type: 'dialogue',
+    name: '욱현',
+    role: '욱현 엔딩',
+    place: '접힌 노트의 답장',
+    text: '다음엔 내가 먼저 적어둘게. 학범이가 또 잊어버려도, 내가 다시 찾아갈 수 있게.',
+    effect: { target: 'ukhyun', type: 'heart' },
+    directives: [
+      { type: 'E', target: 'ukhyun', effect: 'heart', motion: 'zoom', se: 'promise' },
+      { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+      { type: 'STOP_BGM' }
+    ]
+  },
+  {
+    id: 'ending-jaeseong',
+    terminal: true,
+    type: 'dialogue',
+    name: '재성',
+    role: '재성 엔딩',
+    place: '방송실 너머의 목소리',
+    text: '오늘 방송은 여기까지. 대신 내일은 마이크 없이, 학범 목소리로만 다시 불러줘.',
+    effect: { target: 'jaeseong', type: 'heart' },
+    directives: [
+      { type: 'E', target: 'jaeseong', effect: 'heart', motion: 'zoom', se: 'promise' },
+      { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+      { type: 'STOP_BGM' }
     ]
   },
   {

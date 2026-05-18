@@ -80,11 +80,21 @@
 
 `rewards`는 선택지/답장 결과를 기록한다.
 
-- `affection`: 호감도 변경. `routeConfig.affectionTarget.max`를 넘지 않도록 엔진이 clamp한다.
+- `affection`: 호감도 변경. `routeConfig.affectionTargets` 또는 기존 `affectionTarget.max`를 넘지 않도록 엔진이 clamp한다. 예: `{ affection: { ukhyun: 2 } }`.
 - `flags`: 이후 분기, variants, 갤러리 해금 조건에 사용한다.
 - `gallery`, `unlockedGallery`, `galleryItem`: `routeConfig.galleryItems`에 존재하는 ID만 사용한다.
 - `recollections`, `unlockedRecollections`, `recollectionItem`: `routeConfig.recollectionItems`에 존재하는 ID만 사용한다.
 - `ending`/`endings`: terminal ending ID 또는 route config ending ID와 맞아야 한다.
+
+### 여러 히로인 route target
+
+히로인을 추가할 때는 `src/data/routeConfig.js`의 `affectionTargets`에 ID/name/max를 등록하고, `src/data/characterProfiles.js`에 같은 ID의 profile을 추가한다. 실제 PNG가 없으면 `baseSrc: ''`로 두면 런타임이 이름 placeholder를 표시한다.
+
+```js
+{ id: 'ukhyun', name: '욱현', max: 10 }
+{ type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3 }
+{ affection: { ukhyun: 2 }, flags: ['ukhyun_route'] }
+```
 
 ## 분기와 도달 가능성
 

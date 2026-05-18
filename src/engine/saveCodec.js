@@ -22,6 +22,14 @@ function clampNumber(value, min, max) {
 }
 
 function clampAffection(target, value, routeConfig) {
+  const configuredTargets = Array.isArray(routeConfig?.affectionTargets) ? routeConfig.affectionTargets : [];
+  const matchedTarget = configuredTargets.find((entry) => entry?.id === target);
+  if (matchedTarget) {
+    const min = Number.isFinite(matchedTarget.min) ? matchedTarget.min : 0;
+    const max = Number.isFinite(matchedTarget.max) ? matchedTarget.max : Number.POSITIVE_INFINITY;
+    return Math.min(max, Math.max(min, value));
+  }
+
   const configuredTarget = typeof routeConfig?.affectionTarget === 'string'
     ? routeConfig.affectionTarget
     : routeConfig?.affectionTarget?.id;

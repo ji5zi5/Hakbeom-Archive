@@ -4,6 +4,11 @@ export const routeConfig = {
     name: '현겸',
     max: 10
   },
+  affectionTargets: [
+    { id: 'hyeongyeom', name: '현겸', max: 10 },
+    { id: 'ukhyun', name: '욱현', max: 10 },
+    { id: 'jaeseong', name: '재성', max: 10 }
+  ],
   affectionLabels: [
     { min: 0, label: '어색한 동급생' },
     { min: 3, label: '신경 쓰이는 사이' },
@@ -32,6 +37,18 @@ export const routeConfig = {
       title: '내일의 약속',
       unlockFlag: 'promise_hand',
       src: '/assets/ui/image0_13_6.jpg'
+    },
+    {
+      id: 'cg-ukhyun-note',
+      title: '욱현의 접힌 노트',
+      unlockFlag: 'ukhyun_route',
+      src: '/assets/ui/image0_13_6.jpg'
+    },
+    {
+      id: 'cg-jaeseong-call',
+      title: '재성의 호출',
+      unlockFlag: 'jaeseong_route',
+      src: '/assets/ui/image0_13_6.jpg'
     }
   ],
   recollectionItems: [
@@ -49,6 +66,18 @@ export const routeConfig = {
       id: 'rec-day3',
       title: '마른 우산의 약속',
       startId: 'day3-chapter-card'
+    },
+    {
+      id: 'rec-ukhyun',
+      title: '접힌 노트의 약속',
+      startId: 'ukhyun-route-start',
+      unlockFlag: 'ukhyun_route'
+    },
+    {
+      id: 'rec-jaeseong',
+      title: '방송실 호출',
+      startId: 'jaeseong-route-start',
+      unlockFlag: 'jaeseong_route'
     },
     {
       id: 'rec-ending',

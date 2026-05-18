@@ -28,7 +28,7 @@ src/main.jsx                     React entry
 src/App.jsx                      episodeInfo/scenario를 BAVisualNovel에 연결
 src/components/BAVisualNovel.jsx React UI, SVG scene, modal/controller glue
 src/data/scenario.js             실제 시나리오와 episodeInfo
-src/data/routeConfig.js          호감도, 챕터, 갤러리, 회상 설정
+src/data/routeConfig.js          단일/다중 히로인 호감도, 챕터, 갤러리, 회상 설정
 src/data/characterProfiles.js    캐릭터별 expression asset fallback
 src/engine/vnEngine.js           진행, skip, ending, replay path 계산
 src/engine/directorEngine.js     BCG/SCG/SE/E/MOOD/audio directive 적용
@@ -81,6 +81,7 @@ public/assets/                   런타임 asset
 - Phone display data is normalized by `src/engine/phoneEngine.js` before rendering.
 - Chapter/day card visibility is calculated by `src/engine/chapterEngine.js`; scenario authors control it with `kind: 'chapter'` and `chapter` metadata.
 - Character expression asset fallback belongs in `src/data/characterProfiles.js`; scenario files should reference expression names, not duplicate fallback paths.
+- 새 히로인을 추가할 때는 `routeConfig.affectionTargets`, `characterProfiles`, scenario reward/endingRules, terminal ending, contract test를 함께 갱신한다.
 
 ### scenario는 데이터, validator는 계약이다
 

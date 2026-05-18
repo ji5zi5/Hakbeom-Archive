@@ -23,6 +23,8 @@ Day 1 카드:    http://localhost:5173/?id=day1-chapter-card
 폰 답장:        http://localhost:5173/?id=phone-evening-message
 Day 2 카드:    http://localhost:5173/?id=day2-chapter-card
 Day 3 카드:    http://localhost:5173/?id=day3-chapter-card
+욱현 루트:      http://localhost:5173/?id=ukhyun-route-start
+재성 루트:      http://localhost:5173/?id=jaeseong-route-start
 
 대화창:        http://localhost:5173/?mode=dialogue
 중앙 배너:     http://localhost:5173/?mode=banner
@@ -87,6 +89,7 @@ Esc           : 메뉴/모달 닫기
 - Save/load 슬롯 카드: 챕터, 대사 미리보기, 호감도, 썸네일
 - 현겸 expression profile fallback
 - Phone/SNS 채팅 말풍선, 읽음, 입력중 표시
+- 욱현/재성 서브 히로인 루트와 terminal ending
 - 선택/클릭/확인 SE 연결용 sounds prop
 ```
 

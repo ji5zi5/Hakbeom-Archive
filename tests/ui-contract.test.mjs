@@ -132,6 +132,12 @@ assert.match(
 );
 
 assert.match(
+  routeConfig,
+  /affectionTargets:\s*\[[\s\S]*id:\s*'hyeongyeom'[\s\S]*id:\s*'ukhyun'[\s\S]*id:\s*'jaeseong'/,
+  'Route config should define all heroine affection targets.'
+);
+
+assert.match(
   vnState,
   /export function applyRouteRewards[\s\S]*?export function markLineRead[\s\S]*?export function unlockGalleryItem/,
   'VN state helpers should expose route reward, read-line, and gallery unlock operations.'
@@ -961,6 +967,30 @@ assert.match(
 
 assert.match(
   scenarioSource,
+  /id:\s*'choice-day3-route-focus'[\s\S]*?'현겸에게 남은 말을 전한다\.'[\s\S]*?'욱현이 놓고 간 노트를 따라간다\.'[\s\S]*?'재성이 보낸 호출에 답한다\.'/,
+  'Scenario should let the player choose between Hyungyeom, Ukhyun, and Jaeseong route focus.'
+);
+
+assert.match(
+  scenarioSource,
+  /id:\s*'ukhyun-route-start'[\s\S]*name:\s*'욱현'[\s\S]*affection:\s*\{\s*ukhyun:/,
+  'Scenario should include a playable Ukhyun heroine branch with affection rewards.'
+);
+
+assert.match(
+  scenarioSource,
+  /id:\s*'jaeseong-route-start'[\s\S]*name:\s*'재성'[\s\S]*affection:\s*\{\s*jaeseong:/,
+  'Scenario should include a playable Jaeseong heroine branch with affection rewards.'
+);
+
+assert.match(
+  scenarioSource,
+  /endingNext:\s*\{[\s\S]*ukhyun:\s*'ending-ukhyun'[\s\S]*jaeseong:\s*'ending-jaeseong'/,
+  'Ending gate should route to Ukhyun and Jaeseong endings.'
+);
+
+assert.match(
+  scenarioSource,
   /id:\s*'day3-morning-message'[\s\S]*?type:\s*'phone'[\s\S]*?messages:\s*\[[\s\S]*?오늘은 우산 필요 없겠다[\s\S]*?pending:\s*true/,
   'Day 3 should include a phone timeline with a typing beat.'
 );
@@ -982,6 +1012,14 @@ for (const endingId of ['ending-good', 'ending-normal', 'ending-quiet']) {
     scenarioSource,
     new RegExp(`id:\\s*'${endingId}'[\\s\\S]*?terminal:\\s*true`),
     `${endingId} should be terminal so advancing cannot wrap back to the opening.`
+  );
+}
+
+for (const endingId of ['ending-ukhyun', 'ending-jaeseong']) {
+  assert.match(
+    scenarioSource,
+    new RegExp(`id:\\s*'${endingId}'[\\s\\S]*?terminal:\\s*true`),
+    `${endingId} should be terminal so heroine route endings cannot wrap back to the opening.`
   );
 }
 
@@ -1108,6 +1146,15 @@ const cappedState = applyRouteRewards(
 );
 assert.equal(cappedState.affection.hyeongyeom, routeConfigData.affectionTarget.max);
 
+const cappedMultiHeroineState = applyRouteRewards(
+  { ...createInitialGameState(), affection: { ukhyun: 9, jaeseong: 9 } },
+  { id: 'test-multi-overflow', rewards: [{ affection: { ukhyun: 99, jaeseong: 99 } }] },
+  0,
+  routeConfigData
+);
+assert.equal(cappedMultiHeroineState.affection.ukhyun, 10);
+assert.equal(cappedMultiHeroineState.affection.jaeseong, 10);
+
 const normalizedByItem = normalizeSavePayload(
   { version: 1, index: 9999, itemId: scenario[2].id, gameState: {}, settings: {}, directorState: null, log: [] },
   { scenario, fallbackIndex: 0 }
@@ -1190,6 +1237,28 @@ const replayPath = findReplayPath(
 assert.ok(Array.isArray(replayPath), 'Replay path should be found for a reachable ending target.');
 assert.ok(replayPath.includes(goodEndingIndex), 'Replay path should include the requested target.');
 
+const ukhyunEndingIndex = scenario.findIndex((item) => item.id === 'ending-ukhyun');
+const ukhyunReplayPath = findReplayPath(
+  scenario,
+  ukhyunEndingIndex,
+  0,
+  createInitialGameState(),
+  { endingRules: episodeInfo.endingRules || [], routeConfig: routeConfigData }
+);
+assert.ok(Array.isArray(ukhyunReplayPath), 'Replay path should be found for the Ukhyun heroine ending.');
+assert.ok(ukhyunReplayPath.includes(ukhyunEndingIndex), 'Replay path should include the Ukhyun ending target.');
+
+const jaeseongEndingIndex = scenario.findIndex((item) => item.id === 'ending-jaeseong');
+const jaeseongReplayPath = findReplayPath(
+  scenario,
+  jaeseongEndingIndex,
+  0,
+  createInitialGameState(),
+  { endingRules: episodeInfo.endingRules || [], routeConfig: routeConfigData }
+);
+assert.ok(Array.isArray(jaeseongReplayPath), 'Replay path should be found for the Jaeseong heroine ending.');
+assert.ok(jaeseongReplayPath.includes(jaeseongEndingIndex), 'Replay path should include the Jaeseong ending target.');
+
 const directorResult = applyDirectorItem(
   { backgroundSrc: null, backgroundTransition: '', characters: [], overlays: [], soundCues: [], soundKey: '' },
   {
@@ -1258,6 +1327,8 @@ assert.equal(saveSummaryResult.thumbnail, '/assets/ui/image0_13_6.jpg');
 assert.equal(characterProfiles.hyeongyeom.name, '현겸');
 assert.equal(resolveCharacterAsset({ id: 'hyeongyeom', expression: 'smile' }), '/assets/character/hyungyeom.png');
 assert.equal(resolveCharacterAsset({ id: 'missing', src: '/assets/character/custom.png' }), '/assets/character/custom.png');
+assert.equal(characterProfiles.ukhyun.name, '욱현');
+assert.equal(characterProfiles.jaeseong.name, '재성');
 
 const phoneMessages = normalizePhoneMessages({
   name: '현겸',
