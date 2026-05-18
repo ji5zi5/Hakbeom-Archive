@@ -13,6 +13,40 @@ function addError(errors, item, message) {
   errors.push(`${item?.id || '<unknown>'}: ${message}`);
 }
 
+function hasTargets(item) {
+  return asArray(item?.next || item?.choiceNext).length > 0;
+}
+
+function getNormalFlowTargets(items, index) {
+  const item = items[index];
+  if (!item || item.terminal || item.previewOnly) return [];
+
+  if (item.endingNext) return Object.values(item.endingNext).filter(Boolean);
+  if (item.type === 'choice' || item.type === 'phone') return asArray(item.next || item.choiceNext);
+  if (item.nextId) return [item.nextId];
+  return items[index + 1]?.id ? [items[index + 1].id] : [];
+}
+
+function getReachableIds(items) {
+  const byId = new Map(items.filter((item) => item?.id).map((item, index) => [item.id, { item, index }]));
+  const startId = items.find((item) => item?.id && !item.previewOnly)?.id;
+  const reachable = new Set();
+  const pending = startId ? [startId] : [];
+
+  while (pending.length > 0) {
+    const id = pending.pop();
+    if (!id || reachable.has(id)) continue;
+    const entry = byId.get(id);
+    if (!entry) continue;
+    reachable.add(id);
+    for (const target of getNormalFlowTargets(items, entry.index)) {
+      if (!reachable.has(target)) pending.push(target);
+    }
+  }
+
+  return reachable;
+}
+
 export function validateScenario(scenario, routeConfig) {
   const errors = [];
   const items = asArray(scenario);
@@ -72,6 +106,9 @@ export function validateScenario(scenario, routeConfig) {
 
     if (item.type === 'phone') {
       const replyCount = asArray(item.replies).length;
+      if (replyCount > 0 && item.nextId && hasTargets(item)) {
+        addError(errors, item, 'phone reply scenes must not define nextId when next targets are present');
+      }
       if (asArray(item.rewards).length && asArray(item.rewards).length !== replyCount) {
         addError(errors, item, `phone rewards length ${asArray(item.rewards).length} does not match replies length ${replyCount}`);
       }
@@ -88,6 +125,13 @@ export function validateScenario(scenario, routeConfig) {
     for (const [index, directive] of asArray(item.directives).entries()) {
       const type = String(directive?.type || directive?.command || directive?.cmd || '').toUpperCase();
       if (type && !DIRECTIVE_TYPES.has(type)) addError(errors, item, `unknown directive type at directives[${index}]: ${type}`);
+    }
+  }
+
+  const reachable = getReachableIds(items);
+  for (const item of items) {
+    if (item?.id && !item.previewOnly && !reachable.has(item.id)) {
+      addError(errors, item, `unreachable non-preview scene: ${item.id}`);
     }
   }
 

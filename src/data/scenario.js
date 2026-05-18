@@ -337,7 +337,6 @@ export const scenario = [
       { affection: { hyeongyeom: 1 }, flags: ['message_tease'] }
     ],
     next: ['reply-warm', 'reply-playful'],
-    nextId: 'choice-reply-tone',
     directives: [
       { type: 'SE', cue: 'message' }
     ]
@@ -345,6 +344,7 @@ export const scenario = [
   {
     id: 'choice-reply-tone',
     type: 'choice',
+    previewOnly: true,
     choices: [
       '오늘 고마웠다고 바로 답장한다.',
       '조금 뜸을 들였다가 장난스럽게 답한다.'

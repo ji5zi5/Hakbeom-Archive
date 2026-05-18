@@ -882,6 +882,39 @@ assert.doesNotMatch(
 const validation = validateScenario(scenario, routeConfigData);
 assert.deepEqual(validation.errors, [], `scenario validator errors: ${validation.errors.join('\n')}`);
 
+const ambiguousPhoneValidation = validateScenario([
+  {
+    id: 'start',
+    type: 'phone',
+    text: 'message',
+    replies: ['reply'],
+    rewards: [{}],
+    next: ['end'],
+    nextId: 'other'
+  },
+  { id: 'end', type: 'dialogue', text: 'end', terminal: true },
+  { id: 'other', type: 'dialogue', text: 'other', terminal: true }
+], routeConfigData);
+assert.ok(
+  ambiguousPhoneValidation.errors.some((error) => error.includes('phone reply scenes must not define nextId')),
+  'Scenario validator should reject phone scenes that define both reply branching and nextId.'
+);
+
+const unreachableValidation = validateScenario([
+  { id: 'start', type: 'dialogue', text: 'start', nextId: 'end' },
+  { id: 'end', type: 'dialogue', text: 'end', terminal: true },
+  { id: 'dead', type: 'dialogue', text: 'dead branch' },
+  { id: 'preview-choice', type: 'choice', previewOnly: true, choices: ['A'], next: ['end'] }
+], routeConfigData);
+assert.ok(
+  unreachableValidation.errors.some((error) => error.includes('unreachable non-preview scene: dead')),
+  'Scenario validator should reject unreachable non-preview scenes.'
+);
+assert.ok(
+  !unreachableValidation.errors.some((error) => error.includes('preview-choice')),
+  'Scenario validator should allow explicitly preview-only scenes to be unreachable.'
+);
+
 const malformedValidation = validateScenario([
   { id: 'start', type: 'choice', choices: ['A', 'B'], next: ['missing'], rewards: [{ affection: { hyeongyeom: 1 } }] }
 ], routeConfigData);
