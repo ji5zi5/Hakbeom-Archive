@@ -1,4 +1,4 @@
-const DIRECTIVE_TYPES = new Set(['BG', 'BG_CG', 'BCG', 'SCG', 'SE', 'E', 'OVERLAY', 'MOOD']);
+const DIRECTIVE_TYPES = new Set(['BG', 'BG_CG', 'BCG', 'SCG', 'SE', 'E', 'OVERLAY', 'MOOD', 'BGM', 'MUSIC', 'AMBIENT', 'AMBIENCE', 'STOP_BGM', 'STOP_AMBIENT']);
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -109,6 +109,17 @@ export function validateScenario(scenario, routeConfig) {
       if (replyCount > 0 && item.nextId && hasTargets(item)) {
         addError(errors, item, 'phone reply scenes must not define nextId when next targets are present');
       }
+      if (Array.isArray(item.messages)) {
+        item.messages.forEach((message, messageIndex) => {
+          if (!message || typeof message !== 'object') {
+            addError(errors, item, `phone message ${messageIndex} must be an object.`);
+            return;
+          }
+          if (!message.text && !message.pending && !message.typing) {
+            addError(errors, item, `phone message text is required unless pending is true.`);
+          }
+        });
+      }
       if (asArray(item.rewards).length && asArray(item.rewards).length !== replyCount) {
         addError(errors, item, `phone rewards length ${asArray(item.rewards).length} does not match replies length ${replyCount}`);
       }
@@ -125,6 +136,12 @@ export function validateScenario(scenario, routeConfig) {
     for (const [index, directive] of asArray(item.directives).entries()) {
       const type = String(directive?.type || directive?.command || directive?.cmd || '').toUpperCase();
       if (type && !DIRECTIVE_TYPES.has(type)) addError(errors, item, `unknown directive type at directives[${index}]: ${type}`);
+      if ((type === 'BGM' || type === 'MUSIC' || type === 'AMBIENT' || type === 'AMBIENCE') && !(directive.src || directive.cue || directive.id || directive.name)) {
+        addError(errors, item, `audio directive at directives[${index}] needs src, cue, id, or name`);
+      }
+      if (type === 'SCG' && directive.expression && !/^[a-z0-9_-]+$/i.test(String(directive.expression))) {
+        addError(errors, item, `SCG expression at directives[${index}] must be a safe token`);
+      }
     }
   }
 

@@ -15,6 +15,12 @@ function uniqueList(value) {
   return [...new Set((Array.isArray(value) ? value : []).filter(Boolean))];
 }
 
+function clampNumber(value, min, max) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return undefined;
+  return Math.min(max, Math.max(min, numeric));
+}
+
 function clampAffection(target, value, routeConfig) {
   const configuredTarget = typeof routeConfig?.affectionTarget === 'string'
     ? routeConfig.affectionTarget
@@ -55,12 +61,30 @@ function normalizeGameState(value, routeConfig) {
 function normalizeSettings(value) {
   if (!isPlainObject(value)) return {};
   const settings = {};
-  if (Number.isFinite(value.textSpeedMs)) settings.textSpeedMs = value.textSpeedMs;
-  if (Number.isFinite(value.autoDelayMs)) settings.autoDelayMs = value.autoDelayMs;
-  if (Number.isFinite(value.bgmVolume)) settings.bgmVolume = value.bgmVolume;
-  if (Number.isFinite(value.seVolume)) settings.seVolume = value.seVolume;
+  const textSpeedMs = clampNumber(value.textSpeedMs, 8, 60);
+  if (textSpeedMs !== undefined) settings.textSpeedMs = textSpeedMs;
+  const autoDelayMs = clampNumber(value.autoDelayMs, 500, 2600);
+  if (autoDelayMs !== undefined) settings.autoDelayMs = autoDelayMs;
+  const bgmVolume = clampNumber(value.bgmVolume, 0, 100);
+  if (bgmVolume !== undefined) settings.bgmVolume = bgmVolume;
+  const seVolume = clampNumber(value.seVolume, 0, 100);
+  if (seVolume !== undefined) settings.seVolume = seVolume;
   if (typeof value.skipReadOnly === 'boolean') settings.skipReadOnly = value.skipReadOnly;
   return settings;
+}
+
+function normalizeSaveSummary(value) {
+  const summary = isPlainObject(value) ? value : {};
+  return {
+    itemId: typeof summary.itemId === 'string' ? summary.itemId : '',
+    chapter: typeof summary.chapter === 'string' ? summary.chapter : '',
+    chapterTitle: typeof summary.chapterTitle === 'string' ? summary.chapterTitle : '',
+    linePreview: typeof summary.linePreview === 'string' ? summary.linePreview : '',
+    affectionTarget: typeof summary.affectionTarget === 'string' ? summary.affectionTarget : '',
+    affectionValue: Number.isFinite(Number(summary.affectionValue)) ? Number(summary.affectionValue) : 0,
+    affectionLabel: typeof summary.affectionLabel === 'string' ? summary.affectionLabel : '',
+    thumbnail: typeof summary.thumbnail === 'string' ? summary.thumbnail : ''
+  };
 }
 
 function findScenarioIndex(scenario, itemId) {
@@ -84,6 +108,7 @@ export function normalizeSavePayload(payload, { scenario, fallbackIndex = 0, rou
     mode: typeof payload?.mode === 'string' ? payload.mode : item.type || 'dialogue',
     title: typeof payload?.title === 'string' ? payload.title : item.place || item.name || '스토리',
     line: typeof payload?.line === 'string' ? payload.line : '',
+    summary: normalizeSaveSummary(payload?.summary),
     gameState: normalizeGameState(payload?.gameState, routeConfig),
     settings: normalizeSettings(payload?.settings),
     directorState: isDirectorState(payload?.directorState) ? payload.directorState : null,
@@ -93,7 +118,7 @@ export function normalizeSavePayload(payload, { scenario, fallbackIndex = 0, rou
   };
 }
 
-export function createSavePayload({ index, itemId, mode, title, line, gameState, settings, directorState, log, ending }) {
+export function createSavePayload({ index, itemId, mode, title, line, summary, gameState, settings, directorState, log, ending }) {
   return {
     version: SAVE_VERSION,
     index,
@@ -101,6 +126,7 @@ export function createSavePayload({ index, itemId, mode, title, line, gameState,
     mode: mode || 'dialogue',
     title: title || '스토리',
     line: line || '',
+    summary: normalizeSaveSummary(summary),
     gameState,
     settings,
     directorState,

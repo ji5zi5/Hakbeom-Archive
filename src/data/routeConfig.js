@@ -9,6 +9,10 @@ export const routeConfig = {
     { min: 3, label: '신경 쓰이는 사이' },
     { min: 6, label: '같은 우산의 약속' }
   ],
+  chapterItems: [
+    { id: 'day-1', title: 'Day 1: 비 오는 방과 후', thumbnail: '/assets/ui/image0_13_6.jpg' },
+    { id: 'day-2', title: 'Day 2: 우산을 돌려주는 아침', thumbnail: '/assets/ui/image0_13_6.jpg' }
+  ],
   galleryItems: [
     {
       id: 'cg-umbrella',

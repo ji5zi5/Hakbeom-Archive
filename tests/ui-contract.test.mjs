@@ -1,9 +1,20 @@
 import { existsSync, readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { routeConfig as routeConfigData } from '../src/data/routeConfig.js';
+import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
+import {
+  applyAudioDirective,
+  applyAudioItem,
+  clampVolumePercent,
+  createAudioState,
+  resolveAudioCue
+} from '../src/engine/audioEngine.js';
+import { getChapterInfo, shouldShowChapterCard } from '../src/engine/chapterEngine.js';
 import { applyDirectorItem } from '../src/engine/directorEngine.js';
+import { normalizePhoneMessages, normalizePhoneReplies } from '../src/engine/phoneEngine.js';
 import { normalizeSavePayload } from '../src/engine/saveCodec.js';
+import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
 import { findReplayPath, resolveNextIndex } from '../src/engine/vnEngine.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
@@ -14,9 +25,13 @@ const routeConfig = readFileSync('src/data/routeConfig.js', 'utf8');
 const vnState = readFileSync('src/utils/vnState.js', 'utf8');
 const vnText = readFileSync('src/utils/vnText.js', 'utf8');
 const directorEngine = readFileSync('src/engine/directorEngine.js', 'utf8');
+const audioEngine = readFileSync('src/engine/audioEngine.js', 'utf8');
 const saveCodec = readFileSync('src/engine/saveCodec.js', 'utf8');
+const saveSummary = readFileSync('src/engine/saveSummary.js', 'utf8');
 const scenarioValidator = readFileSync('src/engine/scenarioValidator.js', 'utf8');
 const vnEngine = readFileSync('src/engine/vnEngine.js', 'utf8');
+const phoneEngine = readFileSync('src/engine/phoneEngine.js', 'utf8');
+const chapterEngine = readFileSync('src/engine/chapterEngine.js', 'utf8');
 const regressionCapture = readFileSync('scripts/capture-vn-regression.mjs', 'utf8');
 
 assert.equal(
@@ -172,14 +187,68 @@ assert.match(
 
 assert.match(
   component,
-  /function PhoneMessageScene\([\s\S]*?replies[\s\S]*?phone-reply[\s\S]*?onChoose\(index\)/,
-  'Phone message scene should render replies as clickable phone-reply controls.'
+  /import \{ buildSaveSummary \} from '\.\.\/engine\/saveSummary\.js';/,
+  'BAVisualNovel should use saveSummary for slot metadata.'
+);
+
+assert.match(
+  component,
+  /import \{ getChapterInfo \} from '\.\.\/engine\/chapterEngine\.js';/,
+  'BAVisualNovel should derive chapter cards through chapterEngine.'
+);
+
+assert.match(
+  component,
+  /import \{ resolveCharacterAsset \} from '\.\.\/data\/characterProfiles\.js';/,
+  'CharacterSprite should resolve expression-specific assets through characterProfiles.'
+);
+
+assert.match(
+  component,
+  /import \{ normalizePhoneMessages, normalizePhoneReplies \} from '\.\.\/engine\/phoneEngine\.js';/,
+  'PhoneMessageScene should use phoneEngine normalization.'
+);
+
+assert.match(
+  component,
+  /const bgmAudioRef = useRef\(null\)[\s\S]*const ambientAudioRefs = useRef\(new Map\(\)\)/,
+  'BAVisualNovel should keep dedicated BGM and ambient audio refs.'
+);
+
+assert.match(
+  component,
+  /playLoopAudio\(audioState\.bgm\?\.src \|\| '', bgmVolume, bgmAudioRef\.current\)[\s\S]*directorState\.audio\?\.key[\s\S]*settings\.bgmVolume/,
+  'BAVisualNovel should react to director audio changes and BGM volume settings.'
+);
+
+assert.doesNotMatch(
+  component,
+  /<ConfigRange label="BGM 준비중"[\s\S]*disabled/,
+  'BGM config should be enabled after BGM playback exists.'
+);
+
+assert.match(
+  component,
+  /function PhoneMessageScene\([\s\S]*?normalizePhoneReplies\(item\)[\s\S]*?phone-reply[\s\S]*?onChoose\(reply\.index\)/,
+  'Phone message scene should render normalized replies as clickable phone-reply controls.'
 );
 
 assert.match(
   component,
   /<PhoneMessageScene[\s\S]*?visible=\{mode === 'phone'\}[\s\S]*?onChoose=\{choose\}/,
   'Phone scenes should be routed into the main render tree.'
+);
+
+assert.match(
+  component,
+  /className=\{`phone-bubble phone-bubble-\$\{message\.side\}`\}/,
+  'Phone UI should render left/right chat bubbles.'
+);
+
+assert.match(
+  component,
+  /className="phone-typing"/,
+  'Phone UI should support typing/pending message indicators.'
 );
 
 assert.match(
@@ -377,6 +446,12 @@ assert.match(
 );
 
 assert.match(
+  characterSpriteSource,
+  /const resolvedSrc = resolveCharacterAsset\(character\)[\s\S]*href=\{resolvedSrc\}/,
+  'CharacterSprite should render the resolved expression asset.'
+);
+
+assert.match(
   component,
   /function getChoiceRows\(choices\)[\s\S]*?CHOICE_ROW_LAYOUTS\[count\]/,
   'ChoiceScene should choose row positions based on the actual number of choices.'
@@ -432,6 +507,18 @@ assert.match(
 
 assert.match(
   component,
+  /<ChapterCard\s+info=\{chapterInfo\}/,
+  'BAVisualNovel should render a ChapterCard overlay.'
+);
+
+assert.match(
+  component,
+  /function ChapterCard\(\{ info \}\)[\s\S]*mood-\$\{safeClassName\(info\.mood\)\}/,
+  'ChapterCard should expose mood-specific classes safely.'
+);
+
+assert.match(
+  component,
   /className="title-logo-mark"[\s\S]*?className="title-menu"/,
   'Title screen should use a purpose-built BA-style logo/menu layout instead of a generic centered card.'
 );
@@ -446,6 +533,12 @@ assert.match(
   styles,
   /\.title-menu button\s*\{[\s\S]*?clip-path\s*:/i,
   'Title menu buttons should use slanted BA-style panels.'
+);
+
+assert.match(
+  styles,
+  /\.chapter-card[\s\S]*?animation:\s*chapterCardIn/i,
+  'Chapter card should have its own polished transition.'
 );
 
 const gameButtonsMatch = visualNovelSource.match(/<div className="game-system-buttons"[\s\S]*?<\/div>/);
@@ -471,6 +564,18 @@ assert.match(
   visualNovelSource,
   /const saveGame = useCallback[\s\S]*?persistSaveSlot[\s\S]*?buildSavePayload/,
   'Visual novel should persist full save slots.'
+);
+
+assert.match(
+  component,
+  /className="save-slot-thumb"[\s\S]*className="save-slot-affection"/,
+  'Save slots should render thumbnail and affection metadata.'
+);
+
+assert.match(
+  saveCodec,
+  /summary:[\s\S]*normalizeSaveSummary/,
+  'Save codec should persist normalized summary metadata.'
 );
 
 assert.match(
@@ -509,6 +614,12 @@ assert.match(
   'App should expose ?id=... so 1-choice and 2-choice examples can be previewed directly.'
 );
 
+assert.match(
+  app,
+  /bgmRain:[\s\S]*'\/assets\/bgm\/rainy-after-school\.mp3'/,
+  'App should expose named BGM cues to the VN runtime.'
+);
+
 const scenarioSource = readFileSync('src/data/scenario.js', 'utf8');
 
 assert.match(
@@ -519,8 +630,26 @@ assert.match(
 
 assert.match(
   scenarioSource,
+  /kind:\s*'chapter'[\s\S]*chapter:\s*'day-1'[\s\S]*kind:\s*'chapter'[\s\S]*chapter:\s*'day-2'/,
+  'Scenario should include explicit Day 1 and Day 2 chapter transition beats.'
+);
+
+assert.match(
+  scenarioSource,
+  /type:\s*'BGM'[\s\S]*cue:\s*'bgmRain'[\s\S]*type:\s*'AMBIENT'[\s\S]*cue:\s*'ambientRain'/,
+  'Scenario should start with declarative BGM and ambient cues.'
+);
+
+assert.match(
+  scenarioSource,
   /kind:\s*'phone'/,
   'Scenario should include phone message events.'
+);
+
+assert.match(
+  scenarioSource,
+  /messages:\s*\[[\s\S]*from:\s*'hyeongyeom'[\s\S]*from:\s*'hakbeom'[\s\S]*replies:/,
+  'Scenario should author phone scenes as multi-message timelines.'
 );
 
 assert.match(
@@ -538,6 +667,18 @@ assert.match(
   scenarioSource,
   /src:\s*'\/assets\/character\/hyungyeom\.png'/,
   'Hyungyeom SCG should use the provided PNG asset.'
+);
+
+assert.match(
+  scenarioSource,
+  /expression:\s*'surprised'[\s\S]*expression:\s*'quiet'/,
+  'Scenario should use a broader Hyungyeom expression vocabulary.'
+);
+
+assert.match(
+  scenarioSource,
+  /variants:\s*\[[\s\S]*requiredFlags:[\s\S]*shared_umbrella[\s\S]*text:/,
+  'Scenario should include route-state text variants for Hyungyeom reactions.'
 );
 
 assert.doesNotMatch(
@@ -757,8 +898,8 @@ assert.match(
 
 assert.match(
   effectBadgeSource,
-  /className="effect-badge-anchor"\s+transform=\{`translate\(\$\{x\} \$\{y\}\)`\}[\s\S]*?className=\{`effect-badge effect-\$\{type\}`\}/,
-  'EffectBadge should separate SVG translate anchoring from the pop animation so CSS transform does not reset badge position.'
+  /className="effect-badge-anchor"\s+transform=\{`translate\(\$\{x\} \$\{y\}\)`\}[\s\S]*?className=\{`effect-badge effect-\$\{safeClassName\(type\)\}`\}/,
+  'EffectBadge should separate SVG translate anchoring from the pop animation and sanitize dynamic effect classes.'
 );
 
 
@@ -900,6 +1041,23 @@ assert.ok(
   'Scenario validator should reject phone scenes that define both reply branching and nextId.'
 );
 
+const malformedPhoneTimelineValidation = validateScenario([
+  {
+    id: 'start',
+    type: 'phone',
+    text: 'message',
+    messages: [{ from: 'hyeongyeom', text: '' }],
+    replies: ['reply'],
+    rewards: [{}],
+    next: ['end']
+  },
+  { id: 'end', type: 'dialogue', text: 'end', terminal: true }
+], routeConfigData);
+assert.ok(
+  malformedPhoneTimelineValidation.errors.some((error) => error.includes('phone message text is required')),
+  'Scenario validator should reject empty phone messages unless pending is true.'
+);
+
 const unreachableValidation = validateScenario([
   { id: 'start', type: 'dialogue', text: 'start', nextId: 'end' },
   { id: 'end', type: 'dialogue', text: 'end', terminal: true },
@@ -948,13 +1106,35 @@ assert.equal(normalizedFallback.itemId, scenario[0].id);
 assert.equal(normalizedFallback.directorState, null);
 assert.deepEqual(normalizedFallback.log, []);
 
+const normalizedSummarySave = normalizeSavePayload(
+  {
+    version: 1,
+    index: 0,
+    itemId: scenario[0].id,
+    summary: {
+      chapterTitle: 'Day 1',
+      linePreview: 'line',
+      affectionLabel: 'label',
+      affectionValue: 3,
+      thumbnail: '/assets/ui/image0_13_6.jpg'
+    },
+    gameState: {},
+    settings: {},
+    directorState: null,
+    log: []
+  },
+  { scenario, fallbackIndex: 0 }
+);
+assert.equal(normalizedSummarySave.summary.chapterTitle, 'Day 1');
+assert.equal(normalizedSummarySave.summary.affectionValue, 3);
+
 const normalizedClampedSave = normalizeSavePayload(
   {
     version: 1,
     index: 0,
     itemId: scenario[0].id,
     gameState: { affection: { hyeongyeom: 999 }, flags: 'bad', readLines: ['opening', 'opening'] },
-    settings: { seVolume: 'loud' },
+    settings: { textSpeedMs: -50, autoDelayMs: 999999, bgmVolume: 999, seVolume: -10 },
     directorState: null,
     log: []
   },
@@ -963,7 +1143,12 @@ const normalizedClampedSave = normalizeSavePayload(
 assert.equal(normalizedClampedSave.gameState.affection.hyeongyeom, routeConfigData.affectionTarget.max);
 assert.deepEqual(normalizedClampedSave.gameState.flags, []);
 assert.deepEqual(normalizedClampedSave.gameState.readLines, ['opening']);
-assert.deepEqual(normalizedClampedSave.settings, {});
+assert.deepEqual(normalizedClampedSave.settings, {
+  textSpeedMs: 8,
+  autoDelayMs: 2600,
+  bgmVolume: 100,
+  seVolume: 0
+});
 
 const firstChoiceIndex = scenario.findIndex((item) => item.id === 'choice-approach');
 const nextChoiceIndex = resolveNextIndex({
@@ -1000,12 +1185,84 @@ assert.equal(directorResult.backgroundSrc, '/assets/ui/test.jpg');
 assert.equal(directorResult.characters[0].expression, 'smile');
 assert.ok(directorResult.overlays.length > 0, 'Director engine should add mood overlays.');
 
+assert.equal(clampVolumePercent(-20), 0);
+assert.equal(clampVolumePercent(45), 45);
+assert.equal(clampVolumePercent(999), 100);
+
+const namedAudio = { rain: '/assets/bgm/rain.mp3', cafe: '/assets/bgm/cafe.mp3' };
+assert.equal(resolveAudioCue('rain', namedAudio), '/assets/bgm/rain.mp3');
+assert.equal(resolveAudioCue('/assets/bgm/direct.mp3', namedAudio), '/assets/bgm/direct.mp3');
+assert.equal(resolveAudioCue('missing', namedAudio), '');
+
+const bgmAudio = applyAudioDirective(createAudioState(), { type: 'BGM', cue: 'rain', fadeMs: 900 }, namedAudio);
+assert.deepEqual(bgmAudio.bgm, { id: 'rain', src: '/assets/bgm/rain.mp3', fadeMs: 900, loop: true, volume: 100 });
+assert.equal(bgmAudio.key, 'bgm:rain|ambient:');
+
+const ambientAudio = applyAudioItem(createAudioState(), {
+  id: 'audio-scene',
+  directives: [
+    { type: 'BGM', cue: 'cafe' },
+    { type: 'AMBIENT', cue: 'rain', id: 'rain-loop', volume: 35 }
+  ]
+}, namedAudio);
+assert.equal(ambientAudio.bgm.src, '/assets/bgm/cafe.mp3');
+assert.equal(ambientAudio.ambient[0].id, 'rain-loop');
+assert.equal(ambientAudio.ambient[0].volume, 35);
+
+const audioDirectorResult = applyDirectorItem(
+  { backgroundSrc: null, backgroundTransition: '', characters: [], overlays: [], soundCues: [], soundKey: '', audio: createAudioState() },
+  { id: 'bgm-test', directives: [{ type: 'BGM', src: '/assets/bgm/rain.mp3', id: 'rain-main' }] },
+  {}
+);
+assert.equal(audioDirectorResult.audio.bgm.id, 'rain-main');
+assert.equal(audioDirectorResult.audio.bgm.src, '/assets/bgm/rain.mp3');
+assert.match(audioDirectorResult.audio.key, /bgm:rain-main/);
+
+const chapterInfo = getChapterInfo({ chapter: 'day-2', sectionTitle: 'Day 2: 아침', place: '교실' }, { previousItem: { chapter: 'day-1' } });
+assert.equal(chapterInfo.chapter, 'day-2');
+assert.equal(chapterInfo.title, 'Day 2: 아침');
+assert.equal(chapterInfo.place, '교실');
+assert.equal(shouldShowChapterCard({ chapter: 'day-2' }, { chapter: 'day-1' }), true);
+assert.equal(shouldShowChapterCard({ chapter: 'day-2' }, { chapter: 'day-2' }), false);
+
+const saveSummaryResult = buildSaveSummary({
+  item: { id: 'day2-rooftop', chapter: 'day-2', sectionTitle: 'Day 2: 옥상', text: '오늘도 우산 가져왔어.' },
+  gameState: { affection: { hyeongyeom: 7 } },
+  routeConfig: routeConfigData,
+  backgroundSrc: '/assets/ui/image0_13_6.jpg'
+});
+assert.equal(saveSummaryResult.itemId, 'day2-rooftop');
+assert.equal(saveSummaryResult.chapterTitle, 'Day 2: 옥상');
+assert.equal(saveSummaryResult.linePreview, '오늘도 우산 가져왔어.');
+assert.equal(saveSummaryResult.affectionLabel, '같은 우산의 약속');
+assert.equal(saveSummaryResult.thumbnail, '/assets/ui/image0_13_6.jpg');
+
+assert.equal(characterProfiles.hyeongyeom.name, '현겸');
+assert.equal(resolveCharacterAsset({ id: 'hyeongyeom', expression: 'smile' }), '/assets/character/hyungyeom.png');
+assert.equal(resolveCharacterAsset({ id: 'missing', src: '/assets/character/custom.png' }), '/assets/character/custom.png');
+
+const phoneMessages = normalizePhoneMessages({
+  name: '현겸',
+  text: '집 도착했어.',
+  messages: [
+    { from: 'hyeongyeom', text: '우산 고마워.', read: true },
+    { from: 'hakbeom', text: '내일 봐.', pending: true }
+  ]
+});
+assert.equal(phoneMessages[0].side, 'other');
+assert.equal(phoneMessages[1].side, 'me');
+assert.equal(phoneMessages[1].pending, true);
+
+const phoneReplies = normalizePhoneReplies({ replies: ['바로 답장한다.'], next: ['reply-warm'] });
+assert.deepEqual(phoneReplies[0], { index: 0, text: '바로 답장한다.', targetId: 'reply-warm' });
+
 assert.match(saveCodec, /export const SAVE_VERSION = 1/);
 assert.match(scenarioValidator, /export function validateScenario/);
+assert.match(scenarioValidator, /messages[\s\S]*phone message text is required/);
 assert.match(component, /function playAudio\(src, volume = 0\.65\)/);
 assert.match(component, /audio\.volume = Math\.max\(0, Math\.min\(1, volume\)\)/);
 assert.match(component, /settings\.seVolume \/ 100/);
-assert.match(component, /<ConfigRange label="BGM 준비중"[\s\S]*?disabled \/>/);
+assert.match(component, /<ConfigRange label="BGM 볼륨"[\s\S]*?settings\.bgmVolume/);
 assert.match(component, /onKeyDown=\{createKeyboardActivationHandler\(/);
 assert.match(component, /const currentExpression = character\.expression \|\| 'normal'/);
 assert.match(component, /data-expression=\{currentExpression\}/);

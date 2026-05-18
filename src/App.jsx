@@ -16,7 +16,10 @@ export default function App() {
       sounds={{
         click: '',
         choice: '',
-        confirm: ''
+        confirm: '',
+        bgmRain: '/assets/bgm/rainy-after-school.mp3',
+        bgmWarm: '/assets/bgm/warm-promise.mp3',
+        ambientRain: '/assets/bgm/rain-loop.mp3'
       }}
     />
   );

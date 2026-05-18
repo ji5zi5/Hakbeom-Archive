@@ -1,4 +1,5 @@
 import { safeText } from '../utils/vnText.js';
+import { applyAudioDirective, createAudioState } from './audioEngine.js';
 
 function normalizeDirectives(item) {
   return Array.isArray(item?.directives) ? item.directives : [];
@@ -13,7 +14,9 @@ export function safeClassName(value) {
 }
 
 export function normalizeDirectiveType(directive) {
-  return safeText(directive?.type || directive?.cmd || directive?.command).toLowerCase();
+  return safeText(directive?.type || directive?.cmd || directive?.command)
+    .toLowerCase()
+    .replace(/_/g, '-');
 }
 
 export function makeSoundKey(soundCues) {
@@ -43,7 +46,8 @@ export function createDirectorState(defaults = {}) {
     characters: fallbackCharacter,
     overlays: [],
     soundCues: [],
-    soundKey: ''
+    soundKey: '',
+    audio: createAudioState(defaults.audio)
   };
 }
 
@@ -75,7 +79,8 @@ export function applyDirectorItem(state, item, defaults = {}) {
       .filter((character) => !character.leaving)
       .map(clearEphemeralCharacterState),
     overlays: [],
-    soundCues: []
+    soundCues: [],
+    audio: createAudioState(state.audio)
   };
 
   for (const directive of normalizeDirectives(item)) {
@@ -97,6 +102,11 @@ export function applyDirectorItem(state, item, defaults = {}) {
 
     if (type === 'se') {
       next.soundCues = [...next.soundCues, directive.src || directive.cue || directive.id || directive.name || directive];
+      continue;
+    }
+
+    if (type === 'bgm' || type === 'music' || type === 'ambient' || type === 'ambience' || type === 'stop-bgm' || type === 'stop-ambient') {
+      next = { ...next, audio: applyAudioDirective(next.audio, directive, defaults.sounds || {}) };
       continue;
     }
 

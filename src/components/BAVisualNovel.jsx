@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { resolveCharacterAsset } from '../data/characterProfiles.js';
 import { routeConfig } from '../data/routeConfig.js';
+import { getChapterInfo } from '../engine/chapterEngine.js';
 import { applyDirectorItem, resolveSoundCue, safeClassName } from '../engine/directorEngine.js';
 import { createSavePayload, normalizeSavePayload } from '../engine/saveCodec.js';
+import { buildSaveSummary } from '../engine/saveSummary.js';
+import { normalizePhoneMessages, normalizePhoneReplies } from '../engine/phoneEngine.js';
 import {
   findScenarioIndexById,
   replayDirectorState,
@@ -98,7 +102,7 @@ function resolveItemText(item, gameState) {
   const variants = Array.isArray(item.variants) ? item.variants : [];
   const flags = new Set(gameState?.flags || []);
   const matchedVariant = variants.find((candidate) => (
-    !candidate.default && (candidate.flags || []).every((flag) => flags.has(flag))
+    !candidate.default && (candidate.requiredFlags || candidate.flags || []).every((flag) => flags.has(flag))
   ));
   const defaultVariant = variants.find((candidate) => candidate.default);
   return safeText(matchedVariant?.text ?? defaultVariant?.text ?? text);
@@ -125,6 +129,31 @@ function playAudio(src, volume = 0.65) {
     audio.play().catch(() => undefined);
   } catch {
     // Audio is optional. Missing files should not break the VN engine.
+  }
+}
+
+function stopAudio(audio) {
+  if (!audio) return;
+  audio.pause();
+  audio.src = '';
+}
+
+function playLoopAudio(src, volume = 0.6, existingAudio = null) {
+  if (!src) {
+    stopAudio(existingAudio);
+    return null;
+  }
+
+  try {
+    const audio = existingAudio || new Audio();
+    const resolvedSrc = new URL(src, window.location.href).href;
+    if (audio.src !== resolvedSrc) audio.src = src;
+    audio.loop = true;
+    audio.volume = Math.max(0, Math.min(1, volume));
+    audio.play?.().catch(() => undefined);
+    return audio;
+  } catch {
+    return existingAudio;
   }
 }
 
@@ -251,6 +280,12 @@ function buildSavePayload({ index, item, gameState, ending, settings, directorSt
     mode: item?.type || 'dialogue',
     title: item?.place || item?.name || '스토리',
     line: getItemText(item, gameState) || getItemChoices(item).join(' / ') || '',
+    summary: buildSaveSummary({
+      item,
+      gameState,
+      routeConfig,
+      backgroundSrc: directorState?.backgroundSrc || ''
+    }),
     gameState,
     ending,
     settings,
@@ -297,8 +332,9 @@ export function BAVisualNovel({
     characterSrc,
     fallbackCharacter: character,
     endingRules: episodeInfo.endingRules || [],
-    routeConfig
-  }), [backgroundSrc, characterSrc, character, episodeInfo.endingRules]);
+    routeConfig,
+    sounds
+  }), [backgroundSrc, characterSrc, character, episodeInfo.endingRules, sounds]);
   const [screen, setScreen] = useState(initialScreen);
   const [index, setIndex] = useState(initialIndex);
   const [directorState, setDirectorState] = useState(() => replayDirectorState(scenario, initialIndex, directorDefaults));
@@ -323,6 +359,8 @@ export function BAVisualNovel({
   const autoTimerRef = useRef(null);
   const typeTimerRef = useRef(null);
   const loggedKeyRef = useRef('');
+  const bgmAudioRef = useRef(null);
+  const ambientAudioRefs = useRef(new Map());
 
   const item = scenario[index] ?? scenario[0];
   const mode = item?.type ?? 'dialogue';
@@ -331,6 +369,11 @@ export function BAVisualNovel({
   const sceneOverlays = directorState.overlays;
   const fullText = resolveItemText(item, gameState);
   const routeStatus = useMemo(() => resolveRouteStatus(gameState), [gameState]);
+  const previousItem = scenario[index - 1] || null;
+  const chapterInfo = useMemo(
+    () => getChapterInfo(item, { previousItem, fallbackTitle: episodeInfo.sectionTitle || episodeInfo.title }),
+    [episodeInfo.sectionTitle, episodeInfo.title, item, previousItem]
+  );
   const typedText = mode === 'dialogue' || mode === 'banner'
     ? fullText.slice(0, visibleCount)
     : fullText;
@@ -633,6 +676,33 @@ export function BAVisualNovel({
       .forEach((cue) => playAudio(cue, settings.seVolume / 100));
   }, [directorState.soundKey, item, settings.seVolume, sounds]);
 
+  useEffect(() => {
+    const audioState = directorState.audio || { bgm: null, ambient: [] };
+    const bgmVolume = settings.bgmVolume / 100;
+    const ambientVolume = Math.max(0, Math.min(1, bgmVolume * 0.72));
+
+    bgmAudioRef.current = playLoopAudio(audioState.bgm?.src || '', bgmVolume, bgmAudioRef.current);
+
+    const activeAmbientIds = new Set((audioState.ambient || []).map((cue) => cue.id));
+    for (const cue of audioState.ambient || []) {
+      const existing = ambientAudioRefs.current.get(cue.id) || null;
+      const nextAudio = playLoopAudio(cue.src, ambientVolume * ((cue.volume ?? 100) / 100), existing);
+      if (nextAudio) ambientAudioRefs.current.set(cue.id, nextAudio);
+    }
+
+    for (const [id, audio] of ambientAudioRefs.current.entries()) {
+      if (!activeAmbientIds.has(id)) {
+        stopAudio(audio);
+        ambientAudioRefs.current.delete(id);
+      }
+    }
+  }, [directorState.audio?.key, settings.bgmVolume]);
+
+  useEffect(() => () => {
+    stopAudio(bgmAudioRef.current);
+    for (const audio of ambientAudioRefs.current.values()) stopAudio(audio);
+  }, []);
+
   useLayoutEffect(() => {
     if (mode !== 'dialogue' || !speakerNameRef.current) return;
     let cancelled = false;
@@ -869,6 +939,7 @@ export function BAVisualNovel({
           }}
         />
 
+        <ChapterCard info={chapterInfo} />
         <EndingToast ending={ending} />
 
         {showHud && (
@@ -1082,7 +1153,8 @@ function BannerScene({ visible, uiHidden, backgroundSrc, characters = [], overla
 }
 
 function PhoneMessageScene({ visible, uiHidden, backgroundSrc, characters = [], overlays = [], item, text, onChoose }) {
-  const replies = item?.replies || [];
+  const messages = normalizePhoneMessages(item);
+  const replies = normalizePhoneReplies(item);
 
   return (
     <g className="scene scene-phone" style={{ display: visible ? 'inline' : 'none' }}>
@@ -1097,18 +1169,31 @@ function PhoneMessageScene({ visible, uiHidden, backgroundSrc, characters = [], 
               <strong>{item?.name || '현겸'}</strong>
             </div>
             <div className="phone-message">{safeText(text)}</div>
+            <div className="phone-chat-list">
+              {messages.map((message) => (
+                <div key={message.id} className={`phone-bubble phone-bubble-${message.side}`}>
+                  <span className="phone-bubble-name">{message.name}</span>
+                  {message.pending ? (
+                    <span className="phone-typing" aria-label="입력 중">● ● ●</span>
+                  ) : (
+                    <span>{message.text}</span>
+                  )}
+                  {message.side === 'me' && message.read && <em>읽음</em>}
+                </div>
+              ))}
+            </div>
             <div className="phone-replies">
-              {replies.map((reply, index) => (
+              {replies.map((reply) => (
                 <button
-                  key={`${index}-${reply}`}
+                  key={`${reply.index}-${reply.text}`}
                   className="phone-reply"
                   type="button"
                   onClick={(event) => {
                     event.stopPropagation();
-                    onChoose(index);
+                    onChoose(reply.index);
                   }}
                 >
-                  {reply}
+                  {reply.text}
                 </button>
               ))}
             </div>
@@ -1139,7 +1224,14 @@ function ChoiceScene({ visible, uiHidden, backgroundSrc, characters = [], overla
                   key={index}
                   className="choice-row"
                   data-choice={index}
+                  role="button"
+                  tabIndex="0"
+                  aria-label={`선택지 ${index + 1}: ${text}`}
                   transform={`translate(185 ${y})`}
+                  onKeyDown={createKeyboardActivationHandler((event) => {
+                    event.stopPropagation();
+                    onChoose(index);
+                  })}
                   onClick={(event) => {
                     event.stopPropagation();
                     onChoose(index);
@@ -1175,6 +1267,7 @@ function CharacterLayer({ characters, fallbackSrc = '', fallbackCharacter = EMPT
 
 function CharacterSprite({ character }) {
   const currentExpression = character.expression || 'normal';
+  const resolvedSrc = resolveCharacterAsset(character);
   const preset = POSITION_PRESETS[character.position || character.pos || 3] || POSITION_PRESETS[3];
   const x = character.x ?? preset.x;
   const y = character.y ?? preset.y;
@@ -1197,10 +1290,10 @@ function CharacterSprite({ character }) {
         className={`character-wrap${motionClass}${expressionClass}${transitionClass}${leavingClass}`}
         data-expression={currentExpression}
       >
-        {character.src ? (
+        {resolvedSrc ? (
           <image
             className="character-sprite"
-            href={character.src}
+            href={resolvedSrc}
             x="0"
             y="0"
             width={width}
@@ -1240,7 +1333,7 @@ function EffectBadge({ type, x, y, radius, fontSize }) {
   const label = EFFECT_LABELS[type] || safeText(type).slice(0, 2) || '!';
   return (
     <g className="effect-badge-anchor" transform={`translate(${x} ${y})`}>
-      <g className={`effect-badge effect-${type}`}>
+      <g className={`effect-badge effect-${safeClassName(type)}`}>
         <circle r={radius} fill="rgba(255,255,255,.88)" stroke="#57C3C2" strokeWidth={Math.max(1.6, radius * 0.13)} />
         <text x="0" y={fontSize * 0.34} textAnchor="middle" className="effect-text" style={{ fontSize }}>{label}</text>
       </g>
@@ -1400,6 +1493,17 @@ function RouteStatusChip({ status }) {
   );
 }
 
+function ChapterCard({ info }) {
+  if (!info?.visible) return null;
+  return (
+    <div className={`chapter-card mood-${safeClassName(info.mood)}`} role="status">
+      <span>{info.chapter || 'chapter'}</span>
+      <strong>{info.title}</strong>
+      {info.place && <em>{info.place}</em>}
+    </div>
+  );
+}
+
 function GalleryModal({ open, gameState, onClose, onReplay }) {
   const unlockedGallery = new Set(gameState.unlockedGallery || []);
   const unlockedRecollections = new Set(gameState.unlockedRecollections || []);
@@ -1472,10 +1576,18 @@ function SaveLoadModal({ mode, slots, onSave, onLoad, onClose }) {
                 disabled={(mode === 'load' && !payload) || protectedSlot}
                 onClick={() => (mode === 'save' ? onSave(slot) : onLoad(slot))}
               >
-                <span className="save-slot-name">{slotLabel(slot)}</span>
-                <span className="save-slot-title">{payload?.title || '빈 슬롯'}</span>
-                <span className="save-slot-line">{payload?.line || (protectedSlot ? '자동 저장 전용' : '저장된 장면이 없습니다.')}</span>
-                <span className="save-slot-date">{payload?.savedAt ? new Date(payload.savedAt).toLocaleString() : '-'}</span>
+                <span className="save-slot-thumb" aria-hidden="true">
+                  {payload?.summary?.thumbnail && <img src={payload.summary.thumbnail} alt="" />}
+                </span>
+                <span className="save-slot-main">
+                  <span className="save-slot-name">{slotLabel(slot)}</span>
+                  <span className="save-slot-title">{payload?.summary?.chapterTitle || payload?.title || '빈 슬롯'}</span>
+                  <span className="save-slot-line">{payload?.summary?.linePreview || payload?.line || (protectedSlot ? '자동 저장 전용' : '저장된 장면이 없습니다.')}</span>
+                </span>
+                <span className="save-slot-side">
+                  <span className="save-slot-affection">{payload?.summary?.affectionLabel || '-'}</span>
+                  <span className="save-slot-date">{payload?.savedAt ? new Date(payload.savedAt).toLocaleString() : '-'}</span>
+                </span>
               </button>
             );
           })}
@@ -1502,7 +1614,7 @@ function ConfigModal({ open, settings, onChange, onClose }) {
         <div className="config-list">
           <ConfigRange label="텍스트 속도" min="8" max="60" value={settings.textSpeedMs} onChange={(value) => onChange({ textSpeedMs: value })} suffix="ms" />
           <ConfigRange label="AUTO 속도" min="500" max="2600" step="100" value={settings.autoDelayMs} onChange={(value) => onChange({ autoDelayMs: value })} suffix="ms" />
-          <ConfigRange label="BGM 준비중" min="0" max="100" value={settings.bgmVolume} onChange={(value) => onChange({ bgmVolume: value })} suffix="%" disabled />
+          <ConfigRange label="BGM 볼륨" min="0" max="100" value={settings.bgmVolume} onChange={(value) => onChange({ bgmVolume: value })} suffix="%" />
           <ConfigRange label="SE 볼륨" min="0" max="100" value={settings.seVolume} onChange={(value) => onChange({ seVolume: value })} suffix="%" />
           <label className="config-toggle">
             <input

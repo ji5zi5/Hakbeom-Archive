@@ -26,8 +26,25 @@ export const episodeInfo = {
 
 export const scenario = [
   {
+    id: 'day1-chapter-card',
+    type: 'banner',
+    kind: 'chapter',
+    chapter: 'day-1',
+    sectionTitle: 'Day 1: 비 오는 방과 후',
+    mood: 'rain',
+    text: 'Day 1 · 비 오는 방과 후',
+    nextId: 'opening',
+    directives: [
+      { type: 'BGM', cue: 'bgmRain', fadeMs: 900 },
+      { type: 'AMBIENT', id: 'ambientRain', cue: 'ambientRain', volume: 42 },
+      { type: 'BCG', src: '/assets/ui/image0_13_6.jpg', transition: 'fade-in' }
+    ]
+  },
+  {
     id: 'opening',
     type: 'dialogue',
+    chapter: 'day-1',
+    sectionTitle: 'Day 1: 비 오는 방과 후',
     mood: 'rain',
     name: '학범',
     role: '방과 후',
@@ -54,7 +71,7 @@ export const scenario = [
         action: 'enter',
         pos: 3,
         src: '/assets/character/hyungyeom.png',
-        expression: 'normal',
+        expression: 'surprised',
         transition: 'enter-right'
       },
       { type: 'E', target: 'hyeongyeom', effect: 'question', motion: 'nod', se: 'question' },
@@ -152,11 +169,11 @@ export const scenario = [
     text: '가볍게 던진 말이었는데, 현겸의 귀끝이 조금 붉어진 걸 보고 학범은 괜히 시선을 피했다.',
     variants: [
       {
-        flags: ['direct_compliment'],
+        requiredFlags: ['direct_compliment'],
         text: '솔직하게 말한 뒤라 그런지, 현겸의 귀끝이 붉어진 순간 학범의 심장도 같이 뛰었다.'
       },
       {
-        flags: ['student_council_help'],
+        requiredFlags: ['student_council_help'],
         text: '도와주겠다고 말했을 뿐인데, 현겸의 안도한 표정 때문에 학범은 괜히 더 다정해지고 싶어졌다.'
       }
     ]
@@ -240,6 +257,7 @@ export const scenario = [
     text: '학범아, 신호 바뀌어도 조금만 천천히 가자. 이상하게 오늘은 집에 빨리 도착하기 싫어.',
     effect: { target: 'hyeongyeom', type: 'ellipsis' },
     directives: [
+      { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'quiet' },
       { type: 'E', target: 'hyeongyeom', effect: 'ellipsis', motion: 'nod' }
     ]
   },
@@ -328,6 +346,11 @@ export const scenario = [
     name: '현겸',
     role: '메시지',
     text: '집 도착했어. 우산은 내일 돌려줄게. 아니, 돌려주러 갈 핑계가 생겼다고 해야 하나.',
+    messages: [
+      { from: 'hyeongyeom', text: '집 도착했어. 우산은 내일 돌려줄게.', read: true },
+      { from: 'hyeongyeom', text: '그리고 오늘... 고마웠어.', read: true },
+      { from: 'hakbeom', text: '나도 오늘 좋았어.', read: true }
+    ],
     replies: [
       '나도 내일 네가 오는 핑계를 기다릴게.',
       '그럼 우산 보관료는 네 웃음으로 받을게.'
@@ -367,7 +390,7 @@ export const scenario = [
         text: '나도 좋았어. 아까 말한 거, 장난 아니야. 내일은 비가 안 와도 같이 걷자.'
       }
     ],
-    nextId: 'day2-morning'
+    nextId: 'day2-chapter-card'
   },
   {
     id: 'reply-playful',
@@ -385,7 +408,21 @@ export const scenario = [
     directives: [
       { type: 'E', target: 'hyeongyeom', effect: 'chatter', motion: 'bounce' }
     ],
-    nextId: 'day2-morning'
+    nextId: 'day2-chapter-card'
+  },
+  {
+    id: 'day2-chapter-card',
+    type: 'banner',
+    kind: 'chapter',
+    chapter: 'day-2',
+    sectionTitle: 'Day 2: 우산을 돌려주는 아침',
+    mood: 'warm',
+    text: 'Day 2 · 우산을 돌려주는 아침',
+    nextId: 'day2-morning',
+    directives: [
+      { type: 'BGM', cue: 'bgmWarm', fadeMs: 900 },
+      { type: 'STOP_AMBIENT', id: 'ambientRain' }
+    ]
   },
   {
     id: 'day2-morning',
@@ -406,6 +443,10 @@ export const scenario = [
     name: '현겸',
     role: '메시지',
     text: '어제 우산 고마웠어. 오늘 점심시간에 잠깐 볼 수 있어?',
+    messages: [
+      { from: 'hakbeom', text: '옥상 먼저 가 있을게.', read: true },
+      { from: 'hyeongyeom', text: '', pending: true }
+    ],
     replies: [
       '갈게. 기다려.',
       '학생회장 일정 확인 후 승인.'
@@ -449,6 +490,14 @@ export const scenario = [
     place: '아침 복도',
     text: '학범아. 우산 돌려주려고 일찍 왔는데, 네가 먼저 와 있을 줄은 몰랐어.',
     variants: [
+      {
+        requiredFlags: ['shared_umbrella'],
+        text: '어제 우산 같이 쓴 거, 아직도 생각나. 학범이는 아무렇지 않은 척하려다 말을 삼켰다.'
+      },
+      {
+        requiredFlags: ['playful_reply'],
+        text: '어제 답장, 좀 장난스러웠지. 현겸은 웃음을 참는 얼굴로 학범이를 올려다봤다.'
+      },
       {
         flags: ['message_waiting'],
         text: '학범아. 어제 네 답장 때문에 일찍 왔어. 기다린다고 했으니까, 진짜 기다려주는지 보고 싶었거든.'
@@ -546,7 +595,8 @@ export const scenario = [
     effect: { target: 'hyeongyeom', type: 'heart' },
     directives: [
       { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'zoom', se: 'promise' },
-      { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' }
+      { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+      { type: 'STOP_BGM' }
     ]
   },
   {
