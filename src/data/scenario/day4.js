@@ -20,13 +20,13 @@ export const day4Scenes = [
     type: 'choice',
     choices: [
       '문화제 기록집을 계속 준비한다.',
-      '오늘의 약속을 엔딩으로 남긴다.'
+      '오늘의 약속도 기록집에 남기고 계속한다.'
     ],
     rewards: [
       { flags: ['archive_room_opened'], unlockedGallery: ['cg-archive-room'], unlockedRecollections: ['rec-day4'] },
-      { flags: ['chapter1_early_ending'] }
+      { flags: ['archive_room_opened', 'promise_kept_into_season'], unlockedGallery: ['cg-archive-room'], unlockedRecollections: ['rec-day4'] }
     ],
-    next: ['day4-chapter-card', 'ending-promise']
+    next: ['day4-chapter-card', 'day4-chapter-card']
   },
   {
     id: 'day4-chapter-card',
@@ -55,6 +55,23 @@ export const day4Scenes = [
       { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' }
     ]
   },
+  {
+    id: 'day4-ukhyun-library-visit',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-4',
+    name: '욱현',
+    role: '도서관 전시 담당',
+    place: '도서관 창가',
+    text: '욱현은 전시용 책갈피 묶음을 학범 앞에 내려놓았다. “도서관 사진도 필요하지. 네가 오면 조용해질 줄 알았는데, 이상하게 페이지 넘기는 소리가 더 잘 들려.”',
+    effect: { target: 'ukhyun', type: 'ellipsis' },
+    directives: [
+      { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+      { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
+      { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
+    ]
+  },
+
   {
     id: 'day4-sangwon-records',
     type: 'dialogue',

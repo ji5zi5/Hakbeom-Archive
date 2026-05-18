@@ -180,6 +180,150 @@ export const day1Scenes = [
           text: '도와주겠다고 했을 뿐인데 현겸은 안심한 얼굴을 했다. 학범은 그 표정을 보고, 도움보다 더 많은 것을 건네고 싶어졌다.'
         }
       ],
+      nextId: 'day1-common-ukhyun-glimpse'
+    },
+  {
+      id: 'day1-common-ukhyun-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '욱현',
+      role: '도서위원',
+      place: '도서관 앞 복도',
+      text: '도서관 문이 닫히기 전, 욱현이 접힌 노트를 학범 쪽으로 밀어 두었다. “회의록 빠진 페이지. 네가 나중에 찾을 것 같아서.” 짧은 말인데, 접힌 모서리는 학범 손이 닿기 쉽게 밖을 향해 있었다.',
+      effect: { target: 'ukhyun', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
+        { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
+      ],
+      nextId: 'day1-common-jaeseong-glimpse'
+    },
+  {
+      id: 'day1-common-jaeseong-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '재성',
+      role: '방송부',
+      place: '방송실 앞',
+      text: '복도 스피커에서 테스트음이 짧게 울리더니 재성이 문틈으로 웃었다. “학범, 들렸어? 방금 건 전체 방송 아니야. 네가 지나갈 때만 맞춰 본 비공개 호출.”',
+      effect: { target: 'jaeseong', type: 'chatter' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
+        { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
+      ],
+      nextId: 'day1-common-sangwon-glimpse'
+    },
+  {
+      id: 'day1-common-sangwon-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '상원',
+      role: '학생회 기록 담당',
+      place: '학생회 기록실',
+      text: '상원은 젖은 협조 요청서를 책상 위에 반듯하게 펴고 학범의 이름 옆에 작은 점을 찍었다. “오늘 네가 누구를 먼저 챙겼는지 적어 두진 않을게. 대신 네가 전부 혼자 하려던 건 기억할 거야.”',
+      effect: { target: 'sangwon', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'sangwon', name: '상원', action: 'enter', pos: 3, expression: 'serious', transition: 'fade-in' },
+        { type: 'E', target: 'sangwon', effect: 'ellipsis', motion: 'nod' }
+      ],
+      nextId: 'day1-common-sanguk-glimpse'
+    },
+  {
+      id: 'day1-common-sanguk-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '상욱',
+      role: '운동부',
+      place: '체육관 복도',
+      text: '상욱은 비에 젖은 포스터 더미를 들고 뛰어오다가 학범 앞에서 급하게 멈췄다. “도와줄까? 아니, 내가 먼저 묻고 움직일게. 너도 오늘 처음 보는 얼굴 많아서 정신없지?”',
+      effect: { target: 'sanguk', type: 'chatter' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/gym-corridor-evening.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'sangwon', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'sanguk', name: '상욱', action: 'enter', pos: 3, expression: 'energetic', transition: 'enter-right' },
+        { type: 'E', target: 'sanguk', effect: 'chatter', motion: 'bounce' }
+      ],
+      nextId: 'day1-common-junhyeok-glimpse'
+    },
+  {
+      id: 'day1-common-junhyeok-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '준혁',
+      role: '문화제 동선 담당',
+      place: '복도 게시판 앞',
+      text: '준혁은 임시 동선표 위에 비를 피하는 경로를 그려 넣었다. “최단 거리는 아니야. 하지만 네가 우산을 나눠 쓰다가 돌아올 확률까지 넣으면, 이쪽이 더 안전해.”',
+      effect: { target: 'junhyeok', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/school-rain-hallway.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'sanguk', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'junhyeok', name: '준혁', action: 'enter', pos: 3, expression: 'thinking', transition: 'fade-in' },
+        { type: 'E', target: 'junhyeok', effect: 'ellipsis', motion: 'nod' }
+      ],
+      nextId: 'day1-common-dohun-glimpse'
+    },
+  {
+      id: 'day1-common-dohun-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '도훈',
+      role: '매점 정보통',
+      place: '매점 앞 복도',
+      text: '도훈은 매점 셔터를 내리다 학범 손에 따뜻한 캔을 툭 밀어 넣었다. “비 오는 날엔 이게 잘 팔려. 네가 추워 보여서 준 건 아니고, 재고 관리야. 아마도.”',
+      effect: { target: 'dohun', type: 'blush' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/convenience-store-night.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'junhyeok', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'dohun', name: '도훈', action: 'enter', pos: 3, expression: 'playful', transition: 'enter-right' },
+        { type: 'E', target: 'dohun', effect: 'blush', motion: 'shake' }
+      ],
+      nextId: 'day1-common-haeum-glimpse'
+    },
+  {
+      id: 'day1-common-haeum-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '하음',
+      role: '음악실 담당',
+      place: '음악실 앞',
+      text: '하음은 열린 음악실 문틈으로 빗소리를 듣고 있었다. “오늘 복도 소리, 조금 빠르네. 네가 여기까지 오느라 숨이 가빠졌다면, 잠깐 내 박자에 쉬어도 돼.”',
+      effect: { target: 'haeum', type: 'heart' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/music-room-late-afternoon.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'dohun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'haeum', name: '하음', action: 'enter', pos: 3, expression: 'gentle', transition: 'fade-in' },
+        { type: 'E', target: 'haeum', effect: 'heart', motion: 'nod' }
+      ],
+      nextId: 'day1-common-yunho-glimpse'
+    },
+  {
+      id: 'day1-common-yunho-glimpse',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-1',
+      name: '윤호',
+      role: '후배 / 옥상 담당',
+      place: '옥상 계단',
+      text: '윤호는 닫힌 옥상 문 앞에서 젖은 표지판을 품에 안고 있었다. “선배, 오늘은 올라가면 미끄러워요. 그래서 제가 기다렸어요. 선배가 오실 줄 알았거든요.”',
+      effect: { target: 'yunho', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/rooftop-after-rain.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'haeum', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'yunho', name: '윤호', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
+        { type: 'E', target: 'yunho', effect: 'ellipsis', motion: 'nod' }
+      ],
       nextId: 'choice-day1-after-school-action'
     },
   {

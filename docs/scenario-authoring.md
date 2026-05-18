@@ -300,6 +300,11 @@ npm run build
 
 ## Longform Season 1 확장 규칙
 
+- 초반 공통 루트는 한 route만 오래 보여주지 않는다. Day 1 종료 전에는 현겸, 욱현, 재성, 상원, 상욱, 준혁, 도훈, 하음, 윤호 9명 전원이 선택과 무관하게 대사/장면으로 등장해야 한다.
+- Day 2~Day 7은 아직 루트가 좁혀지기 전의 공통 일상 구간이다. 각 날짜의 표시 텍스트에는 9명 전원의 말투/모에 포인트가 고르게 남아야 하며, 특정 한 명만 계속 보여주는 구조를 피한다.
+- Day 8 이후부터는 여러 히로인 그룹 중 하나를 고르는 에피소드를 배치하고, Day 10에서 명시적 `route_lock_<id>`로 좁힌 뒤 Day 14 문화제 엔딩으로 간다.
+- 호감도 선택은 “누구에게 더 가까이 가는가”만 바꾸고, 필수 소개/공통 일상 구간을 건너뛰게 만들지 않는다. 선택 branch가 끝나면 공통 소개 merge로 되돌아오게 `nextId`를 명시한다.
+- 조기 엔딩은 만들지 않는다. Day 3 약속, route seed, 회상 unlock은 모두 Day 4 이후 장기 루트로 이어져야 하며, 정상 진행에서 `ending-promise`로 들어가는 장면은 Day 14의 `day14-closing`뿐이어야 한다.
 - 루트락(route lock)은 암묵적인 ending rule 순서에 맡기지 않는다. `route_lock_<id>` 플래그, 호감도, route-specific flag 수, 정적 우선순위를 문서화하고 테스트한다.
 - Day 11–14처럼 lock 이후 분기해야 하는 장면은 `endingGate: true` + `routeGate: true` + `endingNext`를 route gate로 재사용한다. `routeGate`는 payoff 이동만 처리하고 terminal ending unlock은 기록하지 않는다. `episodeInfo.endingRules`의 `route_lock_<id>` 규칙을 terminal ending 규칙보다 먼저 둬야 같은 루트가 payoff 장면과 최종 엔딩까지 유지된다.
 - 캐릭터 말투는 `src/data/characterProfiles.js`의 `archetype`/`voice`/`motif`를 기준으로 맞춘다. route별 핵심 톤은 현겸=정실 순애/우산, 욱현=무표정 쿨데레/노트, 재성=능글 플러팅/방송, 상원=기록집착 얀데레/기록, 상욱=직진 댕댕이/달리기, 준혁=무심한 두뇌파/지도, 도훈=장난치는 츤데레/정보값, 하음=치유계/박자, 윤호=후배 선배집착/옥상이다. 윤호 route 대사에는 `선배` 호칭을 유지한다.

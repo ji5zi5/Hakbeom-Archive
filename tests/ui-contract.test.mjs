@@ -1257,6 +1257,103 @@ assert.deepEqual(
   'Day 2 free action should make the player choose what Hakbeom does after school.'
 );
 
+
+function enumerateScenarioPathsUntil(startId, targetId, maxSteps = 240) {
+  const idToIndex = new Map(scenario.map((item, index) => [item.id, index]));
+  const paths = [];
+  const stack = [{ id: startId, path: [] }];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    const index = idToIndex.get(current.id);
+    assert.notEqual(index, undefined, `Scenario path target should exist: ${current.id}`);
+    const nextPath = [...current.path, current.id];
+    assert.ok(nextPath.length <= maxSteps, `Scenario path to ${targetId} should terminate before ${maxSteps} steps.`);
+    if (current.id === targetId) {
+      paths.push(nextPath);
+      continue;
+    }
+    const item = scenario[index];
+    let targets = [];
+    if ((item.type === 'choice' || (item.type === 'phone' && (item.replies || []).length > 0)) && (item.next || item.choiceNext)) {
+      targets = item.next || item.choiceNext;
+    } else if (item.nextId) {
+      targets = [item.nextId];
+    } else if (index + 1 < scenario.length) {
+      targets = [scenario[index + 1].id];
+    }
+    for (const target of targets) {
+      if (!target || nextPath.includes(target)) continue;
+      stack.push({ id: target, path: nextPath });
+    }
+  }
+  return paths;
+}
+
+function displayedPathText(pathIds) {
+  return pathIds
+    .map((id) => scenario.find((item) => item.id === id))
+    .filter(Boolean)
+    .flatMap((item) => [item.name, item.text, ...(item.messages || []).map((message) => message.text || '')])
+    .filter(Boolean)
+    .join('\n');
+}
+
+const allHeroineNames = ['현겸', '욱현', '재성', '상원', '상욱', '준혁', '도훈', '하음', '윤호'];
+const day1ToDay2Paths = enumerateScenarioPathsUntil('day1-chapter-card', 'day2-chapter-card');
+assert.ok(day1ToDay2Paths.length > 1, 'Day 1 path enumeration should cover the early free-action choices.');
+for (const path of day1ToDay2Paths) {
+  const pathText = displayedPathText(path);
+  for (const routeName of allHeroineNames) {
+    assert.ok(pathText.includes(routeName), `Every Day 1 path should show all nine heroines before Day 2: ${routeName}`);
+  }
+}
+
+function displayedChapterText(chapterId) {
+  return scenario
+    .filter((item) => item.chapter === chapterId)
+    .flatMap((item) => [item.name, item.text, ...(item.messages || []).map((message) => message.text || ''), ...(item.choices || [])])
+    .filter(Boolean)
+    .join('\n');
+}
+
+for (const day of [2, 3, 4, 5, 6, 7]) {
+  const chapterText = displayedChapterText(`day-${day}`);
+  for (const routeName of allHeroineNames) {
+    assert.ok(
+      chapterText.includes(routeName),
+      `Day ${day} common-route material should keep the nine heroines evenly present before post-Day-7 narrowing: ${routeName}`
+    );
+  }
+}
+
+for (const choiceId of ['day8-choice-morning', 'day9-choice-prep', 'day10-choice-lock-group']) {
+  assert.ok(
+    scenario.some((item) => item.id === choiceId && item.type === 'choice'),
+    `${choiceId} should exist so post-Day-7 episodes narrow attention through explicit heroine groups.`
+  );
+}
+
+const day1ToDay3Paths = enumerateScenarioPathsUntil('day1-chapter-card', 'day3-chapter-card');
+assert.ok(day1ToDay3Paths.length > day1ToDay2Paths.length, 'Pre-Day-3 path enumeration should include Day 2 branch combinations.');
+for (const path of day1ToDay3Paths) {
+  assert.ok(path.includes('day2-introduction-briefing'), 'Every Day 2 branch should return to the mandatory culture-festival introduction tour.');
+  assert.ok(path.includes('day2-yunho-rooftop-wait'), 'Every path should reach the final Day 2 heroine introduction before Day 3.');
+  const pathText = displayedPathText(path);
+  for (const routeName of allHeroineNames) {
+    assert.ok(pathText.includes(routeName), `Every player path should keep all nine heroines visible through the Day 2 balanced route: ${routeName}`);
+  }
+}
+
+const earlyEndingGateEntrances = scenario
+  .filter((item) => item.id !== 'day14-closing')
+  .filter((item) => item.nextId === 'ending-promise' || (item.next || []).includes('ending-promise') || Object.values(item.endingNext || {}).includes('ending-promise'))
+  .map((item) => item.id);
+assert.deepEqual(
+  earlyEndingGateEntrances,
+  [],
+  'No route should enter the ending gate before Day 14; early promises must continue into the full festival route.'
+);
+
 const day3StartIndex = scenario.findIndex((item) => item.id === 'day3-chapter-card');
 const preDay3Rewards = scenario
   .slice(0, day3StartIndex)
@@ -1294,8 +1391,8 @@ assert.match(
 );
 assert.match(
   scenarioSource,
-  /id:\s*'season1-bridge-after-promise'[\s\S]*?id:\s*'choice-season1-continue'[\s\S]*?next:\s*\['day4-chapter-card',\s*'ending-promise'\]/,
-  'Season 1 bridge should offer continuing to Day 4 or closing through the existing ending gate.'
+  /id:\s*'season1-bridge-after-promise'[\s\S]*?id:\s*'choice-season1-continue'[\s\S]*?next:\s*\['day4-chapter-card',\s*'day4-chapter-card'\]/,
+  'Season 1 bridge should preserve the promise beat while forcing every playthrough onward to Day 4 and eventually Day 14.'
 );
 assert.match(
   scenarioSource,
@@ -2131,16 +2228,20 @@ const nextChoiceIndex = resolveNextIndex({
 });
 assert.ok(nextChoiceIndex > firstChoiceIndex, 'VN engine should route from a known choice to a later line.');
 
-const goodEndingIndex = scenario.findIndex((item) => item.id === 'ending-good');
+const hyeongyeomEndingIndex = scenario.findIndex((item) => item.id === 'ending-hyeongyeom');
 const replayPath = findReplayPath(
   scenario,
-  goodEndingIndex,
+  hyeongyeomEndingIndex,
   0,
-  { ...createInitialGameState(), affection: { hyeongyeom: 10 }, flags: ['promise_hand', 'shared_umbrella'] },
-  { endingRules: episodeInfo.endingRules || [] }
+  createInitialGameState(),
+  { endingRules: episodeInfo.endingRules || [], routeConfig: routeConfigData }
 );
-assert.ok(Array.isArray(replayPath), 'Replay path should be found for a reachable ending target.');
-assert.ok(replayPath.includes(goodEndingIndex), 'Replay path should include the requested target.');
+assert.ok(Array.isArray(replayPath), 'Replay path should be found for the Day-14 Hyungyeom ending target.');
+assert.ok(replayPath.includes(hyeongyeomEndingIndex), 'Replay path should include the requested Day-14 Hyungyeom target.');
+assert.ok(
+  replayPath.some((index) => scenario[index]?.id === 'day14-closing'),
+  'Replay path for the primary ending should pass through Day 14 before entering the ending gate.'
+);
 
 const ukhyunEndingIndex = scenario.findIndex((item) => item.id === 'ending-ukhyun');
 const ukhyunReplayPath = findReplayPath(

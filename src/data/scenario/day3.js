@@ -161,6 +161,97 @@ export const day3Scenes = [
     },
 
   {
+      id: 'day3-moe-lunch-jaeseong',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '재성',
+      role: '방송부',
+      place: '방송실 앞 복도',
+      text: '재성은 매점 빵 봉지를 마이크처럼 들고 웃었다. “점심 인터뷰 갑니다. 학범이는 오늘 누구랑 먹고 싶었을까요? 참고로 내 대본엔 내 이름이 크게 적혀 있어.”',
+      effect: { target: 'jaeseong', type: 'chatter' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
+        { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-sangwon',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '상원',
+      role: '학생회 기록 담당',
+      place: '학생회 기록실',
+      text: '상원은 점심 당번표 아래 학범의 빈 시간을 표시했다. “여긴 공식 일정이 없어. 그러니까 네가 누구와 앉고 싶은지, 오늘은 네가 직접 정해야 해.”',
+      effect: { target: 'sangwon', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
+        { type: 'E', target: 'sangwon', effect: 'ellipsis', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-sanguk',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '상욱',
+      role: '운동부',
+      place: '체육관 앞 벤치',
+      text: '상욱은 도시락을 들고 뛰어오다가 벤치 앞에서 멈췄다. “자리 맡아뒀어! 아, 네가 다른 데 앉고 싶으면 괜찮아. 그래도 한 입은 먹고 가.”',
+      effect: { target: 'sanguk', type: 'chatter' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/gym-corridor-evening.png', transition: 'fade-in' },
+        { type: 'E', target: 'sanguk', effect: 'chatter', motion: 'bounce' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-junhyeok',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '준혁',
+      role: '문화제 동선 담당',
+      place: '중정 벤치',
+      text: '준혁은 그늘과 바람 방향을 계산한 뒤 학범 쪽 의자를 당겼다. “여기가 소음도 낮고 이동 거리도 짧아. 네가 편하면, 내 계산은 성공이야.”',
+      effect: { target: 'junhyeok', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/school-courtyard-blue-hour.png', transition: 'fade-in' },
+        { type: 'E', target: 'junhyeok', effect: 'ellipsis', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-haeum',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '하음',
+      role: '음악실 담당',
+      place: '음악실 창가',
+      text: '하음은 도시락 뚜껑을 열기 전 학범의 숨부터 살폈다. “점심시간은 쉼표니까, 너무 빨리 넘기지 말자. 네가 천천히 먹으면 나도 맞출게.”',
+      effect: { target: 'haeum', type: 'heart' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/music-room-late-afternoon.png', transition: 'fade-in' },
+        { type: 'E', target: 'haeum', effect: 'heart', motion: 'nod' }
+      ]
+    },
+  {
+      id: 'day3-moe-lunch-yunho',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-3',
+      name: '윤호',
+      role: '후배 / 옥상 담당',
+      place: '옥상 문 앞',
+      text: '윤호는 옥상 계단에 작은 돗자리를 접어 들고 있었다. “선배가 오실지 몰라서요. 아니, 오셨으면 좋겠어서… 자리 하나만 더 펴 뒀어요.”',
+      effect: { target: 'yunho', type: 'blush' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/rooftop-after-rain.png', transition: 'fade-in' },
+        { type: 'E', target: 'yunho', effect: 'blush', motion: 'nod' }
+      ]
+    },
+
+  {
       id: 'choice-day3-route-focus',
       type: 'choice',
       choices: [
@@ -218,7 +309,7 @@ export const day3Scenes = [
       variants: [
         {
           requiredFlags: ['ukhyun_early_interest', 'ukhyun_day2_library'],
-          text: '첫날 펼친 접힌 선과 어제 기다린 창가가 같은 페이지에 겹쳐 있었다. 학범은 그제야 욱현이 단서를 숨긴 게 아니라, 대답할 자리를 비워 둔 거라는 걸 알아차렸다.'
+          text: '첫날 펼친 접힌 선과 어제 기다린 창가가 같은 페이지에 겹쳐 있었다. 학범은 그제야 욱현이 마음을 숨긴 게 아니라, 대답할 자리를 비워 둔 거라는 걸 알아차렸다.'
         },
         {
           requiredFlags: ['ukhyun_day2_library'],
@@ -260,7 +351,7 @@ export const day3Scenes = [
         { type: 'SCG', id: 'ukhyun', action: 'update', expression: 'blush' },
         { type: 'E', target: 'ukhyun', effect: 'heart', motion: 'zoom', se: 'promise' }
       ],
-      nextId: 'ending-promise'
+      nextId: 'season1-bridge-after-promise'
     },
   {
       id: 'ukhyun-note-answer',
@@ -275,7 +366,7 @@ export const day3Scenes = [
         { type: 'SCG', id: 'ukhyun', action: 'update', expression: 'smile' },
         { type: 'E', target: 'ukhyun', effect: 'blush', motion: 'nod' }
       ],
-      nextId: 'ending-promise'
+      nextId: 'season1-bridge-after-promise'
     },
   {
       id: 'jaeseong-route-start',
@@ -362,7 +453,7 @@ export const day3Scenes = [
         { type: 'SCG', id: 'jaeseong', action: 'update', expression: 'blush' },
         { type: 'E', target: 'jaeseong', effect: 'heart', motion: 'zoom', se: 'promise' }
       ],
-      nextId: 'ending-promise'
+      nextId: 'season1-bridge-after-promise'
     },
   {
       id: 'jaeseong-playful-signal',
@@ -377,7 +468,7 @@ export const day3Scenes = [
         { type: 'SCG', id: 'jaeseong', action: 'update', expression: 'smile' },
         { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
       ],
-      nextId: 'ending-promise'
+      nextId: 'season1-bridge-after-promise'
     },
   {
       id: 'choice-day3-distance',

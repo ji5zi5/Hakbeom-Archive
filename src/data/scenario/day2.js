@@ -154,7 +154,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'blush', transition: 'fade-in' },
         { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod', se: 'heart' }
       ],
-      nextId: 'day2-after-school'
+      nextId: 'day2-introduction-briefing'
     },
   {
       id: 'day2-action-ukhyun',
@@ -172,7 +172,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
         { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod', se: 'question' }
       ],
-      nextId: 'day2-after-school'
+      nextId: 'day2-introduction-briefing'
     },
   {
       id: 'day2-action-jaeseong',
@@ -190,7 +190,25 @@ export const day2Scenes = [
         { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
         { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
       ],
-      nextId: 'day2-after-school'
+      nextId: 'day2-introduction-briefing'
+    },
+
+  {
+      id: 'day2-introduction-briefing',
+      type: 'dialogue',
+      mood: 'warm',
+      chapter: 'day-2',
+      name: '학범',
+      role: '학생회 기록 담당',
+      place: '학생회 기록실',
+      text: '짧은 자유 시간이 끝나자 학범은 협조 요청서 더미를 다시 들었다. 누구에게 마음이 기울든, 기록 담당으로서는 문화제를 함께 만드는 사람들을 모두 만나야 했다.',
+      directives: [
+        { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' }
+      ],
+      nextId: 'day2-moe-hyeongyeom-lunch-side'
     },
 
   {
@@ -200,8 +218,8 @@ export const day2Scenes = [
       chapter: 'day-2',
       name: '현겸',
       role: '동급생',
-      place: '교실 창가',
-      text: '현겸은 학범 도시락에서 싫어하는 반찬을 자연스럽게 자기 쪽으로 옮겼다. “어제 우산값은 이걸로 받을게. 너, 이건 항상 마지막까지 남기잖아.”',
+      place: '학생회 기록실 앞',
+      text: '현겸은 협조 요청서 더미 위에 작은 메모를 올려 두었다. “무리하면 말해. 오늘은 네가 누구를 만나든, 끝나고 돌아올 자리 정도는 내가 맡아둘게.”',
       effect: { target: 'hyeongyeom', type: 'heart' },
       directives: [
         { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' }
@@ -244,7 +262,7 @@ export const day2Scenes = [
       name: '학범',
       role: '학생회 기록 담당',
       place: '학생회 기록실',
-      text: '점심이 끝나자 학생회 기록실 책상 위에는 문화제 협조 요청서가 쌓였다. 학범은 기록집 첫 장에 “봄날의 방과 후”라고 적었다가, 너무 솔직한 제목 같아서 손바닥으로 가렸다.',
+      text: '학생회 기록실 책상 위에는 문화제 협조 요청서가 쌓였다. 학범은 기록집 첫 장에 “봄날의 방과 후”라고 적었다가, 오늘 새로 만날 이름들이 그 제목을 완성할지도 모른다고 생각했다.',
       directives: [
         { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
         { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' }
