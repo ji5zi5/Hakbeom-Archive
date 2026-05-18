@@ -20,6 +20,7 @@ import { findReplayPath, resolveNextIndex } from '../src/engine/vnEngine.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
 
 const app = readFileSync('src/App.jsx', 'utf8');
+const indexHtml = readFileSync('index.html', 'utf8');
 const styles = readFileSync('src/styles.css', 'utf8');
 const routeConfig = readFileSync('src/data/routeConfig.js', 'utf8');
 const vnState = readFileSync('src/utils/vnState.js', 'utf8');
@@ -534,8 +535,26 @@ assert.match(
 
 assert.match(
   component,
-  /className="title-logo-mark"[\s\S]*?className="title-menu"/,
-  'Title screen should use a purpose-built BA-style logo/menu layout instead of a generic centered card.'
+  /<img\s+className="title-logo-image"\s+src="\/assets\/ui\/hakbeom-archive-logo\.png"\s+alt="학범 아카이브"\s+\/>[\s\S]*?className="title-menu"/,
+  'Title screen should use the supplied Hakbeom Archive logo asset before the menu.'
+);
+
+assert.deepEqual(
+  readPngSize('public/assets/ui/hakbeom-archive-logo.png'),
+  { width: 900, height: 250 },
+  'Hakbeom Archive logo asset should be installed from the provided folder PNG.'
+);
+
+assert.doesNotMatch(
+  component,
+  /학범 러브|Hakbeom Love|title-logo-mark/,
+  'Title screen should no longer show the old Hakbeom Love/HB placeholder branding.'
+);
+
+assert.match(
+  indexHtml,
+  /<title>Hakbeom Archive<\/title>/,
+  'Browser tab title should use the final Hakbeom Archive product name.'
 );
 
 assert.match(
@@ -817,8 +836,8 @@ for (const placeholderText of [
 
 assert.match(
   scenarioSource,
-  /title:\s*'학범 러브'[\s\S]*sectionTitle:\s*'프롤로그: 비 오는 방과 후'/,
-  'Scenario should present a real dating-sim episode title instead of generic placeholder metadata.'
+  /title:\s*'학범 아카이브'[\s\S]*sectionTitle:\s*'프롤로그: 비 오는 방과 후'/,
+  'Scenario should use the Hakbeom Archive episode title instead of the old Hakbeom Love branding.'
 );
 
 assert.match(

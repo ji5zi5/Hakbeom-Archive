@@ -1395,9 +1395,9 @@ function TitleScreen({ open, canContinue, onStart, onContinue, onLoad, onGallery
     <div className="title-screen" aria-hidden={open ? 'false' : 'true'}>
       <div className="title-bg-stripe" aria-hidden="true" />
       <div className="title-brand">
-        <span className="title-logo-mark">HB</span>
-        <p className="title-kicker">Blue Archive Style Visual Novel</p>
-        <h1>학범 러브</h1>
+        <img className="title-logo-image" src="/assets/ui/hakbeom-archive-logo.png" alt="학범 아카이브" />
+        <h1 className="title-logo-heading">학범 아카이브</h1>
+        <p className="title-kicker">Hakbeom Archive Visual Novel</p>
         <p className="title-subtitle">비 오는 방과 후, 현겸과 시작되는 프롤로그</p>
       </div>
       <div className="title-menu" role="menu" aria-label="타이틀 메뉴">
@@ -1407,7 +1407,7 @@ function TitleScreen({ open, canContinue, onStart, onContinue, onLoad, onGallery
         <button type="button" role="menuitem" onClick={onGallery}>GALLERY</button>
         <button type="button" role="menuitem" onClick={onConfig}>CONFIG</button>
       </div>
-      <p className="title-footer">Hakbeom Love / Prologue</p>
+      <p className="title-footer">Hakbeom Archive / Prologue</p>
     </div>
   );
 }

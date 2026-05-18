@@ -1,5 +1,5 @@
 export const episodeInfo = {
-  title: '학범 러브',
+  title: '학범 아카이브',
   sectionTitle: '프롤로그: 비 오는 방과 후',
   summary: '비가 내리던 방과 후, 학범은 학생회실 앞에서 우산을 잃어버린 현겸과 마주친다. 사소한 농담과 선택이 어색한 공기를 바꾸고, 학범은 같은 우산 아래에서 다음 약속을 정한다.',
   skipToId: 'ending-promise',
