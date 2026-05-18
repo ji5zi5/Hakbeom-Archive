@@ -1194,7 +1194,7 @@ function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransit
       <DirectorOverlays overlays={overlays} />
       <CharacterLayer characters={characters} />
       {!uiHidden && (
-        <foreignObject x="586" y="58" width="406" height="454">
+        <foreignObject x="626" y="62" width="386" height="444">
           <div className={`phone-ui ${hasReplies ? 'phone-ui-reply' : 'phone-ui-message'}`}>
             <div className="phone-device-bar" aria-hidden="true">
               <span />
@@ -1204,9 +1204,16 @@ function PhoneMessageScene({ visible, uiHidden, backgroundSrc, backgroundTransit
                 <span>BA MESSENGER</span>
                 <strong>{contactName}</strong>
               </div>
-              <small>{hasReplies ? '답장 선택' : '대화 수신'}</small>
+              <div className="phone-head-status">
+                <span className="phone-signal" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <small>{hasReplies ? '답장 선택' : '대화 수신'}</small>
+              </div>
             </div>
-            <div ref={chatListRef} className="phone-chat-list" aria-label={`${contactName} 메시지`}>
+            <div ref={chatListRef} className="phone-chat-list" role="log" aria-label={`${contactName} 메시지`}>
               {messages.map((message) => (
                 <div key={message.id} className={`phone-bubble phone-bubble-${message.side}`}>
                   <span className="phone-bubble-name">{message.name}</span>

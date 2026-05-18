@@ -35,6 +35,52 @@ async function visibleSvgScene(page, selector) {
   return page.locator(selector).first().evaluate((node) => getComputedStyle(node).display !== 'none');
 }
 
+async function assertPhoneLayoutFits(page, label, { minReplies = 0 } = {}) {
+  const metrics = await page.evaluate(() => {
+    const box = (node) => {
+      if (!node) return null;
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        clientHeight: node.clientHeight,
+        scrollHeight: node.scrollHeight
+      };
+    };
+
+    return {
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      phone: box(document.querySelector('.scene-phone .phone-ui')),
+      chat: box(document.querySelector('.scene-phone .phone-chat-list')),
+      replies: [...document.querySelectorAll('.scene-phone .phone-reply')].map(box),
+      bubbles: [...document.querySelectorAll('.scene-phone .phone-bubble')].map(box)
+    };
+  });
+
+  assert.ok(metrics.phone, `${label}: phone panel should exist`);
+  assert.ok(metrics.chat, `${label}: phone chat list should exist`);
+  assert.ok(metrics.bubbles.length > 0, `${label}: phone should render message bubbles`);
+  assert.ok(metrics.replies.length >= minReplies, `${label}: phone should render expected reply controls`);
+
+  const insideViewport = (rect, name) => {
+    assert.ok(rect.left >= -0.5, `${label}: ${name} should not clip left`);
+    assert.ok(rect.top >= -0.5, `${label}: ${name} should not clip top`);
+    assert.ok(rect.right <= metrics.viewport.width + 0.5, `${label}: ${name} should not clip right`);
+    assert.ok(rect.bottom <= metrics.viewport.height + 0.5, `${label}: ${name} should not clip bottom`);
+  };
+
+  insideViewport(metrics.phone, 'phone panel');
+  insideViewport(metrics.chat, 'chat list');
+  for (const [index, rect] of metrics.replies.entries()) {
+    insideViewport(rect, `reply ${index + 1}`);
+    assert.ok(rect.bottom <= metrics.phone.bottom + 0.5, `${label}: reply ${index + 1} should stay inside phone panel`);
+  }
+}
+
 async function clickFirstVisible(locators) {
   for (const locator of locators) {
     const count = await locator.count();
@@ -141,9 +187,25 @@ async function main() {
     await page.goto(buildUrl('?screen=game&id=phone-evening-message'), { waitUntil: 'networkidle' });
     await page.waitForSelector('.phone-reply');
     assert.equal(await visibleSvgScene(page, '.scene-phone'), true, 'phone scene should be visible');
+    await assertPhoneLayoutFits(page, 'phone-evening-message', { minReplies: 2 });
     await page.locator('.phone-reply').first().click();
     await page.waitForTimeout(350);
     assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'phone reply should advance into dialogue');
+  });
+
+  await check('phone-layout', async () => {
+    const phoneScenes = [
+      ['day2-morning-message', 2],
+      ['day5-after-school-phone', 0],
+      ['day4-dohun-message', 0]
+    ];
+
+    for (const [sceneId, minReplies] of phoneScenes) {
+      await page.goto(buildUrl(`?screen=game&id=${sceneId}`), { waitUntil: 'networkidle' });
+      await page.waitForSelector('.scene-phone .phone-ui');
+      assert.equal(await visibleSvgScene(page, '.scene-phone'), true, `${sceneId} phone scene should be visible`);
+      await assertPhoneLayoutFits(page, sceneId, { minReplies });
+    }
   });
 
   await check('save-load', async () => {
