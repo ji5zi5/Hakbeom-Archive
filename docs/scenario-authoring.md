@@ -103,6 +103,34 @@
 - 정상 장면은 시작점에서 도달 가능해야 한다. 도달 불가능하면 validator가 `unreachable non-preview scene` 에러를 낸다.
 - 의도적으로 정상 흐름에서 제외하는 장면은 `previewOnly: true`를 붙인다.
 
+## 초반 자유행동 / 장소 선택 규칙
+
+공통 루트 초반은 하루별 보고서처럼 넘기지 말고, 학범이 직접 어디로 갈지 고르는 `choice` 허브를 둔다. Day 1–2처럼 route lock 전에는 1개 정답이 아니라 현겸/욱현/재성 등 주요 인물의 장소 행동을 나란히 배치한다.
+
+- 선택지 문장은 “조사한다/따라간다”보다 플레이어 행동과 감정이 보이게 쓴다. 예: `재성이 마이크를 꺼 둔 이유를 묻는다.`
+- 각 선택은 해당 route의 `affection`과 seed flag를 반드시 남긴다. 예: `ukhyun_early_interest`, `jaeseong_day2_broadcast`.
+- 초반 action scene은 최소 한 번의 직접 대사와 물리적 행동을 포함한다. 예: 노트를 펼침, 마이크를 끔, 우산 손잡이를 넘김.
+- 공통 루트로 되돌아갈 때는 다른 캐릭터 SCG를 `delete`하고 현재 장면 인물을 다시 `enter`/`move`해서 화면 잔상을 남기지 않는다.
+- 이후 route 진입 장면은 early flag를 `variants.requiredFlags`로 받아 “이전 선택이 기억된다”는 감각을 줘야 한다.
+
+```js
+{
+  id: 'choice-day2-free-action',
+  type: 'choice',
+  choices: [
+    '현겸에게 우산을 핑계로 한 번 더 말을 건다.',
+    '도서관 창가에서 욱현의 답장을 기다린다.',
+    '방송실에서 재성이 꺼 둔 마이크 앞에 선다.'
+  ],
+  rewards: [
+    { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_day2_umbrella_excuse'] },
+    { affection: { ukhyun: 1 }, flags: ['ukhyun_day2_library'] },
+    { affection: { jaeseong: 1 }, flags: ['jaeseong_day2_broadcast'] }
+  ],
+  next: ['day2-action-hyeongyeom', 'day2-action-ukhyun', 'day2-action-jaeseong']
+}
+```
+
 ## 엔딩 규칙
 
 `episodeInfo.endingRules`는 위에서부터 검사된다.

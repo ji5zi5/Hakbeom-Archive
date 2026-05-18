@@ -121,7 +121,76 @@ export const day2Scenes = [
           flags: ['playful_reply'],
           text: '현겸은 우산을 돌려준 뒤에도 학범의 책상 근처를 지나쳤다 돌아왔다. 어제의 장난을 떠올리는지, 말끝마다 웃음을 삼켰다.'
         }
-      ]
+      ],
+      nextId: 'choice-day2-free-action'
+    },
+  {
+      id: 'choice-day2-free-action',
+      type: 'choice',
+      chapter: 'day-2',
+      choices: [
+        '현겸에게 우산을 핑계로 한 번 더 말을 건다.',
+        '도서관 창가에서 욱현의 답장을 기다린다.',
+        '방송실에서 재성이 꺼 둔 마이크 앞에 선다.'
+      ],
+      rewards: [
+        { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_day2_umbrella_excuse'] },
+        { affection: { ukhyun: 1 }, flags: ['ukhyun_day2_library'] },
+        { affection: { jaeseong: 1 }, flags: ['jaeseong_day2_broadcast'] }
+      ],
+      next: ['day2-action-hyeongyeom', 'day2-action-ukhyun', 'day2-action-jaeseong']
+    },
+  {
+      id: 'day2-action-hyeongyeom',
+      type: 'dialogue',
+      mood: 'confession',
+      chapter: 'day-2',
+      name: '현겸',
+      role: '동급생',
+      place: '방과 후 복도',
+      text: '“우산 핑계 아직 유효해?” 현겸은 빈손인데도 학범 곁에 섰다. “비가 안 오면, 이번엔 네가 다른 핑계를 만들어 줘.”',
+      effect: { target: 'hyeongyeom', type: 'heart' },
+      directives: [
+        { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'blush', transition: 'fade-in' },
+        { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod', se: 'heart' }
+      ],
+      nextId: 'day2-after-school'
+    },
+  {
+      id: 'day2-action-ukhyun',
+      type: 'dialogue',
+      mood: 'tense',
+      chapter: 'day-2',
+      name: '욱현',
+      role: '도서위원',
+      place: '도서관 창가',
+      text: '“기다릴 줄은 몰랐어.” 욱현은 책갈피처럼 접힌 쪽지를 학범 앞에 밀었다. “어제 네가 펼친 줄, 아직 그대로야. 답도 그대로고.”',
+      effect: { target: 'ukhyun', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
+        { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod', se: 'question' }
+      ],
+      nextId: 'day2-after-school'
+    },
+  {
+      id: 'day2-action-jaeseong',
+      type: 'dialogue',
+      mood: 'tense',
+      chapter: 'day-2',
+      name: '재성',
+      role: '방송부',
+      place: '방송실',
+      text: '“마이크 꺼 둔 거 확인하러 온 거야?” 재성은 헤드폰 한쪽을 학범에게 걸어 주었다. “그럼 이제 방송용 말 말고, 네가 듣고 싶은 말 해 봐.”',
+      effect: { target: 'jaeseong', type: 'question' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
+        { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
+      ],
+      nextId: 'day2-after-school'
     },
   {
       id: 'day2-after-school',
@@ -141,6 +210,11 @@ export const day2Scenes = [
           flags: ['day2_playful_reply'],
           text: '오늘은 비 안 오네. 그래도 같이 걸어도 돼? 학생회장 승인서에 유효기간은 안 적혀 있었잖아.'
         }
+      ],
+      directives: [
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'smile', transition: 'fade-in' }
       ],
       nextId: 'day3-chapter-card'
     }

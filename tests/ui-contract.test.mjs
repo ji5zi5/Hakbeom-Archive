@@ -1224,6 +1224,59 @@ assert.match(
   'Scenario should include a real two-option follow-up choice from Hakbeom’s perspective.'
 );
 
+const day1ActionChoice = scenario.find((item) => item.id === 'choice-day1-after-school-action');
+assert.ok(day1ActionChoice, 'Day 1 should include a free-action hub before the story returns to the main flow.');
+assert.deepEqual(
+  day1ActionChoice.choices,
+  [
+    '현겸과 현관에서 조금 더 걷는다.',
+    '도서관에 들러 욱현이 남긴 접힌 노트를 펼친다.',
+    '방송실 호출에 답해 재성이 마이크를 끈 이유를 묻는다.'
+  ],
+  'Day 1 free action should let the player choose a location/character action, not only a response tone.'
+);
+assert.deepEqual(
+  day1ActionChoice.next,
+  ['day1-action-hyeongyeom', 'day1-action-ukhyun', 'day1-action-jaeseong'],
+  'Day 1 free action should route to concrete action scenes.'
+);
+
+const day2ActionChoice = scenario.find((item) => item.id === 'choice-day2-free-action');
+assert.ok(day2ActionChoice, 'Day 2 should include a second free-action hub before Day 3.');
+assert.deepEqual(
+  day2ActionChoice.choices,
+  [
+    '현겸에게 우산을 핑계로 한 번 더 말을 건다.',
+    '도서관 창가에서 욱현의 답장을 기다린다.',
+    '방송실에서 재성이 꺼 둔 마이크 앞에 선다.'
+  ],
+  'Day 2 free action should make the player choose what Hakbeom does after school.'
+);
+
+const day3StartIndex = scenario.findIndex((item) => item.id === 'day3-chapter-card');
+const preDay3Rewards = scenario
+  .slice(0, day3StartIndex)
+  .flatMap((item) => item.rewards || []);
+for (const [routeId, requiredFlag] of [
+  ['ukhyun', 'ukhyun_early_interest'],
+  ['jaeseong', 'jaeseong_early_signal']
+]) {
+  assert.ok(
+    preDay3Rewards.some((reward) => reward.affection?.[routeId] > 0 && (reward.flags || []).includes(requiredFlag)),
+    `${routeId} should have a meaningful affection/flag route seed before Day 3.`
+  );
+}
+
+for (const [sceneId, expectedName] of [
+  ['day1-action-ukhyun', '욱현'],
+  ['day1-action-jaeseong', '재성'],
+  ['day2-action-ukhyun', '욱현'],
+  ['day2-action-jaeseong', '재성']
+]) {
+  const scene = scenario.find((item) => item.id === sceneId);
+  assert.equal(scene?.name, expectedName, `${sceneId} should be a direct dialogue scene with ${expectedName}, not a narration-only detour.`);
+}
+
 assert.match(
   scenarioSource,
   /id:\s*'choice-promise'[\s\S]*?choices:\s*\[[\s\S]*?'손을 잡는다\.'/,
@@ -1676,8 +1729,8 @@ assert.match(
 
 assert.match(
   scenarioSource,
-  /id:\s*'choice-day3-route-focus'[\s\S]*?'현겸에게 남은 말을 전한다\.'[\s\S]*?'욱현이 놓고 간 노트를 따라간다\.'[\s\S]*?'재성이 보낸 호출에 답한다\.'/,
-  'Scenario should let the player choose between Hyungyeom, Ukhyun, and Jaeseong route focus.'
+  /id:\s*'choice-day3-route-focus'[\s\S]*?'현겸에게 남은 말을 직접 묻는다\.'[\s\S]*?'욱현이 일부러 남긴 것 같은 노트를 펼친다\.'[\s\S]*?'재성이 마이크를 꺼 둔 이유를 묻는다\.'/,
+  'Scenario should make Day 3 route focus read like an emotional action choice, not an investigation menu.'
 );
 
 assert.match(

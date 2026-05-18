@@ -151,7 +151,76 @@ export const day1Scenes = [
           requiredFlags: ['student_council_help'],
           text: '도와주겠다고 했을 뿐인데 현겸은 안심한 얼굴을 했다. 학범은 그 표정을 보고, 도움보다 더 많은 것을 건네고 싶어졌다.'
         }
-      ]
+      ],
+      nextId: 'choice-day1-after-school-action'
+    },
+  {
+      id: 'choice-day1-after-school-action',
+      type: 'choice',
+      chapter: 'day-1',
+      choices: [
+        '현겸과 현관에서 조금 더 걷는다.',
+        '도서관에 들러 욱현이 남긴 접힌 노트를 펼친다.',
+        '방송실 호출에 답해 재성이 마이크를 끈 이유를 묻는다.'
+      ],
+      rewards: [
+        { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_day1_action'] },
+        { affection: { ukhyun: 1 }, flags: ['ukhyun_early_interest'] },
+        { affection: { jaeseong: 1 }, flags: ['jaeseong_early_signal'] }
+      ],
+      next: ['day1-action-hyeongyeom', 'day1-action-ukhyun', 'day1-action-jaeseong']
+    },
+  {
+      id: 'day1-action-hyeongyeom',
+      type: 'dialogue',
+      mood: 'confession',
+      chapter: 'day-1',
+      name: '현겸',
+      role: '동급생',
+      place: '현관',
+      text: '“아직 안 가?” 현겸은 우산 손잡이를 놓지 않았다. “네가 다른 데 들를까 봐 기다린 거 아니야. 그냥… 오늘은 내가 먼저 같이 가자고 말하고 싶었어.”',
+      effect: { target: 'hyeongyeom', type: 'heart' },
+      directives: [
+        { type: 'SCG', id: 'hyeongyeom', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'blush', transition: 'fade-in' },
+        { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod', se: 'heart' }
+      ],
+      nextId: 'hallway-lights'
+    },
+  {
+      id: 'day1-action-ukhyun',
+      type: 'dialogue',
+      mood: 'tense',
+      chapter: 'day-1',
+      name: '욱현',
+      role: '도서위원',
+      place: '도서관 앞',
+      text: '“그거 일부러 둔 거야.” 욱현은 학범이 펼친 노트를 보더니 시선을 피했다. “네가 읽을지 궁금했어. 안 읽으면… 내일 또 접어 둘 생각이었고.”',
+      effect: { target: 'ukhyun', type: 'ellipsis' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
+        { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod', se: 'question' }
+      ],
+      nextId: 'hallway-lights'
+    },
+  {
+      id: 'day1-action-jaeseong',
+      type: 'dialogue',
+      mood: 'tense',
+      chapter: 'day-1',
+      name: '재성',
+      role: '방송부',
+      place: '방송실 앞',
+      text: '“왔네, 학범.” 재성은 온에어 불을 꺼 둔 채 웃었다. “방송으로 부르면 다들 듣잖아. 네가 왜 왔는지는 나만 듣고 싶어서.”',
+      effect: { target: 'jaeseong', type: 'question' },
+      directives: [
+        { type: 'BCG', src: '/assets/bg/broadcast-room.png', transition: 'fade-in' },
+        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
+        { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
+      ],
+      nextId: 'hallway-lights'
     },
   {
       id: 'hallway-lights',
@@ -162,7 +231,9 @@ export const day1Scenes = [
       text: '소등 방송 곧 나와. 지금 나가면 덜 어두울 거야. 그래도 네가 괜찮으면… 조금 늦어져도 돼.',
       effect: { target: 'hyeongyeom', type: 'ellipsis' },
       directives: [
-        { type: 'SCG', id: 'hyeongyeom', action: 'move', pos: 4, motion: 'straight' },
+        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
+        { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 4, src: '/assets/character/hyungyeom.png', expression: 'smile', transition: 'fade-in', motion: 'straight' },
         { type: 'E', target: 'hyeongyeom', effect: 'ellipsis' }
       ]
     },
