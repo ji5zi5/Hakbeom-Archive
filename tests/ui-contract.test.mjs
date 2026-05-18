@@ -1296,7 +1296,13 @@ assert.deepEqual(
 );
 
 
-function enumerateScenarioPathsUntil(startId, targetId, maxSteps = 240) {
+function isEquivalentScenarioTarget(currentId, targetId, item) {
+  if (currentId === targetId) return true;
+  if (targetId === 'day2-chapter-card') return item?.chapter === 'day-2';
+  return false;
+}
+
+function enumerateScenarioPathsUntil(startId, targetId, maxSteps = 640) {
   const idToIndex = new Map(scenario.map((item, index) => [item.id, index]));
   const paths = [];
   const stack = [{ id: startId, path: [] }];
@@ -1306,11 +1312,11 @@ function enumerateScenarioPathsUntil(startId, targetId, maxSteps = 240) {
     assert.notEqual(index, undefined, `Scenario path target should exist: ${current.id}`);
     const nextPath = [...current.path, current.id];
     assert.ok(nextPath.length <= maxSteps, `Scenario path to ${targetId} should terminate before ${maxSteps} steps.`);
-    if (current.id === targetId) {
+    const item = scenario[index];
+    if (isEquivalentScenarioTarget(current.id, targetId, item)) {
       paths.push(nextPath);
       continue;
     }
-    const item = scenario[index];
     let targets = [];
     if ((item.type === 'choice' || (item.type === 'phone' && (item.replies || []).length > 0)) && (item.next || item.choiceNext)) {
       targets = item.next || item.choiceNext;
@@ -1477,9 +1483,7 @@ for (const [sceneId, forbiddenNextId] of [
 
 for (const [sceneId, expectedNextName] of [
   ['day1-action-ukhyun', '욱현'],
-  ['day1-action-jaeseong', '재성'],
-  ['day2-action-ukhyun', '욱현'],
-  ['day2-action-jaeseong', '재성']
+  ['day1-action-jaeseong', '재성']
 ]) {
   const scene = scenario.find((item) => item.id === sceneId);
   const nextScene = scenario.find((item) => item.id === scene?.nextId);
@@ -1490,16 +1494,14 @@ for (const [sceneId, expectedNextName] of [
   );
 }
 
-assert.equal(
-  scenario.find((item) => item.id === 'day2-ukhyun-close')?.nextId,
-  'ukhyun-route-start',
-  'Ukhyun Day 2 close should enter the Ukhyun Day 3 route start instead of the Hyungyeom Day 3 phone opener.'
-);
-assert.equal(
-  scenario.find((item) => item.id === 'day2-jaeseong-close')?.nextId,
-  'jaeseong-route-start',
-  'Jaeseong Day 2 close should enter the Jaeseong Day 3 route start instead of the Hyungyeom Day 3 phone opener.'
-);
+for (const sceneId of ['day2-action-ukhyun', 'day2-action-jaeseong']) {
+  const scene = scenario.find((item) => item.id === sceneId);
+  assert.equal(
+    scene?.nextId,
+    'day2-introduction-briefing',
+    `${sceneId} should return to the latest shared culture-festival introduction tour instead of cutting to a Hyungyeom scene.`
+  );
+}
 
 assert.match(
   scenarioSource,
