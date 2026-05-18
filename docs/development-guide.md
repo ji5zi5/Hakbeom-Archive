@@ -138,13 +138,14 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 - 상단 `AUTO/MENU`, quick menu path, 선택지 row 위치는 reference 이미지에 맞춘 값이라 임의로 크게 바꾸지 않는다.
 - 캐릭터 5구역 위치는 `docs/scenario-authoring.md`의 `pos`/`position` 표를 따른다. 프리셋 좌표 자체를 바꾸면 기존 시나리오 구도가 전부 달라질 수 있다.
 - 레이아웃 변경 후에는 `npm test`, `npm run build` 외에 브라우저 확인이나 캡처를 한다.
-- asset path는 `/assets/...`로 시작해야 한다.
+- asset path는 `/assets/...`로 시작해야 한다. Scene background는 우선 `/assets/bg/...`를 쓰고, `/assets/ui/image0_13_6.jpg` 반복 사용은 피한다.
 
 ## Asset 규칙
 
 - 게임에 쓰는 asset은 `public/assets/` 아래에 둔다.
 - 캐릭터: `public/assets/character/`
 - 배경/UI/CG: `public/assets/ui/` 또는 `public/assets/bg/`
+- Generated VN 배경은 `public/assets/bg/<name>.svg`와 `<name>.prompt.txt`를 쌍으로 둔다.
 - 효과음: `public/assets/se/`
 - 폰트: `public/assets/fonts/`
 - 작업용 reference 이미지는 repo root에 두지 말고, 필요하면 별도 문서에 출처/용도만 기록한다. root reference upload는 `.gitignore` 대상이다.

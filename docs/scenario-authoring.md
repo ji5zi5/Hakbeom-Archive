@@ -134,6 +134,24 @@
 - `E`: 감정 이펙트/오버레이/효과음
 - `OVERLAY`, `MOOD`: 화면 오버레이
 
+### 배경 `BCG` asset
+
+배경은 `public/assets/bg/` 아래 generated VN background bundle을 사용한다. 각 배경은 같은 이름의 `.prompt.txt`를 같이 둔다. 장면 분위기가 바뀌면 `BCG` directive로 배경을 명시하고, 모든 장면을 `/assets/ui/image0_13_6.jpg` 하나에 몰아넣지 않는다.
+
+```js
+{ type: 'BCG', src: '/assets/bg/school-rain-hallway.svg', transition: 'fade-in' }
+{ type: 'BCG', src: '/assets/bg/library-window.svg', transition: 'fade-in' }
+```
+
+현재 bundle:
+
+- `school-rain-hallway.svg`
+- `student-council-room-evening.svg`
+- `school-gate-rain.svg`
+- `school-morning-hallway.svg`
+- `library-window.svg`
+- `broadcast-room.svg`
+
 ### `BGM` / `AMBIENT`
 
 `BGM`은 반복 재생되는 음악을 바꾼다. `AMBIENT`는 빗소리 같은 반복 환경음을 추가한다. `cue`는 `src/App.jsx`의 `sounds` 맵에 등록된 이름을 쓰거나 `/assets/bgm/...` 직접 경로를 쓸 수 있다. 중지할 때는 `STOP_BGM`, `STOP_AMBIENT`를 쓴다.

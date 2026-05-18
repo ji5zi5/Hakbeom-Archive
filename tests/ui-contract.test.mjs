@@ -626,6 +626,12 @@ assert.match(
   'App should expose named BGM cues to the VN runtime.'
 );
 
+assert.match(
+  app,
+  /backgroundSrc="\/assets\/bg\/school-rain-hallway\.svg"/,
+  'App should use the generated VN background bundle as the default background.'
+);
+
 const scenarioSource = readFileSync('src/data/scenario.js', 'utf8');
 
 assert.match(
@@ -650,6 +656,37 @@ assert.match(
   scenarioSource,
   /type:\s*'BGM'[\s\S]*cue:\s*'bgmRain'[\s\S]*type:\s*'AMBIENT'[\s\S]*cue:\s*'ambientRain'/,
   'Scenario should start with declarative BGM and ambient cues.'
+);
+
+const generatedBackgrounds = [
+  'school-rain-hallway',
+  'student-council-room-evening',
+  'school-gate-rain',
+  'school-morning-hallway',
+  'library-window',
+  'broadcast-room'
+];
+for (const backgroundName of generatedBackgrounds) {
+  assert.ok(
+    existsSync(`public/assets/bg/${backgroundName}.svg`),
+    `Generated VN background should exist: ${backgroundName}.svg`
+  );
+  assert.ok(
+    existsSync(`public/assets/bg/${backgroundName}.prompt.txt`),
+    `Generated VN background should keep its image prompt metadata: ${backgroundName}.prompt.txt`
+  );
+}
+
+const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^']+\.svg/g)].map((match) => match[0]);
+assert.ok(
+  new Set(scenarioBackgroundRefs).size >= 6,
+  'Scenario BCG directives should use multiple generated VN backgrounds instead of one repeated UI image.'
+);
+
+assert.doesNotMatch(
+  scenarioSource,
+  /type:\s*'BCG'[\s\S]{0,120}\/assets\/ui\/image0_13_6\.jpg/,
+  'Scenario BCG directives should not keep routing every scene to the old UI placeholder background.'
 );
 
 assert.match(

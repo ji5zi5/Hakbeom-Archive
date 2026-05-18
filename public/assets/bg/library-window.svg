@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1129 524">
+
+  <defs>
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>
+    <linearGradient id="floorSheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.30"/><stop offset="1" stop-color="#6bbbd4" stop-opacity="0.06"/></linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="45%" r="70%"><stop offset="58%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#06131f" stop-opacity="0.42"/></radialGradient>
+  </defs>
+
+<linearGradient id="libraryBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9f2f4"/><stop offset="0.45" stop-color="#8db8b8"/><stop offset="1" stop-color="#263446"/></linearGradient>
+<rect width="1129" height="524" fill="url(#libraryBg)"/>
+<rect x="54" y="62" width="240" height="300" rx="9" fill="#4d3c35" opacity="0.83"/><rect x="835" y="52" width="235" height="310" rx="9" fill="#4d3c35" opacity="0.78"/>
+<g fill="#d9c692" opacity="0.62"><rect x="74" y="92" width="196" height="18" rx="3"/><rect x="74" y="135" width="196" height="18" rx="3"/><rect x="74" y="178" width="196" height="18" rx="3"/><rect x="858" y="90" width="188" height="18" rx="3"/><rect x="858" y="134" width="188" height="18" rx="3"/><rect x="858" y="180" width="188" height="18" rx="3"/></g>
+<rect x="365" y="48" width="395" height="255" rx="18" fill="#efffff" opacity="0.36"/><g stroke="#fff" stroke-opacity="0.36" stroke-width="4"><path d="M497 50v253"/><path d="M628 50v253"/><path d="M365 175h395"/></g>
+<polygon points="0,360 1129,330 1129,524 0,524" fill="#302b2e" opacity="0.82"/>
+<rect x="360" y="332" width="400" height="58" rx="12" fill="#6b5137"/><polygon points="330,386 788,386 860,524 260,524" fill="#4b382f"/>
+<g fill="#f7f0d9" opacity="0.66"><rect x="468" y="348" width="100" height="13" rx="2" transform="rotate(-3 468 348)"/><rect x="580" y="350" width="88" height="12" rx="2" transform="rotate(4 580 350)"/></g>
+<ellipse cx="562" cy="432" rx="350" ry="55" fill="#fff8d6" opacity="0.18" filter="url(#softBlur)"/>
+<rect width="1129" height="524" fill="url(#vignette)" opacity="0.5"/>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1129 524">
+
+  <defs>
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>
+    <linearGradient id="floorSheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.30"/><stop offset="1" stop-color="#6bbbd4" stop-opacity="0.06"/></linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="45%" r="70%"><stop offset="58%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#06131f" stop-opacity="0.42"/></radialGradient>
+  </defs>
+
+<linearGradient id="morningHall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dff8ff"/><stop offset="0.45" stop-color="#8ccfe4"/><stop offset="1" stop-color="#315b77"/></linearGradient>
+<rect width="1129" height="524" fill="url(#morningHall)"/>
+<rect x="0" y="0" width="1129" height="130" fill="#f7fdff" opacity="0.34"/>
+<g fill="#ffffff" opacity="0.46"><rect x="80" y="58" width="145" height="230" rx="10"/><rect x="270" y="48" width="160" height="246" rx="10"/><rect x="480" y="43" width="170" height="255" rx="10"/><rect x="710" y="56" width="145" height="232" rx="10"/></g>
+<g stroke="#3484a3" stroke-opacity="0.18" stroke-width="3"><path d="M225 58v240M430 48v250M650 43v258M80 170h775M80 250h775"/></g>
+<polygon points="0,340 1129,300 1129,524 0,524" fill="#b8e1ec" opacity="0.74"/>
+<polygon points="0,402 1129,335 1129,524 0,524" fill="#f8feff" opacity="0.32"/>
+<g opacity="0.34"><path d="M165 300L60 524H240L342 300Z" fill="#fff"/><path d="M505 300L402 524H620L720 300Z" fill="#fff"/><path d="M810 300L730 524H945L1005 300Z" fill="#fff"/></g>
+<rect width="1129" height="524" fill="url(#vignette)" opacity="0.42"/>
+</svg>

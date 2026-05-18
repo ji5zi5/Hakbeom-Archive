@@ -85,6 +85,7 @@ Esc           : 메뉴/모달 닫기
 - 감정 이펙트: exclamation, question, heart, anger, sweat, chatter, ellipsis, blush, sigh
 - 선택지별 next id 이동
 - BGM/ambient directive state와 BGM 볼륨 config
+- 장면별 generated VN 배경 bundle: 복도/학생회실/교문/도서관/방송실
 - Day/chapter 전환 카드
 - Save/load 슬롯 카드: 챕터, 대사 미리보기, 호감도, 썸네일
 - 현겸 expression profile fallback

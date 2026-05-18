@@ -318,7 +318,7 @@ export function BAVisualNovel({
   initialItemId = '',
   initialScreen = 'game',
   initialAuto = false,
-  backgroundSrc = '/assets/ui/image0_13_6.jpg',
+  backgroundSrc = '/assets/bg/school-rain-hallway.svg',
   characterSrc = '',
   character = EMPTY_CHARACTER,
   sounds = {},
