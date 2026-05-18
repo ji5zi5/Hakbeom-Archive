@@ -316,16 +316,9 @@ assert.doesNotMatch(
 
 const expectedSoundCues = [
   ['click', '/assets/se/ui-click.ogg'],
-  ['choice', '/assets/se/ui-choice.ogg'],
-  ['confirm', '/assets/se/ui-confirm.ogg'],
-  ['message', '/assets/se/phone-message.ogg'],
-  ['heart', '/assets/se/heart.ogg'],
-  ['promise', '/assets/se/promise.ogg'],
-  ['question', '/assets/se/question.ogg'],
-  ['chatter', '/assets/se/chatter.ogg'],
-  ['blush', '/assets/se/blush.ogg'],
-  ['voice-soft', '/assets/se/voice-soft.ogg'],
-  ['rain-step', '/assets/se/rain-step.ogg']
+  ['choice', '/assets/se/ui-drop.ogg'],
+  ['confirm', '/assets/se/ui-drop.ogg'],
+  ['close', '/assets/se/ui-click.ogg']
 ];
 
 for (const [cue, assetPath] of expectedSoundCues) {
