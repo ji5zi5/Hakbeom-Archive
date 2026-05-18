@@ -23,7 +23,12 @@ Tests use Node’s built-in `assert` module in `tests/ui-contract.test.mjs`. Add
 
 ## Commit & Pull Request Guidelines
 
-This checkout has no local git history to infer conventions from. Use concise, intent-focused commit messages such as `Stabilize VN dialogue layout`. Include verification notes in the body, for example `Tested: npm test && npm run build`. Pull requests should describe user-visible changes, list tests run, mention asset additions, and include screenshots for UI or visual-novel presentation changes.
+Use concise, intent-focused commit messages such as `Stabilize VN dialogue layout` or `Enforce explicit VN graph semantics before expansion`. Include verification notes in the body, for example `Tested: npm test && npm run build`. Pull requests should describe user-visible changes, list tests run, mention asset additions, and include screenshots for UI or visual-novel presentation changes.
+
+
+## Developer Documentation
+
+Before changing code, read `docs/development-guide.md`. Before changing scenario content, also read `docs/scenario-authoring.md`. Keep these docs updated when engine, save, scenario, UI, or validation contracts change.
 
 ## Security & Configuration Tips
 

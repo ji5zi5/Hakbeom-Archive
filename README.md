@@ -3,6 +3,11 @@
 업로드한 `BA_ui.svg` 기반 UI를 React/Vite로 포팅한 버전입니다.  
 이번 버전은 `MENU` 클릭 시 로그를 바로 띄우지 않고, 레퍼런스처럼 우측 상단에 작은 메뉴 패널을 먼저 띄웁니다.
 
+
+## 개발자/수정자 가이드
+
+코드를 수정하기 전에는 [`docs/development-guide.md`](docs/development-guide.md)를 먼저 확인하세요. 시나리오만 수정할 때도 [`docs/scenario-authoring.md`](docs/scenario-authoring.md)의 graph/branch 규칙을 따라야 합니다.
+
 ## 실행
 
 ```bash
