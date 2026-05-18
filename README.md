@@ -76,6 +76,8 @@ Esc           : 메뉴/모달 닫기
 
 ## 대사와 스킵 요약 수정
 
+자세한 작성 규칙은 [`docs/scenario-authoring.md`](docs/scenario-authoring.md)를 먼저 확인하세요.
+
 `src/data/scenario.js`를 수정하면 됩니다.
 
 ```js
