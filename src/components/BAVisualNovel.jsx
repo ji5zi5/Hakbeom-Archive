@@ -411,6 +411,20 @@ export function BAVisualNovel({
     setLog([]);
   }, [initialIndex, resetToIndex, settings.seVolume, sounds.click, sounds.confirm]);
 
+  const returnToTitle = useCallback((event) => {
+    event?.stopPropagation?.();
+    playAudio(sounds.confirm || sounds.click, settings.seVolume / 100);
+    setScreen('title');
+    setAuto(false);
+    setMenuOpen(false);
+    setSaveLoadMode(null);
+    setSettingsOpen(false);
+    setGalleryOpen(false);
+    setBacklogOpen(false);
+    setSkipOpen(false);
+    setUiHidden(false);
+  }, [settings.seVolume, sounds.click, sounds.confirm]);
+
   const saveGame = useCallback((slot = QUICK_SAVE_SLOT) => {
     const saved = persistSaveSlot(slot, buildSavePayload({
       index,
@@ -611,10 +625,10 @@ export function BAVisualNovel({
 
   useEffect(() => {
     if (!item?.endingGate) return;
+    if (item.routeGate) return;
     const route = resolveEndingRoute(gameState, episodeInfo.endingRules || []);
     if (!route) return;
     setEnding((current) => (current?.id === route.id ? current : route));
-    if (item.routeGate) return;
     setGameState((current) => current.endings?.includes(route.id)
       ? current
       : { ...current, endings: [...(current.endings || []), route.id] });
@@ -934,7 +948,12 @@ export function BAVisualNovel({
         />
 
         <ChapterCard info={chapterInfo} />
-        <EndingToast ending={ending} />
+        <EndingToast
+          ending={ending}
+          terminal={Boolean(item?.terminal)}
+          onTitle={returnToTitle}
+          onNewGame={startNewGame}
+        />
 
         {showHud && (
           <div className="hud">
@@ -1739,12 +1758,16 @@ function ConfigRange({ label, suffix = '', onChange, ...props }) {
   );
 }
 
-function EndingToast({ ending }) {
-  if (!ending) return null;
+function EndingToast({ ending, terminal, onTitle, onNewGame }) {
+  if (!ending || !terminal) return null;
   return (
-    <div className="ending-toast" role="status">
+    <div className="ending-toast" role="dialog" aria-live="polite" aria-label="엔딩 완료">
       <span>ENDING</span>
       <strong>{ending.title || ending.id}</strong>
+      <div className="ending-actions">
+        <button type="button" onClick={onTitle}>타이틀로</button>
+        <button type="button" onClick={onNewGame}>처음부터</button>
+      </div>
     </div>
   );
 }

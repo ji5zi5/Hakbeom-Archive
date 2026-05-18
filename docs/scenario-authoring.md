@@ -138,6 +138,9 @@
 - `default: true`인 rule은 fallback이다.
 - `affection`과 `flags` 조건이 모두 맞으면 해당 ending route가 선택된다.
 - `endingGate: true` 장면은 `endingNext`로 실제 terminal 장면을 고른다.
+- `routeGate: true`인 중간 게이트는 Day 11–14 같은 루트 분기용이다. 플레이어에게 엔딩 UI를 띄우거나 엔딩 해금으로 기록하면 안 된다.
+- 실제 엔딩 장면은 `terminal: true`를 붙이고, 너무 갑자기 끊기지 않도록 고백 뒤 여운/다음 약속을 포함한다. 현재 계약 테스트는 terminal ending text가 최소 150자 이상인지 확인한다.
+- terminal ending에 도달하면 런타임이 `타이틀로`와 `처음부터` 버튼을 띄운다. 시나리오에서 홈 복귀용 가짜 choice를 추가하지 않는다.
 
 ```js
 {

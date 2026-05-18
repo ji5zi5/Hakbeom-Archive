@@ -1282,12 +1282,12 @@ button {
   top: 9%;
   z-index: 7;
   transform: translateX(-50%);
-  min-width: min(420px, 72%);
-  padding: 13px 22px;
+  min-width: min(430px, 74%);
+  padding: 14px 22px 15px;
   color: #fff;
   text-align: center;
   border: 1px solid rgba(255,255,255,.45);
-  border-radius: 999px;
+  border-radius: 18px;
   background: rgba(16, 35, 54, .72);
   box-shadow: 0 10px 30px rgba(0,0,0,.32);
   backdrop-filter: blur(6px);
@@ -1304,6 +1304,30 @@ button {
 
 .ending-toast strong {
   font-size: 17px;
+}
+
+.ending-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.ending-actions button {
+  min-width: 92px;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 999px;
+  padding: 7px 13px 6px;
+  background: rgba(236, 248, 255, .18);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+}
+
+.ending-actions button:hover {
+  background: rgba(127, 215, 246, .28);
 }
 
 .backlog-list {

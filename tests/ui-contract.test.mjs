@@ -154,6 +154,7 @@ const characterLayerSource = topLevelFunctionSource(component, 'CharacterLayer')
 const characterSpriteSource = topLevelFunctionSource(component, 'CharacterSprite');
 const dialogueTextLinesSource = topLevelFunctionSource(component, 'DialogueTextLines');
 const choiceTextLinesSource = topLevelFunctionSource(component, 'ChoiceTextLines');
+const endingToastSource = topLevelFunctionSource(component, 'EndingToast');
 const wrapDialogueTextSource = topLevelFunctionSource(vnText, 'wrapDialogueText');
 const effectGeometrySource = topLevelFunctionSource(component, 'getEffectBadgeGeometry');
 const effectBadgeSource = topLevelFunctionSource(component, 'EffectBadge');
@@ -724,6 +725,30 @@ assert.match(
   component,
   /<TitleScreen\s+open=\{screen === 'title'\}/,
   'Title screen should remain visible behind title-origin LOAD/CONFIG modals; z-index should put modals above it.'
+);
+
+assert.match(
+  visualNovelSource,
+  /const returnToTitle = useCallback\(\(event\) => \{[\s\S]*?setScreen\('title'\)[\s\S]*?setAuto\(false\)[\s\S]*?setMenuOpen\(false\)[\s\S]*?setSaveLoadMode\(null\)/,
+  'Terminal endings should expose a return-to-title handler that closes gameplay overlays instead of trapping the player on a dead end.'
+);
+
+assert.match(
+  component,
+  /<EndingToast\s+ending=\{ending\}\s+terminal=\{Boolean\(item\?\.terminal\)\}\s+onTitle=\{returnToTitle\}\s+onNewGame=\{startNewGame\}/,
+  'Ending UI should render only on terminal ending lines and provide title/new-game actions.'
+);
+
+assert.match(
+  endingToastSource,
+  /function EndingToast\(\{ ending, terminal, onTitle, onNewGame \}\)[\s\S]*?if \(!ending \|\| !terminal\) return null;[\s\S]*?<button[\s\S]*?onClick=\{onTitle\}[\s\S]*?타이틀로[\s\S]*?<button[\s\S]*?onClick=\{onNewGame\}[\s\S]*?처음부터/,
+  'EndingToast should become an actionable terminal panel with 타이틀로 and 처음부터 buttons.'
+);
+
+assert.match(
+  styles,
+  /\.ending-actions\s*\{[\s\S]*?display\s*:\s*flex[\s\S]*?justify-content\s*:\s*center/i,
+  'Ending action buttons should have a dedicated centered layout.'
 );
 
 assert.match(
@@ -2004,9 +2029,16 @@ assert.match(
 );
 assert.match(
   visualNovelSource,
-  /item\.routeGate[\s\S]*?return[\s\S]*?setGameState/,
-  'Non-terminal route gates should resolve route navigation without marking terminal endings as unlocked.'
+  /if \(!item\?\.endingGate\) return;[\s\S]*?if \(item\.routeGate\) return;[\s\S]*?const route = resolveEndingRoute[\s\S]*?setEnding/,
+  'Non-terminal route gates should resolve route navigation without showing or storing a terminal ending early.'
 );
+
+for (const endingItem of scenario.filter((item) => item.terminal)) {
+  assert.ok(
+    endingItem.text.length >= 150,
+    `${endingItem.id} should leave enough afterglow before the terminal state instead of ending abruptly.`
+  );
+}
 
 const validation = validateScenario(scenario, routeConfigData);
 assert.deepEqual(validation.errors, [], `scenario validator errors: ${validation.errors.join('\n')}`);

@@ -104,6 +104,7 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 5. 선택지 reward는 `applyRouteRewards()`를 거친 뒤 `applyRouteUnlocks()`로 갤러리/회상 해금을 반영한다.
 6. 자동 저장은 `createSavePayload()`를 통해 localStorage에 저장된다.
 7. 로드는 `normalizeSavePayload()`를 거쳐 index, settings, gameState, directorState를 안전하게 복원한다.
+8. 중간 `routeGate`는 루트 분기만 계산하고 엔딩 UI를 띄우지 않는다. 실제 `terminal` 엔딩에 도달하면 엔딩 패널에서 `타이틀로` 또는 `처음부터`를 선택할 수 있다.
 
 ## 테스트 작성 기준
 
@@ -171,7 +172,8 @@ save 관련 코드를 바꾸면 다음을 확인한다.
 4. 정상 장면은 시작점에서 reachable. chapter card와 phone timeline도 예외가 아니다.
 5. 프리뷰 전용 장면은 `previewOnly: true`.
 6. 새 unlock ID는 `routeConfig.js`에 등록.
-7. `npm test` 통과.
+7. terminal ending은 150자 이상의 여운/다음 약속을 포함해서 갑자기 끊기지 않게 한다.
+8. `npm test` 통과.
 
 ## Git/커밋 규칙
 

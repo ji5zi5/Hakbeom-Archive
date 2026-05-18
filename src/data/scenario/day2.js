@@ -142,7 +142,8 @@ export const day2Scenes = [
       directives: [
         { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'smile' },
         { type: 'E', target: 'hyeongyeom', effect: 'blush', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-moe-hyeongyeom-lunch-side'
     },
   {
       id: 'day2-lunch-note',
@@ -151,7 +152,7 @@ export const day2Scenes = [
       name: '학범',
       role: '독백',
       place: '점심시간',
-      text: '현겸은 우산을 돌려준 뒤에도 바로 돌아서지 않았다. 빈 손이 어색한지 교복 소매를 만지작거렸고, 학범은 그 손에 다시 무언가 쥐여주고 싶어졌다.',
+      text: '점심이 끝날 즈음, 기록집에는 새 이름들이 늘어났고 현겸은 우산을 돌려준 뒤에도 바로 돌아서지 않았다. 여러 사람의 부탁이 쌓일수록, 학범은 자기 손에 다시 무언가를 쥐여 주려는 마음이 누구에게 향하는지 더 의식하게 됐다.',
       variants: [
         {
           flags: ['warm_reply'],
@@ -298,7 +299,8 @@ export const day2Scenes = [
       effect: { target: 'hyeongyeom', type: 'heart' },
       directives: [
         { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-moe-sangwon-pen-line'
     },
   {
       id: 'day2-moe-sangwon-pen-line',
@@ -312,7 +314,8 @@ export const day2Scenes = [
       effect: { target: 'sangwon', type: 'ellipsis' },
       directives: [
         { type: 'E', target: 'sangwon', effect: 'ellipsis', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-moe-jaeseong-preview'
     },
   {
       id: 'day2-moe-jaeseong-preview',
@@ -326,7 +329,8 @@ export const day2Scenes = [
       effect: { target: 'jaeseong', type: 'chatter' },
       directives: [
         { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
-      ]
+      ],
+      nextId: 'day2-festival-briefing'
     },
 
   {
@@ -341,7 +345,8 @@ export const day2Scenes = [
       directives: [
         { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
         { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' }
-      ]
+      ],
+      nextId: 'day2-sangwon-forms'
     },
   {
       id: 'day2-sangwon-forms',
@@ -356,7 +361,8 @@ export const day2Scenes = [
       directives: [
         { type: 'SCG', id: 'sangwon', name: '상원', action: 'enter', pos: 3, expression: 'serious', transition: 'fade-in' },
         { type: 'E', target: 'sangwon', effect: 'question', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-ukhyun-library-request'
     },
   {
       id: 'day2-ukhyun-library-request',
@@ -373,7 +379,8 @@ export const day2Scenes = [
         { type: 'SCG', id: 'sangwon', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
         { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-jaeseong-broadcast-invite'
     },
   {
       id: 'day2-jaeseong-broadcast-invite',
@@ -390,7 +397,8 @@ export const day2Scenes = [
         { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
         { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
-      ]
+      ],
+      nextId: 'day2-sanguk-gym-poster'
     },
   {
       id: 'day2-sanguk-gym-poster',
@@ -407,7 +415,8 @@ export const day2Scenes = [
         { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'sanguk', name: '상욱', action: 'enter', pos: 3, expression: 'energetic', transition: 'enter-right' },
         { type: 'E', target: 'sanguk', effect: 'chatter', motion: 'bounce' }
-      ]
+      ],
+      nextId: 'day2-junhyeok-map-note'
     },
   {
       id: 'day2-junhyeok-map-note',
@@ -424,7 +433,8 @@ export const day2Scenes = [
         { type: 'SCG', id: 'sanguk', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'junhyeok', name: '준혁', action: 'enter', pos: 3, expression: 'thinking', transition: 'fade-in' },
         { type: 'E', target: 'junhyeok', effect: 'ellipsis', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-dohun-coupon'
     },
   {
       id: 'day2-dohun-coupon',
@@ -460,7 +470,8 @@ export const day2Scenes = [
         { type: 'SCG', id: 'junhyeok', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'haeum', name: '하음', action: 'enter', pos: 3, expression: 'gentle', transition: 'fade-in' },
         { type: 'E', target: 'haeum', effect: 'heart', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-yunho-rooftop-wait'
     },
   {
       id: 'day2-yunho-rooftop-wait',
@@ -477,7 +488,8 @@ export const day2Scenes = [
         { type: 'SCG', id: 'haeum', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'yunho', name: '윤호', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
         { type: 'E', target: 'yunho', effect: 'ellipsis', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day2-lunch-note'
     },
   {
       id: 'day2-after-school',
