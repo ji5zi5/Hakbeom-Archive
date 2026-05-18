@@ -32,8 +32,8 @@ export const day3Scenes = [
         '이번엔 내가 먼저 기다릴게.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 1 }, flags: ['day3_fast_reply'] },
-        { affection: { hyeongyeom: 2 }, flags: ['day3_wait_first'] }
+        { affection: { hyeongyeom: 10 }, flags: ['day3_fast_reply'] },
+        { affection: { hyeongyeom: 20 }, flags: ['day3_wait_first'] }
       ],
       next: ['day3-library-fast', 'day3-library-wait'],
       directives: [
@@ -260,9 +260,9 @@ export const day3Scenes = [
         '재성이 마이크를 꺼 둔 이유를 묻는다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_route_focus'] },
-        { affection: { ukhyun: 2 }, flags: ['ukhyun_route'] },
-        { affection: { jaeseong: 2 }, flags: ['jaeseong_route'] }
+        { affection: { hyeongyeom: 10 }, flags: ['hyeongyeom_route_focus'] },
+        { affection: { ukhyun: 20 }, flags: ['ukhyun_route'] },
+        { affection: { jaeseong: 20 }, flags: ['jaeseong_route'] }
       ],
       next: ['choice-day3-distance', 'ukhyun-route-start', 'jaeseong-route-start']
     },
@@ -333,8 +333,8 @@ export const day3Scenes = [
         '고맙다는 말을 노트에 적어 돌려준다.'
       ],
       rewards: [
-        { affection: { ukhyun: 2 }, flags: ['ukhyun_direct_answer'] },
-        { affection: { ukhyun: 1 }, flags: ['ukhyun_note_answer'] }
+        { affection: { ukhyun: 20 }, flags: ['ukhyun_direct_answer'] },
+        { affection: { ukhyun: 10 }, flags: ['ukhyun_note_answer'] }
       ],
       next: ['ukhyun-direct-answer', 'ukhyun-note-answer']
     },
@@ -435,8 +435,8 @@ export const day3Scenes = [
         '방송 멘트처럼 장난스럽게 답한다.'
       ],
       rewards: [
-        { affection: { jaeseong: 2 }, flags: ['jaeseong_direct_signal'] },
-        { affection: { jaeseong: 1 }, flags: ['jaeseong_playful_signal'] }
+        { affection: { jaeseong: 20 }, flags: ['jaeseong_direct_signal'] },
+        { affection: { jaeseong: 10 }, flags: ['jaeseong_playful_signal'] }
       ],
       next: ['jaeseong-direct-signal', 'jaeseong-playful-signal']
     },
@@ -478,8 +478,8 @@ export const day3Scenes = [
         '우산 손잡이를 내밀며 장난스럽게 넘긴다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 2 }, flags: ['day3_honest_distance'] },
-        { affection: { hyeongyeom: 1 }, flags: ['day3_umbrella_joke'] }
+        { affection: { hyeongyeom: 20 }, flags: ['day3_honest_distance'] },
+        { affection: { hyeongyeom: 10 }, flags: ['day3_umbrella_joke'] }
       ],
       next: ['day3-distance-honest', 'day3-distance-joke']
     },
@@ -547,7 +547,7 @@ export const day3Scenes = [
         '손을 잡는다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 2 }, flags: ['promise_hand'] }
+        { affection: { hyeongyeom: 20 }, flags: ['promise_hand'] }
       ],
       next: ['season1-bridge-after-promise']
     }

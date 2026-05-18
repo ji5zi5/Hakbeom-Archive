@@ -17,6 +17,7 @@ import { normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCo
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
 import { findReplayPath, replayDirectorState, resolveNextIndex } from '../src/engine/vnEngine.js';
+import { affectionConditionMatches, variantMatchesState } from '../src/utils/relationshipState.js';
 import { resolveDominantRoute, resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
 
@@ -37,6 +38,7 @@ const saveCodec = readSource('src/engine/saveCodec.js');
 const saveSummary = readSource('src/engine/saveSummary.js');
 const scenarioValidator = readSource('src/engine/scenarioValidator.js');
 const vnEngine = readSource('src/engine/vnEngine.js');
+const relationshipState = readSource('src/utils/relationshipState.js');
 const phoneEngine = readSource('src/engine/phoneEngine.js');
 const chapterEngine = readSource('src/engine/chapterEngine.js');
 const regressionCapture = readSource('scripts/capture-vn-regression.mjs');
@@ -189,6 +191,7 @@ for (const requiredSystemSymbol of [
   'function TitleScreen',
   'function SaveLoadModal',
   'function ConfigModal',
+  'function StatusModal',
   'function EndingToast'
 ]) {
   assert.ok(
@@ -209,10 +212,31 @@ assert.match(
   'Route config should define all heroine affection targets.'
 );
 
+for (const target of routeConfigData.affectionTargets) {
+  assert.equal(target.max, 100, `${target.id} affection should use a 100-point dating-sim scale.`);
+}
+assert.equal(routeConfigData.affectionTarget.max, 100, 'Primary affection target should also use the 100-point scale.');
+assert.equal(routeConfigData.routeLockThreshold, 70, 'Route lock should require serious investment on the 100-point scale.');
+assert.ok(
+  routeConfigData.affectionLabels.some((label) => label.min === 85),
+  'Affection labels should include a high-intimacy 85+ tier for confession/good-ending range.'
+);
+for (const rule of episodeInfo.endingRules || []) {
+  for (const minimum of Object.values(rule.affection || {})) {
+    assert.ok(Number(minimum) >= 60, `${rule.id} ending affection condition should not be cheap on a 100-point scale.`);
+  }
+}
+
 assert.match(
   vnState,
   /export function applyRouteRewards[\s\S]*?export function markLineRead[\s\S]*?export function unlockGalleryItem/,
   'VN state helpers should expose route reward, read-line, and gallery unlock operations.'
+);
+
+assert.match(
+  relationshipState,
+  /export function affectionConditionMatches[\s\S]*?export function variantMatchesState/,
+  'Relationship state helpers should expose affection-threshold matching for scenario variants.'
 );
 
 assert.match(
@@ -424,8 +448,8 @@ assert.match(
 
 assert.match(
   component,
-  /function resolveItemText\(item, gameState\)[\s\S]*?variants[\s\S]*?flags/,
-  'Text resolver should support flag-based scenario variants.'
+  /function resolveItemText\(item, gameState\)[\s\S]*?variants[\s\S]*?variantMatchesState/,
+  'Text resolver should support flag- and affection-based scenario variants.'
 );
 
 assert.match(
@@ -903,6 +927,21 @@ assert.match(
 );
 assert.match(
   component,
+  /<button type="button" onClick=\{openStatus\}>STATUS<\/button>[\s\S]*<StatusModal\s+open=\{statusOpen\}\s+gameState=\{gameState\}/,
+  'Game system buttons should expose a STATUS modal for relationship progress without noisy reward toasts.'
+);
+assert.match(
+  component,
+  /function StatusModal\(\{ open, gameState, onClose \}\)[\s\S]*?routeConfig\.affectionTargets[\s\S]*?affection-meter[\s\S]*?\$\{value\}\s*\/\s*\$\{target\.max/,
+  'Status modal should list each heroine with an affection meter and numeric 100-point progress.'
+);
+assert.match(
+  styles,
+  /\.status-panel[\s\S]*?\.affection-meter[\s\S]*?\.affection-meter-fill/,
+  'Status modal affection meters should be styled separately from the normal gameplay overlay.'
+);
+assert.match(
+  component,
   /normalizeSaveSummary\(payload\?\.summary\)[\s\S]*?save-slot-chapter[\s\S]*?save-slot-route[\s\S]*?save-slot-lock/,
   'Save slots should render normalized chapter, route, and real route-lock display fields instead of raw localStorage summaries.'
 );
@@ -1288,11 +1327,46 @@ assert.ok(day2ActionChoice, 'Day 2 should include a second free-action hub befor
 assert.deepEqual(
   day2ActionChoice.choices,
   [
-    '현겸에게 우산을 핑계로 한 번 더 말을 건다.',
+    '현겸과 방과 후 둘만의 약속을 잡는다.',
     '도서관 창가에서 욱현의 답장을 기다린다.',
     '방송실에서 재성이 꺼 둔 마이크 앞에 선다.'
   ],
   'Day 2 free action should make the player choose what Hakbeom does after school.'
+);
+assert.ok(
+  day2ActionChoice.choices.some((choice) => /약속|데이트|같이|기다/.test(choice)),
+  'Day 2 free action should read like a dating-sim promise/date choice.'
+);
+
+const promiseScene = scenario.find((item) => item.id === 'day2-promise-memory-hyeongyeom');
+assert.ok(promiseScene, 'A Day 2 promise memory scene should exist.');
+assert.match(promiseScene.text, /약속|둘만|기다|같이/, 'Promise memory should feel like a dating-sim payoff.');
+assert.ok(
+  (promiseScene.directives || []).some((directive) => ['BCG', 'BG', 'BG_CG'].includes(directive.type)),
+  'Promise memory should stage a CG-like background moment.'
+);
+const promiseChoiceIndex = day2ActionChoice.next.indexOf('day2-promise-memory-hyeongyeom');
+assert.ok(promiseChoiceIndex >= 0, 'Day 2 free action should route one choice to the promise memory.');
+assert.ok(
+  (day2ActionChoice.rewards[promiseChoiceIndex]?.flags || []).includes('hyeongyeom_day2_promise_memory'),
+  'Promise branch should set the memory unlock flag.'
+);
+assert.ok(
+  routeConfigData.galleryItems.some((item) => item.id === 'cg-day2-hyeongyeom-promise' && item.unlockFlag === 'hyeongyeom_day2_promise_memory'),
+  'Promise memory should unlock a gallery CG tile.'
+);
+assert.ok(
+  routeConfigData.recollectionItems.some((item) => item.id === 'recall-day2-hyeongyeom-promise' && item.startId === 'day2-promise-memory-hyeongyeom'),
+  'Promise memory should unlock a replayable recollection.'
+);
+
+const day2AfterSchoolScene = scenario.find((item) => item.id === 'day2-after-school');
+assert.ok(
+  (day2AfterSchoolScene?.variants || []).some((variant) => (
+    (variant.requiredFlags || []).includes('hyeongyeom_day2_promise_memory')
+    || Number(variant.affection?.hyeongyeom?.min || 0) >= 60
+  )),
+  'A later Day 2 scene should react to the promise memory flag or high affection.'
 );
 
 
@@ -1652,13 +1726,13 @@ for (const item of runtimeChoices) {
 
 assert.match(
   scenarioSource,
-  /endingRules:\s*\[[\s\S]*?id:\s*'good'[\s\S]*?affection:\s*\{ hyeongyeom:\s*6 \}[\s\S]*?id:\s*'normal'/,
-  'Episode metadata should define dating-sim ending rules.'
+  /endingRules:\s*\[[\s\S]*?id:\s*'good'[\s\S]*?affection:\s*\{ hyeongyeom:\s*85 \}[\s\S]*?id:\s*'normal'[\s\S]*?affection:\s*\{ hyeongyeom:\s*60 \}/,
+  'Episode metadata should define high-threshold 100-point dating-sim ending rules.'
 );
 
 assert.match(
   scenarioSource,
-  /id:\s*'choice-approach'[\s\S]*?rewards:\s*\[[\s\S]*?affection:\s*\{ hyeongyeom:\s*2 \}[\s\S]*?flags:\s*\['shared_umbrella'\]/,
+  /id:\s*'choice-approach'[\s\S]*?rewards:\s*\[[\s\S]*?affection:\s*\{ hyeongyeom:\s*20 \}[\s\S]*?flags:\s*\['shared_umbrella'\]/,
   'Main choice should grant affection and flags.'
 );
 
@@ -2193,17 +2267,36 @@ const cappedState = applyRouteRewards(
 assert.equal(cappedState.affection.hyeongyeom, routeConfigData.affectionTarget.max);
 
 const cappedMultiHeroineState = applyRouteRewards(
-  { ...createInitialGameState(), affection: { ukhyun: 9, jaeseong: 9 } },
+  { ...createInitialGameState(), affection: { ukhyun: 99, jaeseong: 99 } },
   { id: 'test-multi-overflow', rewards: [{ affection: { ukhyun: 99, jaeseong: 99 } }] },
   0,
   routeConfigData
 );
-assert.equal(cappedMultiHeroineState.affection.ukhyun, 10);
-assert.equal(cappedMultiHeroineState.affection.jaeseong, 10);
+assert.equal(cappedMultiHeroineState.affection.ukhyun, 100);
+assert.equal(cappedMultiHeroineState.affection.jaeseong, 100);
+
+assert.equal(
+  affectionConditionMatches({ affection: { hyeongyeom: 84 } }, { hyeongyeom: { min: 85 } }),
+  false,
+  'Affection variant conditions should not match below the high-intimacy threshold.'
+);
+assert.equal(
+  affectionConditionMatches({ affection: { hyeongyeom: 85 } }, { hyeongyeom: { min: 85 } }),
+  true,
+  'Affection variant conditions should match at the high-intimacy threshold.'
+);
+assert.equal(
+  variantMatchesState(
+    { requiredFlags: ['shared_umbrella'], affection: { hyeongyeom: { min: 60, max: 84 } } },
+    { flags: ['shared_umbrella'], affection: { hyeongyeom: 70 } }
+  ),
+  true,
+  'Scenario variants should be able to require both flags and affection ranges.'
+);
 
 const dominantRoute = resolveDominantRoute(
   {
-    affection: { hyeongyeom: 4, sangwon: 6, haeum: 6 },
+    affection: { hyeongyeom: 40, sangwon: 60, haeum: 60 },
     flags: ['sangwon_route_seed', 'haeum_route_seed']
   },
   routeConfigData
@@ -2211,7 +2304,7 @@ const dominantRoute = resolveDominantRoute(
 assert.equal(dominantRoute.id, 'sangwon', 'Dominant route should use route priority when affection/flags tie.');
 const explicitRouteLock = resolveRouteLock(
   {
-    affection: { sangwon: 8, yunho: 8 },
+    affection: { sangwon: 80, yunho: 80 },
     flags: ['sangwon_route_seed', 'yunho_route_seed', 'route_lock_yunho']
   },
   routeConfigData
@@ -2219,7 +2312,7 @@ const explicitRouteLock = resolveRouteLock(
 assert.equal(explicitRouteLock.id, 'yunho', 'Explicit latest route lock flag should win over static priority.');
 assert.equal(explicitRouteLock.reason, 'explicit-lock');
 const thresholdRouteLock = resolveRouteLock(
-  { affection: { sangwon: 6 }, flags: ['sangwon_route_seed'] },
+  { affection: { sangwon: 70 }, flags: ['sangwon_route_seed'] },
   routeConfigData
 );
 assert.equal(thresholdRouteLock.reason, 'threshold', 'Seeded route at threshold should lock through threshold semantics.');
@@ -2568,7 +2661,7 @@ assert.equal(shouldShowChapterCard({ chapter: 'day-2' }, { chapter: 'day-2' }), 
 
 const saveSummaryResult = buildSaveSummary({
   item: { id: 'day2-rooftop', chapter: 'day-2', sectionTitle: 'Day 2: 옥상', text: '오늘도 우산 가져왔어.' },
-  gameState: { affection: { hyeongyeom: 7 } },
+  gameState: { affection: { hyeongyeom: 70 } },
   routeConfig: routeConfigData,
   backgroundSrc: '/assets/ui/image0_13_6.jpg'
 });
@@ -2585,12 +2678,12 @@ assert.equal(saveSummaryResult.thumbnail, '/assets/ui/image0_13_6.jpg');
 
 const multiRouteSaveSummary = buildSaveSummary({
   item: { id: 'day4-route-test', chapter: 'day-4', sectionTitle: 'Day 4', text: '상원이 기록을 건넸다.' },
-  gameState: { affection: { hyeongyeom: 4, sangwon: 7 }, flags: ['sangwon_route_seed'] },
+  gameState: { affection: { hyeongyeom: 40, sangwon: 70 }, flags: ['sangwon_route_seed'] },
   routeConfig: routeConfigData,
   backgroundSrc: '/assets/bg/archive-club-room-evening.png'
 });
 assert.equal(multiRouteSaveSummary.affectionTarget, 'sangwon');
-assert.equal(multiRouteSaveSummary.affectionValue, 7);
+assert.equal(multiRouteSaveSummary.affectionValue, 70);
 assert.equal(multiRouteSaveSummary.routeId, 'sangwon');
 assert.equal(multiRouteSaveSummary.routeName, '상원');
 assert.equal(multiRouteSaveSummary.routeLabel, '상원 루트 확정');

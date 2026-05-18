@@ -2,21 +2,21 @@ export const routeConfig = {
   affectionTarget: {
     id: 'hyeongyeom',
     name: '현겸',
-    max: 10
+    max: 100
   },
   affectionTargets: [
-    { id: 'hyeongyeom', name: '현겸', max: 10 },
-    { id: 'ukhyun', name: '욱현', max: 10 },
-    { id: 'jaeseong', name: '재성', max: 10 },
-    { id: 'sangwon', name: '상원', max: 10 },
-    { id: 'sanguk', name: '상욱', max: 10 },
-    { id: 'junhyeok', name: '준혁', max: 10 },
-    { id: 'dohun', name: '도훈', max: 10 },
-    { id: 'haeum', name: '하음', max: 10 },
-    { id: 'yunho', name: '윤호', max: 10 }
+    { id: 'hyeongyeom', name: '현겸', max: 100 },
+    { id: 'ukhyun', name: '욱현', max: 100 },
+    { id: 'jaeseong', name: '재성', max: 100 },
+    { id: 'sangwon', name: '상원', max: 100 },
+    { id: 'sanguk', name: '상욱', max: 100 },
+    { id: 'junhyeok', name: '준혁', max: 100 },
+    { id: 'dohun', name: '도훈', max: 100 },
+    { id: 'haeum', name: '하음', max: 100 },
+    { id: 'yunho', name: '윤호', max: 100 }
   ],
   routePriority: ['hyeongyeom', 'sangwon', 'haeum', 'yunho', 'ukhyun', 'jaeseong', 'junhyeok', 'sanguk', 'dohun'],
-  routeLockThreshold: 6,
+  routeLockThreshold: 70,
   routeSeedFlags: {
     hyeongyeom: ['hyeongyeom_route_focus', 'shared_umbrella'],
     ukhyun: ['ukhyun_route'],
@@ -30,8 +30,10 @@ export const routeConfig = {
   },
   affectionLabels: [
     { min: 0, label: '어색한 동급생' },
-    { min: 3, label: '신경 쓰이는 사이' },
-    { min: 6, label: '같은 우산의 약속' }
+    { min: 20, label: '신경 쓰이는 사이' },
+    { min: 40, label: '가까워지는 거리' },
+    { min: 60, label: '같은 우산의 약속' },
+    { min: 85, label: '고백 직전의 온도' }
   ],
   chapterItems: [
     { id: 'day-1', title: 'Day 1: 비 오는 새 학기', thumbnail: '/assets/bg/school-rain-hallway.png' },
@@ -67,6 +69,15 @@ export const routeConfig = {
       hint: '따뜻한 답장을 남기면 해금',
       unlockFlag: 'warm_reply',
       src: '/assets/bg/school-rain-hallway.png'
+    },
+    {
+      id: 'cg-day2-hyeongyeom-promise',
+      title: '방과 후의 약속',
+      chapter: 'day-2',
+      routeId: 'hyeongyeom',
+      hint: 'Day 2 현겸과 방과 후 약속을 만든다.',
+      unlockFlag: 'hyeongyeom_day2_promise_memory',
+      src: '/assets/bg/school-courtyard-blue-hour.png'
     },
     {
       id: 'cg-promise',
@@ -146,6 +157,15 @@ export const routeConfig = {
       chapter: 'day-2',
       routeId: 'hyeongyeom',
       startId: 'phone-vibration'
+    },
+    {
+      id: 'recall-day2-hyeongyeom-promise',
+      title: '방과 후의 약속',
+      chapter: 'day-2',
+      routeId: 'hyeongyeom',
+      hint: '현겸과의 Day 2 약속 기억',
+      unlockFlag: 'hyeongyeom_day2_promise_memory',
+      startId: 'day2-promise-memory-hyeongyeom'
     },
     {
       id: 'rec-day3',

@@ -102,9 +102,9 @@ export const day5Scenes = [
       '준혁과 도서관에서 문화제 동선을 확인한다.'
     ],
     rewards: [
-      { affection: { sangwon: 2 }, flags: ['sangwon_route_seed', 'day5_records_copy'] },
-      { affection: { sanguk: 2 }, flags: ['sanguk_route_seed', 'day5_gym_trace'] },
-      { affection: { junhyeok: 2 }, flags: ['junhyeok_route_seed', 'day5_library_map'] }
+      { affection: { sangwon: 20 }, flags: ['sangwon_route_seed', 'day5_records_copy'] },
+      { affection: { sanguk: 20 }, flags: ['sanguk_route_seed', 'day5_gym_trace'] },
+      { affection: { junhyeok: 20 }, flags: ['junhyeok_route_seed', 'day5_library_map'] }
     ],
     next: ['day5-sangwon-archive-desk', 'day5-sanguk-gym-start', 'day5-junhyeok-library-corner']
   },
@@ -273,9 +273,9 @@ export const day5Scenes = [
       '윤호와 옥상 휴게 공간을 점검한다.'
     ],
     rewards: [
-      { affection: { dohun: 2 }, flags: ['dohun_route_seed', 'day5_cctv_check'] },
-      { affection: { haeum: 2 }, flags: ['haeum_route_seed', 'day5_music_room_echo'] },
-      { affection: { yunho: 2 }, flags: ['yunho_route_seed', 'day5_rooftop_paper'] }
+      { affection: { dohun: 20 }, flags: ['dohun_route_seed', 'day5_cctv_check'] },
+      { affection: { haeum: 20 }, flags: ['haeum_route_seed', 'day5_music_room_echo'] },
+      { affection: { yunho: 20 }, flags: ['yunho_route_seed', 'day5_rooftop_paper'] }
     ],
     next: ['day5-dohun-store-arrival', 'day5-haeum-music-room', 'day5-yunho-rooftop']
   },

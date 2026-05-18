@@ -200,7 +200,7 @@ export const day10Scenes = [
     "rewards": [
       {
         "affection": {
-          "hyeongyeom": 3
+          "hyeongyeom": 30
         },
         "flags": [
           "hyeongyeom_route_seed",
@@ -210,7 +210,7 @@ export const day10Scenes = [
       },
       {
         "affection": {
-          "sangwon": 3
+          "sangwon": 30
         },
         "flags": [
           "sangwon_route_seed",
@@ -220,7 +220,7 @@ export const day10Scenes = [
       },
       {
         "affection": {
-          "haeum": 3
+          "haeum": 30
         },
         "flags": [
           "haeum_route_seed",
@@ -558,7 +558,7 @@ export const day10Scenes = [
     "rewards": [
       {
         "affection": {
-          "ukhyun": 3
+          "ukhyun": 30
         },
         "flags": [
           "ukhyun_route_seed",
@@ -568,7 +568,7 @@ export const day10Scenes = [
       },
       {
         "affection": {
-          "jaeseong": 3
+          "jaeseong": 30
         },
         "flags": [
           "jaeseong_route_seed",
@@ -578,7 +578,7 @@ export const day10Scenes = [
       },
       {
         "affection": {
-          "junhyeok": 3
+          "junhyeok": 30
         },
         "flags": [
           "junhyeok_route_seed",
@@ -916,7 +916,7 @@ export const day10Scenes = [
     "rewards": [
       {
         "affection": {
-          "sanguk": 3
+          "sanguk": 30
         },
         "flags": [
           "sanguk_route_seed",
@@ -926,7 +926,7 @@ export const day10Scenes = [
       },
       {
         "affection": {
-          "dohun": 3
+          "dohun": 30
         },
         "flags": [
           "dohun_route_seed",
@@ -936,7 +936,7 @@ export const day10Scenes = [
       },
       {
         "affection": {
-          "yunho": 3
+          "yunho": 30
         },
         "flags": [
           "yunho_route_seed",

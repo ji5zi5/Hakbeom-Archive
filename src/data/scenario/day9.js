@@ -213,9 +213,9 @@ export const day9Scenes = [
     "rewards": [
       {
         "affection": {
-          "jaeseong": 1,
-          "haeum": 1,
-          "hyeongyeom": 1
+          "jaeseong": 10,
+          "haeum": 10,
+          "hyeongyeom": 10
         },
         "flags": [
           "day9_stage_pressure"
@@ -223,9 +223,9 @@ export const day9Scenes = [
       },
       {
         "affection": {
-          "sangwon": 1,
-          "junhyeok": 1,
-          "sanguk": 1
+          "sangwon": 10,
+          "junhyeok": 10,
+          "sanguk": 10
         },
         "flags": [
           "day9_record_pressure"
@@ -233,9 +233,9 @@ export const day9Scenes = [
       },
       {
         "affection": {
-          "dohun": 1,
-          "yunho": 1,
-          "ukhyun": 1
+          "dohun": 10,
+          "yunho": 10,
+          "ukhyun": 10
         },
         "flags": [
           "day9_rest_pressure"

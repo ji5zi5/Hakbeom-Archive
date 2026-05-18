@@ -213,8 +213,8 @@ export const day8Scenes = [
     "rewards": [
       {
         "affection": {
-          "sangwon": 1,
-          "junhyeok": 1
+          "sangwon": 10,
+          "junhyeok": 10
         },
         "flags": [
           "day8_records_first"
@@ -222,9 +222,9 @@ export const day8Scenes = [
       },
       {
         "affection": {
-          "sanguk": 1,
-          "dohun": 1,
-          "yunho": 1
+          "sanguk": 10,
+          "dohun": 10,
+          "yunho": 10
         },
         "flags": [
           "day8_field_first"
@@ -232,10 +232,10 @@ export const day8Scenes = [
       },
       {
         "affection": {
-          "hyeongyeom": 1,
-          "ukhyun": 1,
-          "jaeseong": 1,
-          "haeum": 1
+          "hyeongyeom": 10,
+          "ukhyun": 10,
+          "jaeseong": 10,
+          "haeum": 10
         },
         "flags": [
           "day8_heart_first"
@@ -2697,9 +2697,9 @@ export const day8Scenes = [
     "rewards": [
       {
         "affection": {
-          "sangwon": 1,
-          "junhyeok": 1,
-          "dohun": 1
+          "sangwon": 10,
+          "junhyeok": 10,
+          "dohun": 10
         },
         "flags": [
           "day8_shared_report"
@@ -2707,9 +2707,9 @@ export const day8Scenes = [
       },
       {
         "affection": {
-          "ukhyun": 1,
-          "jaeseong": 1,
-          "haeum": 1
+          "ukhyun": 10,
+          "jaeseong": 10,
+          "haeum": 10
         },
         "flags": [
           "day8_solo_review"
@@ -2717,9 +2717,9 @@ export const day8Scenes = [
       },
       {
         "affection": {
-          "hyeongyeom": 2,
-          "yunho": 1,
-          "sanguk": 1
+          "hyeongyeom": 20,
+          "yunho": 10,
+          "sanguk": 10
         },
         "flags": [
           "day8_checked_in"

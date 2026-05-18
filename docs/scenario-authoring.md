@@ -46,8 +46,8 @@
   previewOnly: true,
   choices: ['바로 답장한다.', '장난스럽게 답한다.'],
   rewards: [
-    { affection: { hyeongyeom: 1 }, flags: ['warm_reply'] },
-    { affection: { hyeongyeom: 1 }, flags: ['playful_reply'] }
+    { affection: { hyeongyeom: 10 }, flags: ['warm_reply'] },
+    { affection: { hyeongyeom: 10 }, flags: ['playful_reply'] }
   ],
   next: ['reply-warm', 'reply-playful']
 }
@@ -69,8 +69,8 @@
   text: '집 도착했어. 우산은 내일 돌려줄게.',
   replies: ['내일 기다릴게.', '보관료는 네 웃음으로 받을게.'],
   rewards: [
-    { affection: { hyeongyeom: 1 }, flags: ['message_waiting'] },
-    { affection: { hyeongyeom: 1 }, flags: ['message_tease'] }
+    { affection: { hyeongyeom: 10 }, flags: ['message_waiting'] },
+    { affection: { hyeongyeom: 10 }, flags: ['message_tease'] }
   ],
   next: ['reply-warm', 'reply-playful']
 }
@@ -80,7 +80,7 @@
 
 `rewards`는 선택지/답장 결과를 기록한다.
 
-- `affection`: 호감도 변경. `routeConfig.affectionTargets` 또는 기존 `affectionTarget.max`를 넘지 않도록 엔진이 clamp한다. 예: `{ affection: { ukhyun: 2 } }`.
+- `affection`: 호감도 변경. 모든 route target은 100점 만점이며 엔진이 `routeConfig.affectionTargets`/`affectionTarget.max`를 넘지 않도록 clamp한다. 일반 선택은 `+10`, 강한 route 선택은 `+20~30`을 기본 단위로 쓴다. 예: `{ affection: { ukhyun: 20 } }`.
 - `flags`: 이후 분기, variants, 갤러리 해금 조건에 사용한다.
 - `gallery`, `unlockedGallery`, `galleryItem`: `routeConfig.galleryItems`에 존재하는 ID만 사용한다.
 - `recollections`, `unlockedRecollections`, `recollectionItem`: `routeConfig.recollectionItems`에 존재하는 ID만 사용한다.
@@ -91,9 +91,9 @@
 히로인을 추가할 때는 `src/data/routeConfig.js`의 `affectionTargets`에 ID/name/max를 등록하고, `src/data/characterProfiles.js`에 같은 ID의 profile을 추가한다. 실제 PNG가 없으면 `baseSrc: ''`로 두면 런타임이 이름 placeholder를 표시한다.
 
 ```js
-{ id: 'ukhyun', name: '욱현', max: 10 }
+{ id: 'ukhyun', name: '욱현', max: 100 }
 { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3 }
-{ affection: { ukhyun: 2 }, flags: ['ukhyun_route'] }
+{ affection: { ukhyun: 20 }, flags: ['ukhyun_route'] }
 ```
 
 ## 분기와 도달 가능성
@@ -118,16 +118,16 @@
   id: 'choice-day2-free-action',
   type: 'choice',
   choices: [
-    '현겸에게 우산을 핑계로 한 번 더 말을 건다.',
+    '현겸과 방과 후 둘만의 약속을 잡는다.',
     '도서관 창가에서 욱현의 답장을 기다린다.',
     '방송실에서 재성이 꺼 둔 마이크 앞에 선다.'
   ],
   rewards: [
-    { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_day2_umbrella_excuse'] },
-    { affection: { ukhyun: 1 }, flags: ['ukhyun_day2_library'] },
-    { affection: { jaeseong: 1 }, flags: ['jaeseong_day2_broadcast'] }
+    { affection: { hyeongyeom: 15 }, flags: ['hyeongyeom_day2_umbrella_excuse', 'hyeongyeom_day2_promise_memory'] },
+    { affection: { ukhyun: 10 }, flags: ['ukhyun_day2_library'] },
+    { affection: { jaeseong: 10 }, flags: ['jaeseong_day2_broadcast'] }
   ],
-  next: ['day2-action-hyeongyeom', 'day2-action-ukhyun', 'day2-action-jaeseong']
+  next: ['day2-promise-memory-hyeongyeom', 'day2-action-ukhyun', 'day2-action-jaeseong']
 }
 ```
 
@@ -137,6 +137,7 @@
 
 - `default: true`인 rule은 fallback이다.
 - `affection`과 `flags` 조건이 모두 맞으면 해당 ending route가 선택된다.
+- 100점 만점 기준으로 루트락은 보통 `70+`, normal terminal ending은 `60+`, good/캐릭터 엔딩은 `85+` 이상으로 둔다. 30점대 엔딩 조건은 너무 낮으므로 쓰지 않는다.
 - `endingGate: true` 장면은 `endingNext`로 실제 terminal 장면을 고른다.
 - `routeGate: true`인 중간 게이트는 Day 11–14 같은 루트 분기용이다. 플레이어에게 엔딩 UI를 띄우거나 엔딩 해금으로 기록하면 안 된다.
 - 실제 엔딩 장면은 `terminal: true`를 붙이고, 너무 갑자기 끊기지 않도록 고백 뒤 여운/다음 약속을 포함한다. 현재 계약 테스트는 terminal ending text가 최소 150자 이상인지 확인한다.
@@ -238,6 +239,11 @@
 variants: [
   {
     requiredFlags: ['shared_umbrella'],
+    affection: { hyeongyeom: { min: 60, max: 84 } },
+    text: '현겸은 우산 손잡이를 먼저 내밀었다. 아직 고백은 아니지만, 기다렸다는 건 숨기지 않았다.'
+  },
+  {
+    requiredFlags: ['shared_umbrella'],
     text: '어제 우산 같이 쓴 거, 아직도 생각나.'
   },
   {
@@ -246,6 +252,8 @@ variants: [
   }
 ]
 ```
+
+`affection` 조건은 숫자(`{ hyeongyeom: 60 }`) 또는 범위(`{ hyeongyeom: { min: 60, max: 84 } }`)를 쓸 수 있다. 호감도별 반응 차이는 보상 토스트 대신 본문 variants로 보여준다.
 
 ### 캐릭터 위치 `pos` / `position`
 
@@ -308,7 +316,7 @@ npm run build
 - Day 8 이후부터는 여러 히로인 그룹 중 하나를 고르는 에피소드를 배치하고, Day 10에서 명시적 `route_lock_<id>`로 좁힌 뒤 Day 14 문화제 엔딩으로 간다.
 - 호감도 선택은 “누구에게 더 가까이 가는가”만 바꾸고, 필수 소개/공통 일상 구간을 건너뛰게 만들지 않는다. 선택 branch가 끝나면 공통 소개 merge로 되돌아오게 `nextId`를 명시한다.
 - 조기 엔딩은 만들지 않는다. Day 3 약속, route seed, 회상 unlock은 모두 Day 4 이후 장기 루트로 이어져야 하며, 정상 진행에서 `ending-promise`로 들어가는 장면은 Day 14의 `day14-closing`뿐이어야 한다.
-- 루트락(route lock)은 암묵적인 ending rule 순서에 맡기지 않는다. `route_lock_<id>` 플래그, 호감도, route-specific flag 수, 정적 우선순위를 문서화하고 테스트한다.
+- 루트락(route lock)은 암묵적인 ending rule 순서에 맡기지 않는다. `route_lock_<id>` 플래그, 100점 만점 호감도(`routeLockThreshold: 70`), route-specific flag 수, 정적 우선순위를 문서화하고 테스트한다.
 - Day 11–14처럼 lock 이후 분기해야 하는 장면은 `endingGate: true` + `routeGate: true` + `endingNext`를 route gate로 재사용한다. `routeGate`는 payoff 이동만 처리하고 terminal ending unlock은 기록하지 않는다. `episodeInfo.endingRules`의 `route_lock_<id>` 규칙을 terminal ending 규칙보다 먼저 둬야 같은 루트가 payoff 장면과 최종 엔딩까지 유지된다.
 - 캐릭터 말투는 `src/data/characterProfiles.js`의 `archetype`/`voice`/`motif`를 기준으로 맞춘다. route별 핵심 톤은 현겸=정실 순애/우산, 욱현=무표정 쿨데레/노트, 재성=능글 플러팅/방송, 상원=기록집착 얀데레/기록, 상욱=직진 댕댕이/달리기, 준혁=무심한 두뇌파/지도, 도훈=장난치는 츤데레/정보값, 하음=치유계/박자, 윤호=후배 선배집착/옥상이다. 윤호 route 대사에는 `선배` 호칭을 유지한다.
 - 현재 선택지 UI는 1/2/3개 레이아웃만 계약으로 보호한다. 6명 중 고르는 장면은 두 개의 3지선다나 맥락별 초대로 나눈다.

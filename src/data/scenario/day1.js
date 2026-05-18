@@ -120,9 +120,9 @@ export const day1Scenes = [
         '오늘따라 네가 신경 쓰여.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 2 }, flags: ['shared_umbrella'] },
-        { affection: { hyeongyeom: 1 }, flags: ['student_council_help'] },
-        { affection: { hyeongyeom: 3 }, flags: ['direct_compliment'] }
+        { affection: { hyeongyeom: 20 }, flags: ['shared_umbrella'] },
+        { affection: { hyeongyeom: 10 }, flags: ['student_council_help'] },
+        { affection: { hyeongyeom: 30 }, flags: ['direct_compliment'] }
       ],
       next: ['branch-umbrella', 'branch-help', 'branch-compliment']
     },
@@ -336,9 +336,9 @@ export const day1Scenes = [
         '방송실 호출에 답해 재성이 마이크를 끈 이유를 묻는다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_day1_action'] },
-        { affection: { ukhyun: 1 }, flags: ['ukhyun_early_interest'] },
-        { affection: { jaeseong: 1 }, flags: ['jaeseong_early_signal'] }
+        { affection: { hyeongyeom: 10 }, flags: ['hyeongyeom_day1_action'] },
+        { affection: { ukhyun: 10 }, flags: ['ukhyun_early_interest'] },
+        { affection: { jaeseong: 10 }, flags: ['jaeseong_early_signal'] }
       ],
       next: ['day1-action-hyeongyeom', 'day1-action-ukhyun', 'day1-action-jaeseong']
     },
@@ -455,8 +455,8 @@ export const day1Scenes = [
         '편의점에서 따뜻한 걸 사주겠다고 한다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 2 }, flags: ['slow_walk'] },
-        { affection: { hyeongyeom: 1 }, flags: ['warm_cocoa'] }
+        { affection: { hyeongyeom: 20 }, flags: ['slow_walk'] },
+        { affection: { hyeongyeom: 10 }, flags: ['warm_cocoa'] }
       ],
       next: ['walk-slow', 'walk-store']
     },
@@ -543,8 +543,8 @@ export const day1Scenes = [
         '장난처럼 넘기며 손을 내민다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 2 }, flags: ['honest_tomorrow'] },
-        { affection: { hyeongyeom: 1 }, flags: ['playful_hand'] }
+        { affection: { hyeongyeom: 20 }, flags: ['honest_tomorrow'] },
+        { affection: { hyeongyeom: 10 }, flags: ['playful_hand'] }
       ],
       next: ['promise-honest', 'promise-joke']
     },
@@ -614,8 +614,8 @@ export const day1Scenes = [
         '그럼 우산 보관료는 네 웃음으로 받을게.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 1 }, flags: ['message_waiting'] },
-        { affection: { hyeongyeom: 1 }, flags: ['message_tease'] }
+        { affection: { hyeongyeom: 10 }, flags: ['message_waiting'] },
+        { affection: { hyeongyeom: 10 }, flags: ['message_tease'] }
       ],
       next: ['reply-warm', 'reply-playful'],
       directives: [
@@ -631,8 +631,8 @@ export const day1Scenes = [
         '조금 뜸을 들였다가 장난스럽게 답한다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 1 }, flags: ['warm_reply'] },
-        { affection: { hyeongyeom: 1 }, flags: ['playful_reply'] }
+        { affection: { hyeongyeom: 10 }, flags: ['warm_reply'] },
+        { affection: { hyeongyeom: 10 }, flags: ['playful_reply'] }
       ],
       next: ['reply-warm', 'reply-playful']
     },

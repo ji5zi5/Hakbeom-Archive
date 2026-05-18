@@ -258,9 +258,9 @@ export const day4Scenes = [
       '준혁과 문화제 동선을 다시 그린다.'
     ],
     rewards: [
-      { affection: { sangwon: 2 }, flags: ['sangwon_route_seed', 'archive_record_checked'] },
-      { affection: { sanguk: 2 }, flags: ['sanguk_route_seed', 'gym_corridor_checked'] },
-      { affection: { junhyeok: 2 }, flags: ['junhyeok_route_seed', 'route_map_drawn'] }
+      { affection: { sangwon: 20 }, flags: ['sangwon_route_seed', 'archive_record_checked'] },
+      { affection: { sanguk: 20 }, flags: ['sanguk_route_seed', 'gym_corridor_checked'] },
+      { affection: { junhyeok: 20 }, flags: ['junhyeok_route_seed', 'route_map_drawn'] }
     ],
     next: ['day4-sangwon-focus', 'day4-sanguk-focus', 'day4-junhyeok-focus']
   },
@@ -331,9 +331,9 @@ export const day4Scenes = [
       '윤호와 옥상 휴게 공간을 확인한다.'
     ],
     rewards: [
-      { affection: { dohun: 2 }, flags: ['dohun_route_seed', 'cctv_favor'] },
-      { affection: { haeum: 2 }, flags: ['haeum_route_seed', 'door_sound_memory'] },
-      { affection: { yunho: 2 }, flags: ['yunho_route_seed', 'wet_paper_kept'] }
+      { affection: { dohun: 20 }, flags: ['dohun_route_seed', 'cctv_favor'] },
+      { affection: { haeum: 20 }, flags: ['haeum_route_seed', 'door_sound_memory'] },
+      { affection: { yunho: 20 }, flags: ['yunho_route_seed', 'wet_paper_kept'] }
     ],
     next: ['day4-dohun-focus', 'day4-haeum-focus', 'day4-yunho-focus']
   },

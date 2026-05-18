@@ -83,8 +83,8 @@ export const day2Scenes = [
         '학생회장 일정 확인 후 승인.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 2 }, flags: ['day2_direct_reply', 'warm_reply'] },
-        { affection: { hyeongyeom: 1 }, flags: ['day2_playful_reply'] }
+        { affection: { hyeongyeom: 20 }, flags: ['day2_direct_reply', 'warm_reply'] },
+        { affection: { hyeongyeom: 10 }, flags: ['day2_playful_reply'] }
       ],
       next: ['day2-rooftop-direct', 'day2-rooftop-playful'],
       directives: [
@@ -121,6 +121,10 @@ export const day2Scenes = [
       place: '아침 복도',
       text: '학범아. 우산 여기. 어제처럼 젖은 곳 하나 없이 말렸어. 그런데 네가 먼저 와 있으면, 내가 돌려주러 온 티가 너무 나잖아.',
       variants: [
+        {
+          affection: { hyeongyeom: { min: 60 } },
+          text: '현겸은 학범을 보자마자 우산 손잡이를 먼저 내밀었다. “네가 올 줄 알았어.” 짧게 말했지만, 손끝은 이미 학범 쪽으로 반쯤 와 있었다.'
+        },
         {
           requiredFlags: ['shared_umbrella'],
           text: '어제 같이 썼던 우산이 생각나서, 접을 때마다 손이 느려졌어. 현겸은 아무렇지 않은 척했지만 손잡이 끝을 놓지 않았다.'
@@ -169,28 +173,39 @@ export const day2Scenes = [
       type: 'choice',
       chapter: 'day-2',
       choices: [
-        '현겸에게 우산을 핑계로 한 번 더 말을 건다.',
+        '현겸과 방과 후 둘만의 약속을 잡는다.',
         '도서관 창가에서 욱현의 답장을 기다린다.',
         '방송실에서 재성이 꺼 둔 마이크 앞에 선다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 1 }, flags: ['hyeongyeom_day2_umbrella_excuse'] },
-        { affection: { ukhyun: 1 }, flags: ['ukhyun_day2_library'] },
-        { affection: { jaeseong: 1 }, flags: ['jaeseong_day2_broadcast'] }
+        { affection: { hyeongyeom: 15 }, flags: ['hyeongyeom_day2_umbrella_excuse', 'hyeongyeom_day2_promise_memory'] },
+        { affection: { ukhyun: 10 }, flags: ['ukhyun_day2_library'] },
+        { affection: { jaeseong: 10 }, flags: ['jaeseong_day2_broadcast'] }
       ],
-      next: ['day2-action-hyeongyeom', 'day2-action-ukhyun', 'day2-action-jaeseong']
+      next: ['day2-promise-memory-hyeongyeom', 'day2-action-ukhyun', 'day2-action-jaeseong']
     },
   {
-      id: 'day2-action-hyeongyeom',
+      id: 'day2-promise-memory-hyeongyeom',
       type: 'dialogue',
       mood: 'confession',
       chapter: 'day-2',
       name: '현겸',
       role: '동급생',
-      place: '방과 후 복도',
-      text: '“우산 핑계 아직 유효해?” 현겸은 빈손인데도 학범 곁에 섰다. “비가 안 오면, 이번엔 네가 다른 핑계를 만들어 줘.”',
+      place: '방과 후 안뜰',
+      text: '“우산 핑계 아직 유효해?” 현겸은 방과 후 안뜰 벤치에 먼저 앉아 학범이 올 자리를 비워 두었다. “오늘은 비가 안 오니까, 이번엔 둘만의 약속으로 기다려도 돼?”',
+      variants: [
+        {
+          affection: { hyeongyeom: { min: 60 } },
+          text: '현겸은 학범이 가까워지자마자 가방 옆자리를 톡 두드렸다. “네가 올 줄 알고 비워 뒀어. 우산도, 회의록도 없이 그냥 둘만 앉아 있는 약속이면 좋겠다.”'
+        },
+        {
+          requiredFlags: ['day2_direct_reply'],
+          text: '현겸은 학범을 보자마자 조금 웃었다. “기다린다는 말, 생각보다 오래 남더라. 그래서 나도 오늘은 먼저 기다려 봤어.”'
+        }
+      ],
       effect: { target: 'hyeongyeom', type: 'heart' },
       directives: [
+        { type: 'BCG', src: '/assets/bg/school-courtyard-blue-hour.png', transition: 'fade-in' },
         { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'blush', transition: 'fade-in' },
         { type: 'E', target: 'hyeongyeom', effect: 'heart', motion: 'nod', se: 'heart' }
       ],
@@ -463,6 +478,10 @@ export const day2Scenes = [
       place: '방과 후 복도',
       text: '오늘은 비 안 오네. 그래도 하굣길 같이 걸어도 돼? 우산을 돌려줬다고 어제 일이 끝나버리면, 좀 아쉬울 것 같아서.',
       variants: [
+        {
+          requiredFlags: ['hyeongyeom_day2_promise_memory'],
+          text: '오늘은 비 안 오네. 그래도 아까 한 약속, 하굣길까지 이어가도 돼? 현겸은 일부러 천천히 걸으며 학범의 손끝이 닿는 거리를 비워 두었다.'
+        },
         {
           flags: ['day2_direct_reply'],
           text: '오늘은 비 안 오네. 그래도 같이 걸어도 돼? 아침에 기다려준 얼굴이 하루 종일 자꾸 생각났어.'

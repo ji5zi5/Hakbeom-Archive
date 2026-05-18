@@ -39,6 +39,7 @@ src/engine/phoneEngine.js        phone/SNS timeline 정규화
 src/engine/saveCodec.js          save payload 생성/정규화
 src/engine/scenarioValidator.js  시나리오 graph/DSL 검증
 src/utils/vnState.js             호감도/flags/read/gallery/recollection 상태 helper
+src/utils/relationshipState.js   호감도 조건/variants 매칭 helper
 src/utils/vnText.js              대사 줄바꿈/텍스트 정규화
 src/utils/accessibility.js       키보드 activation helper
 tests/ui-contract.test.mjs       contract + semantic regression tests
@@ -51,7 +52,7 @@ public/assets/                   런타임 asset
 | 하고 싶은 일 | 주로 수정할 곳 | 같이 확인할 곳 |
 | --- | --- | --- |
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
-| 호감도/갤러리/회상 조건 변경 | `src/data/routeConfig.js` | `src/utils/vnState.js`, validator tests |
+| 호감도/갤러리/회상 조건 변경 | `src/data/routeConfig.js`, `src/utils/relationshipState.js` | `src/utils/vnState.js`, status modal/tests |
 | 분기/스킵/엔딩/replay 동작 변경 | `src/engine/vnEngine.js` | semantic tests 추가 |
 | BCG/SCG/SE/E/BGM/AMBIENT 연출 명령 변경 | `src/engine/directorEngine.js`, `src/engine/audioEngine.js` | scenario directive docs/tests |
 | save/load 구조 변경 | `src/engine/saveCodec.js`, `src/engine/saveSummary.js` | save migration/정규화 tests |
@@ -90,6 +91,7 @@ public/assets/                   런타임 asset
 ### routeConfig는 해금/호감도의 원본이다
 
 갤러리/회상 ID를 scenario reward에 직접 새로 쓰기 전에 `routeConfig.js`에 먼저 등록한다. validator가 없는 ID를 에러로 잡아야 정상이다.
+호감도는 100점 만점이 기본 계약이다. `routeLockThreshold`는 의미 있는 루트 투자선(현재 70), 엔딩 조건은 normal 60+, good/캐릭터 85+를 기준으로 맞춘다. 플레이 중 보상 토스트를 띄우기보다 `variants`와 STATUS 모달/save summary가 관계 변화를 보여줘야 한다.
 
 ### 저장 데이터는 신뢰하지 않는다
 
@@ -102,9 +104,10 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 3. 다음 진행은 `resolveNextIndex()` 또는 choice/phone 선택 처리로 이동한다.
 4. 장면 진입 시 `applyDirectorItem()`이 배경/캐릭터/효과음/오버레이 상태를 만든다.
 5. 선택지 reward는 `applyRouteRewards()`를 거친 뒤 `applyRouteUnlocks()`로 갤러리/회상 해금을 반영한다.
-6. 자동 저장은 `createSavePayload()`를 통해 localStorage에 저장된다.
-7. 로드는 `normalizeSavePayload()`를 거쳐 index, settings, gameState, directorState를 안전하게 복원한다.
-8. 중간 `routeGate`는 루트 분기만 계산하고 엔딩 UI를 띄우지 않는다. 실제 `terminal` 엔딩에 도달하면 엔딩 패널에서 `타이틀로` 또는 `처음부터`를 선택할 수 있다.
+6. 대사 variants는 `variantMatchesState()`가 flags와 affection 범위를 함께 평가해 현재 관계 단계에 맞는 문장을 고른다.
+7. 자동 저장은 `createSavePayload()`를 통해 localStorage에 저장된다.
+8. 로드는 `normalizeSavePayload()`를 거쳐 index, settings, gameState, directorState를 안전하게 복원한다.
+9. 중간 `routeGate`는 루트 분기만 계산하고 엔딩 UI를 띄우지 않는다. 실제 `terminal` 엔딩에 도달하면 엔딩 패널에서 `타이틀로` 또는 `처음부터`를 선택할 수 있다.
 
 ## 테스트 작성 기준
 
@@ -220,7 +223,7 @@ Tested: npm test; npm run build
 - 10k-line contract: longform work is not complete until `npm run test:story-lines` reports at least 10,000 total source lines across `src/data/scenario.js` and `src/data/scenario/*.js`. The 2026-05-18 Ralph authorial rewrite currently verifies 19,775 scenario source lines.
 - Day 11–14 route payoff uses `endingGate` scenes with `routeGate: true` as deterministic route gates. Keep `route_lock_<id>` ending rules before legacy good/normal/quiet rules, do not record route gates as terminal ending unlocks, and keep replay target scoring aware of ending gates so long scenarios do not make `findReplayPath()` explore every branch first.
 - 저장 요약은 장기적으로 단일 `affectionTarget`이 아니라 dominant route / 대표 루트를 보여줘야 한다. 여러 호감도가 동시에 존재하면 `resolveDominantRoute()`의 tie-break 기준을 따른다.
-- route lock, dominant-route save summary, generated background manifest는 Season 1 확장의 핵심 계약이므로 테스트 없이 수정하지 않는다.
+- route lock, 100점 호감도/status modal, dominant-route save summary, generated background manifest는 Season 1 확장의 핵심 계약이므로 테스트 없이 수정하지 않는다.
 
 ## Visual Regression Capture
 

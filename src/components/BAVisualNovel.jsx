@@ -14,6 +14,7 @@ import {
   resolveSkipTargetIndex
 } from '../engine/vnEngine.js';
 import { createKeyboardActivationHandler } from '../utils/accessibility.js';
+import { variantMatchesState } from '../utils/relationshipState.js';
 import { safeText, wrapDialogueText } from '../utils/vnText.js';
 import { applyRouteRewards, createInitialGameState, markLineRead, unlockGalleryItem, unlockRecollectionItem } from '../utils/vnState.js';
 
@@ -106,10 +107,7 @@ function resolveItemText(item, gameState) {
   if (!item) return '';
   const text = ['dialogue', 'banner', 'phone'].includes(item.type) ? safeText(item.text) : '';
   const variants = Array.isArray(item.variants) ? item.variants : [];
-  const flags = new Set(gameState?.flags || []);
-  const matchedVariant = variants.find((candidate) => (
-    !candidate.default && (candidate.requiredFlags || candidate.flags || []).every((flag) => flags.has(flag))
-  ));
+  const matchedVariant = variants.find((candidate) => variantMatchesState(candidate, gameState));
   const defaultVariant = variants.find((candidate) => candidate.default);
   return safeText(matchedVariant?.text ?? defaultVariant?.text ?? text);
 }
@@ -329,6 +327,7 @@ export function BAVisualNovel({
   const [saveSlots, setSaveSlots] = useState(() => readSaveSlots());
   const [saveLoadMode, setSaveLoadMode] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [settings, setSettings] = useState(() => readSettings());
   const [ending, setEnding] = useState(null);
@@ -407,6 +406,7 @@ export function BAVisualNovel({
     setSkipOpen(false);
     setSaveLoadMode(null);
     setSettingsOpen(false);
+    setStatusOpen(false);
     setGalleryOpen(false);
     setLog([]);
   }, [initialIndex, resetToIndex, settings.seVolume, sounds.click, sounds.confirm]);
@@ -419,6 +419,7 @@ export function BAVisualNovel({
     setMenuOpen(false);
     setSaveLoadMode(null);
     setSettingsOpen(false);
+    setStatusOpen(false);
     setGalleryOpen(false);
     setBacklogOpen(false);
     setSkipOpen(false);
@@ -455,6 +456,7 @@ export function BAVisualNovel({
     setScreen('game');
     setSaveLoadMode(null);
     setSettingsOpen(false);
+    setStatusOpen(false);
     setGalleryOpen(false);
     return true;
   }, [directorDefaults, initialIndex, scenario, settings]);
@@ -493,7 +495,7 @@ export function BAVisualNovel({
   }, [ending, episodeInfo.endingRules, gameState, index, jumpToIndex, scenario]);
 
   const next = useCallback(() => {
-    if (screen !== 'game' || saveLoadMode || settingsOpen || galleryOpen || skipOpen || backlogOpen) return;
+    if (screen !== 'game' || saveLoadMode || settingsOpen || statusOpen || galleryOpen || skipOpen || backlogOpen) return;
     if (uiHidden) {
       setUiHidden(false);
       return;
@@ -503,7 +505,7 @@ export function BAVisualNovel({
       return;
     }
     goNextRaw();
-  }, [backlogOpen, finishTyping, galleryOpen, goNextRaw, saveLoadMode, screen, settingsOpen, skipOpen, typing, uiHidden]);
+  }, [backlogOpen, finishTyping, galleryOpen, goNextRaw, saveLoadMode, screen, settingsOpen, statusOpen, skipOpen, typing, uiHidden]);
 
   const setMode = useCallback((nextMode) => {
     setMenuOpen(false);
@@ -573,12 +575,24 @@ export function BAVisualNovel({
     setMenuOpen(false);
     setBacklogOpen(false);
     setSkipOpen(false);
+    setStatusOpen(false);
     setGalleryOpen(true);
+  }, [settings.seVolume, sounds.click]);
+
+  const openStatus = useCallback((event) => {
+    event?.stopPropagation?.();
+    playAudio(sounds.click, settings.seVolume / 100);
+    setMenuOpen(false);
+    setBacklogOpen(false);
+    setSkipOpen(false);
+    setGalleryOpen(false);
+    setStatusOpen(true);
   }, [settings.seVolume, sounds.click]);
 
   const closeModals = useCallback(() => {
     setBacklogOpen(false);
     setSkipOpen(false);
+    setStatusOpen(false);
     setGalleryOpen(false);
   }, []);
 
@@ -900,6 +914,7 @@ export function BAVisualNovel({
             <button type="button" onClick={() => setSaveLoadMode('save')}>SAVE</button>
             <button type="button" onClick={() => setSaveLoadMode('load')}>LOAD</button>
             <button type="button" onClick={openGallery}>CG</button>
+            <button type="button" onClick={openStatus}>STATUS</button>
           </div>
         )}
 
@@ -946,6 +961,8 @@ export function BAVisualNovel({
             }
           }}
         />
+
+        <StatusModal open={statusOpen} gameState={gameState} onClose={closeModals} />
 
         <ChapterCard info={chapterInfo} />
         <EndingToast
@@ -1715,6 +1732,46 @@ function formatSaveDate(value) {
   if (!value) return '-';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString();
+}
+
+function resolveAffectionLabel(value) {
+  const labels = [...(routeConfig.affectionLabels || [])]
+    .sort((left, right) => Number(left.min || 0) - Number(right.min || 0));
+  return labels.reduce((label, entry) => (
+    Number(value || 0) >= Number(entry.min || 0) ? entry.label : label
+  ), labels[0]?.label || '관계 시작');
+}
+
+function StatusModal({ open, gameState, onClose }) {
+  return (
+    <div className="ba-modal-layer status-panel" aria-hidden={open ? 'false' : 'true'}>
+      <div className="ba-modal-card status-card" role="dialog" aria-modal="true" aria-label="호감도 상태">
+        <div className="ba-modal-head">
+          <span className="ba-modal-title">STATUS</span>
+          <button className="ba-modal-close" type="button" onClick={onClose} aria-label="닫기">×</button>
+        </div>
+        <div className="status-list">
+          {routeConfig.affectionTargets.map((target) => {
+            const max = Number(target.max || 100);
+            const value = clamp(Number(gameState?.affection?.[target.id] || 0), 0, max);
+            const percent = max > 0 ? (value / max) * 100 : 0;
+            return (
+              <div className="status-row" key={target.id}>
+                <div className="status-row-head">
+                  <strong>{target.name}</strong>
+                  <span>{resolveAffectionLabel(value)}</span>
+                </div>
+                <div className="affection-meter" aria-label={`${target.name} 호감도 ${value} / ${target.max}`}>
+                  <span className="affection-meter-fill" style={{ width: `${percent}%` }} />
+                </div>
+                <em>{value} / {target.max}</em>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ConfigModal({ open, settings, onChange, onClose }) {
