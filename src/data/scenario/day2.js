@@ -142,8 +142,7 @@ export const day2Scenes = [
       directives: [
         { type: 'SCG', id: 'hyeongyeom', action: 'update', expression: 'smile' },
         { type: 'E', target: 'hyeongyeom', effect: 'blush', motion: 'nod' }
-      ],
-      nextId: 'day2-moe-hyeongyeom-lunch-side'
+      ]
     },
   {
       id: 'day2-lunch-note',
@@ -213,7 +212,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 3, expression: 'quiet', transition: 'enter-left' },
         { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod', se: 'question' }
       ],
-      nextId: 'day2-ukhyun-close'
+      nextId: 'day2-introduction-briefing'
     },
   {
       id: 'day2-action-jaeseong',
@@ -231,43 +230,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 3, expression: 'confident', transition: 'enter-right' },
         { type: 'E', target: 'jaeseong', effect: 'question', motion: 'bounce', se: 'question' }
       ],
-      nextId: 'day2-jaeseong-close'
-    },
-  {
-      id: 'day2-ukhyun-close',
-      type: 'dialogue',
-      mood: 'warm',
-      chapter: 'day-2',
-      name: '욱현',
-      role: '도서위원',
-      place: '도서관 창가',
-      text: '욱현은 접힌 답장을 노트 사이에 끼워 넣었다. “내일도 창가에 둘게. 네가 또 펼칠지, 아니면 이번엔 먼저 말할지 보고 싶어.”',
-      effect: { target: 'ukhyun', type: 'heart' },
-      directives: [
-        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
-        { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
-        { type: 'SCG', id: 'ukhyun', action: 'update', expression: 'smile' },
-        { type: 'E', target: 'ukhyun', effect: 'heart', motion: 'nod' }
-      ],
-      nextId: 'ukhyun-route-start'
-    },
-  {
-      id: 'day2-jaeseong-close',
-      type: 'dialogue',
-      mood: 'warm',
-      chapter: 'day-2',
-      name: '재성',
-      role: '방송부',
-      place: '방송실',
-      text: '재성은 헤드폰을 벗겨 주며 마이크 전원을 끝까지 내렸다. “오늘은 여기까지. 다음에 또 네가 먼저 오면, 그땐 방송 멘트 말고 내 목소리로 답할게.”',
-      effect: { target: 'jaeseong', type: 'heart' },
-      directives: [
-        { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
-        { type: 'SCG', id: 'ukhyun', action: 'delete', transition: 'fade-out' },
-        { type: 'SCG', id: 'jaeseong', action: 'update', expression: 'smile' },
-        { type: 'E', target: 'jaeseong', effect: 'heart', motion: 'nod' }
-      ],
-      nextId: 'jaeseong-route-start'
+      nextId: 'day2-introduction-briefing'
     },
   {
       id: 'day2-introduction-briefing',
@@ -488,8 +451,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'haeum', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'yunho', name: '윤호', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },
         { type: 'E', target: 'yunho', effect: 'ellipsis', motion: 'nod' }
-      ],
-      nextId: 'day2-lunch-note'
+      ]
     },
   {
       id: 'day2-after-school',

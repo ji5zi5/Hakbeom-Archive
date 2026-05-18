@@ -909,7 +909,7 @@ export const day10Scenes = [
     "id": "day10-choice-lock-field-night",
     "type": "choice",
     "choices": [
-      "상욱과 준비 장소을 다시 달린다.",
+      "상욱과 준비 장소를 다시 달린다.",
       "도훈과 밤의 매점 협찬표를 확인한다.",
       "윤호와 젖은 종이를 지킨다."
     ],

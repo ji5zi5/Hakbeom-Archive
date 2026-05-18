@@ -1371,6 +1371,39 @@ for (const choiceId of ['day8-choice-morning', 'day9-choice-prep', 'day10-choice
   );
 }
 
+const day2FestivalChain = [
+  'day2-moe-hyeongyeom-lunch-side',
+  'day2-moe-sangwon-pen-line',
+  'day2-moe-jaeseong-preview',
+  'day2-festival-briefing',
+  'day2-sangwon-forms',
+  'day2-ukhyun-library-request',
+  'day2-jaeseong-broadcast-invite',
+  'day2-sanguk-gym-poster',
+  'day2-junhyeok-map-note',
+  'day2-dohun-coupon',
+  'day2-haeum-performance-list',
+  'day2-yunho-rooftop-wait'
+];
+assert.equal(
+  scenario.find((item) => item.id === 'day2-introduction-briefing')?.nextId,
+  day2FestivalChain[0],
+  'Day 2 route branches should enter the mandatory culture-festival heroine introduction tour.'
+);
+for (let index = 0; index < day2FestivalChain.length - 1; index += 1) {
+  const scene = scenario.find((item) => item.id === day2FestivalChain[index]);
+  assert.equal(
+    scene?.nextId,
+    day2FestivalChain[index + 1],
+    `${day2FestivalChain[index]} should continue to ${day2FestivalChain[index + 1]}.`
+  );
+}
+assert.equal(
+  scenario.findIndex((item) => item.id === 'day2-yunho-rooftop-wait') + 1,
+  scenario.findIndex((item) => item.id === 'day2-after-school'),
+  'Day 2 heroine introduction tour should end naturally at the shared after-school bridge instead of looping to the free-action hub.'
+);
+
 const day1ToDay3Paths = enumerateScenarioPathsUntil('day1-chapter-card', 'day3-chapter-card');
 assert.ok(day1ToDay3Paths.length > day1ToDay2Paths.length, 'Pre-Day-3 path enumeration should include Day 2 branch combinations.');
 for (const path of day1ToDay3Paths) {
@@ -1392,6 +1425,18 @@ assert.deepEqual(
   'No route should enter the ending gate before Day 14; early promises must continue into the full festival route.'
 );
 
+for (const awkwardPhrase of [
+  '축제 준비 문화제 준비 채팅방이 준비 기록처럼 울렸다.',
+  '마음보다 먼저 숨긴 마음이 있었다.',
+  '서두르지 않는 마음 확인를 했다.',
+  '상욱과 준비 장소을 다시 달린다.'
+]) {
+  assert.doesNotMatch(
+    scenarioSource,
+    new RegExp(awkwardPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    `Scenario copy should not contain awkward phrase: ${awkwardPhrase}`
+  );
+}
 const day3StartIndex = scenario.findIndex((item) => item.id === 'day3-chapter-card');
 const preDay3Rewards = scenario
   .slice(0, day3StartIndex)
