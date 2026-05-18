@@ -996,6 +996,17 @@ function assertNoNormalizedRouteTemplateDuplicates(label) {
   );
 }
 
+function displayedTextsForIdPattern(pattern) {
+  return displayedStoryTexts().filter((entry) => pattern.test(entry.id));
+}
+
+function routeLockOrEndingIdPattern(routeId) {
+  const escapedRouteId = routeId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(
+    `^(?:day10-lock-${escapedRouteId}|day1[1-4]-${escapedRouteId}(?:-[^.]+)?|ending-${escapedRouteId})(?:$|\\.)`
+  );
+}
+
 assert.match(
   readFileSync('src/data/scenario.js', 'utf8'),
   /export \{ episodeInfo, scenario \} from '\.\/scenario\/index\.js';/,
@@ -1444,6 +1455,35 @@ assertNoLongDuplicateDisplayedTexts(
 assertNoNormalizedRouteTemplateDuplicates(
   'Displayed story prose should not contain route-name-swapped template paragraphs.'
 );
+assertNoDisplayedStoryPattern(
+  /성인|19금|18금|수위|미성년|성인\s*인증/,
+  'Displayed story prose should not expose rating or adult-premise meta labels in-game.'
+);
+assertNoDisplayedStoryPattern(
+  /성관계|섹스|정사|나체|속옷|강간|성기/,
+  'Displayed story prose should keep romance implication-based and avoid explicit sexual vocabulary.'
+);
+
+const adultTensionRouteAnchors = {
+  hyeongyeom: /질투|혼자 돌아가지|우산 아래.{0,24}(?:거리|가까|가지)|가지 마/,
+  ukhyun: /읽지 않은.{0,24}(?:문장|노트)|접힌 노트.{0,24}(?:붙잡|가까|숨기)|도서관.{0,24}가까|시선.{0,24}(?:피하|붙잡|머물)/,
+  jaeseong: /마이크.{0,24}꺼|장난.{0,24}(?:멈|끊|사라)|비공개.{0,24}(?:목소리|호출)|목소리.{0,24}(?:낮|떨|사라)/,
+  sangwon: /증거.{0,24}(?:남|보관|지우지)|기록.{0,24}(?:남|닫|감추)|선택.{0,24}(?:남|증명|보관)|지우지/,
+  sanguk: /손목.{0,24}(?:멈|놓|잡기 전)|숨.{0,24}(?:가빠|차|고르)|멈춰.{0,24}(?:세우|서)|뛰어.{0,24}(?:왔|와서)/,
+  junhyeok: /계산.{0,24}(?:무너|밖|틀리)|경로.{0,24}(?:막|접|버리)|통제.{0,24}(?:무너|놓|못)|오차.{0,24}(?:아니|라고 부르지)/,
+  dohun: /농담.{0,24}(?:끊|멈|사라)|질투|편의점.{0,24}(?:불빛|밤|영수증)|웃지.{0,24}(?:못|않)/,
+  haeum: /숨.{0,24}(?:가빠|멎|흔들|고르)|박자.{0,24}(?:흐트러|무너|겹|늦)|음악실.{0,24}(?:밤|정적|가까)|정적.{0,24}(?:가까|깨|내려)/,
+  yunho: /선배.{0,24}(?:늦게|부르|기다)|기다릴.{0,24}(?:게요|수|자리)|옥상.{0,24}(?:난간|기다|밤)|부르면.{0,24}(?:바로|갈)/
+};
+for (const [routeId, anchor] of Object.entries(adultTensionRouteAnchors)) {
+  const routeEntries = displayedTextsForIdPattern(routeLockOrEndingIdPattern(routeId));
+  assert.ok(
+    routeEntries.some((entry) => !entry.id.startsWith(`ending-${routeId}`)),
+    `${routeId} route should check post-lock story text, not only ending text.`
+  );
+  const routeTexts = routeEntries.map((entry) => entry.text).join('\n');
+  assert.match(routeTexts, anchor, `${routeId} route should include its stronger romance/tension anchor after route lock.`);
+}
 
 assert.doesNotMatch(
   scenarioSource,
