@@ -1,0 +1,5 @@
+agent-sprite-forge generate2dmap baked_scene_mode / baked_raster VN background import
+Style: Blue Archive-inspired clean anime visual novel background; no characters, no UI, no text.
+Canvas: imported at 1129x524 for the Hakbeom Archive VN stage.
+Scene target: Day 9 dohun rumor longform dating-sim route background.
+Source generated image: /home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf847e1708191b1c2ac6127032f6a.png

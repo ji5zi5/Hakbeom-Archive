@@ -1227,6 +1227,9 @@ for (const backgroundName of generatedBackgrounds) {
   );
 }
 
+const directBackgroundOutputs = (forgeManifestJson.outputs || [])
+  .filter((entry) => entry.sourceGeneratedImage && !entry.derivedFrom);
+const acceptedDirectBackgroundIds = new Set(directBackgroundOutputs.map((entry) => entry.id));
 const committedDerivedBackgrounds = (forgeManifestJson.outputs || [])
   .filter((entry) => entry.derivedFrom);
 assert.equal(
@@ -1235,18 +1238,37 @@ assert.equal(
   'Committed VN background manifest should not contain derivedFrom/tint-only backgrounds; future map expansion must use direct generate2dmap image sources.'
 );
 
-const removedDerivedBackgroundFiles = readdirSync('public/assets/bg')
-  .filter((file) => /^day[6-9]-.*(?:\.png|\.prompt\.txt)$/.test(file));
-assert.deepEqual(
-  removedDerivedBackgroundFiles,
-  [],
-  'Temporary Day 6-9 derived background files should stay deleted until direct agent-sprite-forge generation replaces them.'
+const recoveredLongformBackgrounds = directBackgroundOutputs
+  .map((entry) => entry.id)
+  .filter((id) => /^day[6-9]-(hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho)-(study|rain|festival|rumor)$/.test(id));
+assert.equal(
+  recoveredLongformBackgrounds.length,
+  34,
+  'Recovered cancelled Day 6-9 route background batch should import every available direct generated image without derivedFrom provenance.'
 );
+for (const backgroundName of recoveredLongformBackgrounds) {
+  const backgroundPath = `public/assets/bg/${backgroundName}.png`;
+  const promptPath = `public/assets/bg/${backgroundName}.prompt.txt`;
+  assert.deepEqual(
+    readPngSize(backgroundPath),
+    { width: 1129, height: 524 },
+    `Recovered longform background should preserve the BA stage size: ${backgroundName}.png`
+  );
+  assert.ok(
+    statSync(backgroundPath).size > 500_000,
+    `Recovered longform background should be a real direct generated raster asset: ${backgroundName}.png`
+  );
+  assert.match(
+    readSource(promptPath),
+    /agent-sprite-forge generate2dmap baked_scene_mode[\s\S]*no characters, no UI, no text[\s\S]*Source generated image:/,
+    `Recovered longform background should keep direct generation prompt provenance: ${backgroundName}.prompt.txt`
+  );
+}
 
 const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^'\"]+\.png/g)].map((match) => match[0]);
 assert.ok(
-  new Set(scenarioBackgroundRefs).size >= 12,
-  'Scenario BCG directives should keep using the accepted direct generated PNG VN background set instead of one repeated UI image.'
+  new Set(scenarioBackgroundRefs).size >= 44,
+  'Scenario BCG directives should use the recovered direct generated VN background set instead of one repeated UI image.'
 );
 
 assert.doesNotMatch(
@@ -1712,8 +1734,8 @@ for (const day of [6, 7, 8, 9]) {
       `Day ${day} ${routeId} free route background should exist on disk: ${bgDirective.src}`
     );
     assert.ok(
-      generatedBackgrounds.some((backgroundName) => bgDirective.src === `/assets/bg/${backgroundName}.png`),
-      `Day ${day} ${routeId} free route should use an accepted direct generated background until the 500-map production batch lands.`
+      acceptedDirectBackgroundIds.has(bgDirective.src.replace('/assets/bg/', '').replace(/\.png$/, '')),
+      `Day ${day} ${routeId} free route should use a manifest-accepted direct generated background.`
     );
     assert.equal(answer.name, '학범', `Day ${day} ${routeId} branch should include Hakbeom's direct dialogue response.`);
     assert.ok(

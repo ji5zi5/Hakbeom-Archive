@@ -112,7 +112,7 @@ Day 6–9처럼 공통 루트가 길어지는 구간은 보고서형 요약으�
 3. `reaction`: 상대가 자기 말투/성격으로 흔들린다.
 4. `close`: 다음 hub 또는 기존 day 본문으로 돌아가며, 70+ 호감도 variant를 넣어 관계 진전이 문장으로 보이게 한다.
 
-향후 route별 배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`처럼 장면 목적이 드러나게 명명한다. 단, 직접 생성된 PNG + `.prompt.txt` + manifest `sourceGeneratedImage` provenance가 모두 준비되기 전에는 해당 BCG를 시나리오에 연결하지 않는다. `derivedFrom` 파생 배경은 금지한다.
+Route별 배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`처럼 장면 목적이 드러나게 명명한다. 단, 직접 생성된 PNG + `.prompt.txt` + manifest `sourceGeneratedImage` provenance가 모두 준비된 파일만 BCG로 연결한다. 현재 `day9-haeum-rumor`, `day9-yunho-rumor`는 미생성 상태라 base background를 유지한다. `derivedFrom` 파생 배경은 금지한다.
 
 ## 초반 자유행동 / 장소 선택 규칙
 

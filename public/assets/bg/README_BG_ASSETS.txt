@@ -24,6 +24,6 @@ Batch 1 Season 1 longform additions:
 - rooftop-after-rain.png — generated via image_gen, 1129x524, prompt/provenance recorded.
 
 Longform dating-sim expansion pass:
-- The temporary Day 6–9 route-specific derived backgrounds were removed. They must not be restored as production art.
-- Future route/location expansion must add direct agent-sprite-forge/generate2dmap image outputs only: PNG + neighboring `.prompt.txt` + manifest entry with `sourceGeneratedImage`, dimensions, SHA-256, and intended scene use.
-- Do not commit `derivedFrom`/tint-only variants as accepted VN backgrounds. Route-specific names such as `day6-<route>-study` are production targets only after a direct generated source exists.
+- The cancelled direct-generation batch was recovered from `$CODEX_HOME/generated_images` and imported as 34 Day 6–9 route-specific PNG backgrounds.
+- These files are direct generated sources, not `derivedFrom`/tint-only variants. Each accepted image keeps a `.prompt.txt` and manifest `sourceGeneratedImage`, dimensions, SHA-256, byte size, and intended scene use.
+- The interrupted batch is still missing direct `day9-haeum-rumor` and `day9-yunho-rumor` assets; those scenes keep accepted base backgrounds until direct generation resumes.

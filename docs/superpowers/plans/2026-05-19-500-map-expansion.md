@@ -16,7 +16,7 @@
 - The next execution phase must not generate 500 images blindly. It first creates a scene-to-background demand map, then generates in batches of 50.
 - Final production target: 500 direct PNG backgrounds at 1129×524, each with `.prompt.txt` and manifest `sourceGeneratedImage`.
 - At least 350 backgrounds should be referenced by Season 1/route story scenes; the rest may be reserved in a documented catalog for planned future scenes.
-- Temporary Day 6–9 derived backgrounds stay deleted until replaced by direct generation.
+- Temporary Day 6–9 derived backgrounds stay deleted. The available cancelled direct-generation outputs are recovered as 34 accepted route backgrounds; `day9-haeum-rumor` and `day9-yunho-rumor` remain in the future generation backlog.
 
 ## Five parallel generation lanes
 
