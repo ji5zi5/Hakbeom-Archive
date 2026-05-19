@@ -1,13 +1,22 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const MIN_LINES = Number(process.env.MIN_SCENARIO_SOURCE_LINES || 10_000);
 const files = ['src/data/scenario.js'];
 
-if (existsSync('src/data/scenario')) {
-  for (const fileName of readdirSync('src/data/scenario').filter((file) => file.endsWith('.js')).sort()) {
-    files.push(`src/data/scenario/${fileName}`);
+function collectScenarioFiles(directory) {
+  if (!existsSync(directory)) return;
+  for (const fileName of readdirSync(directory).sort()) {
+    const path = join(directory, fileName);
+    if (fileName.endsWith('.js')) {
+      files.push(path);
+    } else if (!fileName.includes('.')) {
+      collectScenarioFiles(path);
+    }
   }
 }
+
+collectScenarioFiles('src/data/scenario');
 
 const counts = files.map((file) => ({
   file,

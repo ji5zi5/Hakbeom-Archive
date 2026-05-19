@@ -24,6 +24,12 @@ Batch 1 Season 1 longform additions:
 - rooftop-after-rain.png — generated via image_gen, 1129x524, prompt/provenance recorded.
 
 Longform dating-sim expansion pass:
-- The cancelled direct-generation batch was recovered from `$CODEX_HOME/generated_images` and imported as 34 Day 6–9 route-specific PNG backgrounds.
+- The cancelled direct-generation batch was recovered from `$CODEX_HOME/generated_images` and imported as 36 Day 6–9 route-specific PNG backgrounds.
 - These files are direct generated sources, not `derivedFrom`/tint-only variants. Each accepted image keeps a `.prompt.txt` and manifest `sourceGeneratedImage`, dimensions, SHA-256, byte size, and intended scene use.
-- The interrupted batch is still missing direct `day9-haeum-rumor` and `day9-yunho-rumor` assets; those scenes keep accepted base backgrounds until direct generation resumes.
+- The previously missing direct `day9-haeum-rumor` and `day9-yunho-rumor` assets are restored as direct generated PNGs with prompt sidecars, manifest `sourceGeneratedImage`, route binding, and no `derivedFrom` provenance.
+
+Route-depth 2026-05 cohort C provenance:
+- `day6-dohun-study.png`, `day7-dohun-rain.png`, `day8-dohun-festival.png`, `day9-dohun-rumor.png`, `day11-dohun-morning.png`, `day13-dohun-truth.png` are direct route-bound 도훈 backgrounds.
+- `day6-haeum-study.png`, `day7-haeum-rain.png`, `day8-haeum-festival.png`, `day9-haeum-rumor.png`, `day11-haeum-morning.png`, `day13-haeum-truth.png` are direct route-bound 하음 backgrounds.
+- `day6-yunho-study.png`, `day7-yunho-rain.png`, `day8-yunho-festival.png`, `day9-yunho-rumor.png`, `day11-yunho-morning.png`, `day13-yunho-truth.png` are direct route-bound 윤호 backgrounds.
+- These entries are bound in `agent-sprite-forge-manifest.json` with `routeId` and `expansionBatch: route-depth-2026-05` and remain direct raster imports, not derived or placeholder art.

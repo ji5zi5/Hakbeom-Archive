@@ -4,6 +4,11 @@ import { routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
 import {
+  ROUTE_DEPTH_BATCH_ID,
+  routeDepthRoutes,
+  routeDepthSceneBackgroundBindings
+} from '../src/data/scenario/batch1RouteDepth/routeDepthBatchMatrix.js';
+import {
   applyAudioDirective,
   applyAudioItem,
   clampVolumePercent,
@@ -167,11 +172,18 @@ const replayDirectorSource = topLevelFunctionSource(vnEngine, 'replayDirectorSta
 
 function readScenarioSourceTree() {
   const parts = [readSource('src/data/scenario.js')];
-  if (existsSync('src/data/scenario')) {
-    for (const fileName of readdirSync('src/data/scenario').filter((file) => file.endsWith('.js')).sort()) {
-      parts.push(readSource(`src/data/scenario/${fileName}`));
+  const collect = (directory) => {
+    if (!existsSync(directory)) return;
+    for (const fileName of readdirSync(directory).sort()) {
+      const path = `${directory}/${fileName}`;
+      if (statSync(path).isDirectory()) {
+        collect(path);
+      } else if (fileName.endsWith('.js')) {
+        parts.push(readSource(path));
+      }
     }
-  }
+  };
+  collect('src/data/scenario');
   return parts.join('\n');
 }
 
@@ -1243,8 +1255,8 @@ const recoveredLongformBackgrounds = directBackgroundOutputs
   .filter((id) => /^day[6-9]-(hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho)-(study|rain|festival|rumor)$/.test(id));
 assert.equal(
   recoveredLongformBackgrounds.length,
-  34,
-  'Recovered cancelled Day 6-9 route background batch should import every available direct generated image without derivedFrom provenance.'
+  36,
+  'Recovered cancelled Day 6-9 route background batch should import every available direct generated image, including restored Haeum/Yunho Day 9 rumor backgrounds, without derivedFrom provenance.'
 );
 for (const backgroundName of recoveredLongformBackgrounds) {
   const backgroundPath = `public/assets/bg/${backgroundName}.png`;
@@ -1276,6 +1288,113 @@ assert.doesNotMatch(
   /type:\s*'BCG'[\s\S]{0,120}\/assets\/ui\/image0_13_6\.jpg/,
   'Scenario BCG directives should not keep routing every scene to the old UI placeholder background.'
 );
+
+const routeDepthBackgroundBindingsByScene = new Map(
+  routeDepthSceneBackgroundBindings.map((binding) => [binding.sceneId, binding.backgroundId])
+);
+const routeDepthManifestById = new Map((forgeManifestJson.outputs || []).map((entry) => [entry.id, entry]));
+for (const cohortModule of ['coreRoutes', 'clubRoutes', 'afterSchoolRoutes']) {
+  assert.ok(
+    existsSync(`src/data/scenario/batch1RouteDepth/${cohortModule}.js`),
+    `Route depth batch should import real cohort module scenes from ${cohortModule}.js.`
+  );
+}
+for (const route of routeDepthRoutes) {
+  assert.ok(route.id, 'Route depth matrix entries should include stable route ids.');
+  assert.ok(Array.isArray(route.sceneIds), `${route.id} should list batch-counted scene ids.`);
+  assert.ok(Array.isArray(route.backgroundIds), `${route.id} should list deterministic route background ids.`);
+  assert.ok(route.sceneIds.length >= 8, `${route.id} should target at least 8 batch-counted scenes.`);
+  assert.ok(route.backgroundIds.length >= 6, `${route.id} should target at least 6 route-bound backgrounds.`);
+  assert.ok(
+    route.sceneIds.every((sceneId) => sceneId.startsWith(`batch1-${route.id}-`)),
+    `${route.id} batch-counted scenes should come from imported route-depth cohort modules, not legacy metadata overlays.`
+  );
+
+  const routeScenes = route.sceneIds.map((sceneId) => scenario.find((item) => item.id === sceneId));
+  assert.equal(
+    routeScenes.filter(Boolean).length,
+    route.sceneIds.length,
+    `${route.id} route depth matrix should only list existing scenario scene ids.`
+  );
+  assert.equal(
+    scenario.find((item) => item.id === `day14-${route.id}-afterglow`)?.nextId,
+    route.sceneIds[0],
+    `${route.id} Day 14 route flow should enter the imported route-depth module before returning to merge.`
+  );
+
+  const arcStagesByArc = new Map();
+  for (const scene of routeScenes) {
+    assert.equal(scene.type, 'dialogue', `${scene.id} should be a real dialogue-forward route-depth scene.`);
+    assert.equal(scene.batchModule, 'batch1RouteDepth', `${scene.id} should come from the route-depth batch module.`);
+    assert.ok(
+      typeof scene.text === 'string' && scene.text.length >= 60 && /“|”|학범|선배|네가|내가|너/.test(scene.text),
+      `${scene.id} should contain substantial route-depth prose involving Hakbeom or the route relationship.`
+    );
+    assert.equal(scene.routeId, route.id, `${scene.id} should declare routeId ${route.id}.`);
+    assert.equal(
+      scene.expansionBatch,
+      ROUTE_DEPTH_BATCH_ID,
+      `${scene.id} should declare expansionBatch ${ROUTE_DEPTH_BATCH_ID}.`
+    );
+    assert.ok(scene.arcId, `${scene.id} should declare an arcId.`);
+    assert.ok(scene.arcStage, `${scene.id} should declare an arcStage.`);
+    if (!arcStagesByArc.has(scene.arcId)) arcStagesByArc.set(scene.arcId, new Set());
+    arcStagesByArc.get(scene.arcId).add(scene.arcStage);
+
+    const bgDirective = (scene.directives || []).find((directive) => directive.type === 'BCG');
+    if (bgDirective?.src) {
+      assert.notEqual(
+        bgDirective.src,
+        '/assets/ui/image0_13_6.jpg',
+        `${scene.id} should not use the old UI placeholder as a route-depth BCG.`
+      );
+    }
+  }
+
+  assert.ok(
+    [...arcStagesByArc.values()].some((stages) => (
+      stages.has('beginning') && stages.has('escalation') && stages.has('payoff')
+    )),
+    `${route.id} should have at least one complete beginning/escalation/payoff mini arc.`
+  );
+
+  for (const backgroundId of route.backgroundIds) {
+    const manifestEntry = routeDepthManifestById.get(backgroundId);
+    assert.ok(manifestEntry, `${backgroundId} should exist in the background manifest.`);
+    assert.ok(
+      manifestEntry.routeId === route.id
+        || new RegExp(`^(day\\d+-${route.id}-|route-${route.id}-)`).test(backgroundId),
+      `${backgroundId} manifest entry or filename should deterministically bind to ${route.id}.`
+    );
+    assert.ok(manifestEntry.sourceGeneratedImage, `${backgroundId} should keep direct sourceGeneratedImage provenance.`);
+    assert.equal(manifestEntry.derivedFrom, undefined, `${backgroundId} should not use derivedFrom provenance.`);
+    assert.deepEqual(
+      readPngSize(manifestEntry.path),
+      { width: 1129, height: 524 },
+      `${backgroundId} should be imported at the BA stage size.`
+    );
+    assert.ok(existsSync(manifestEntry.promptPath), `${backgroundId} should keep a prompt sidecar.`);
+    assert.ok(
+      routeScenes.some((scene) => {
+        const boundBackgroundId = routeDepthBackgroundBindingsByScene.get(scene.id);
+        const directiveBackgroundId = (scene.directives || [])
+          .find((directive) => directive.type === 'BCG')
+          ?.src
+          ?.replace('/assets/bg/', '')
+          .replace(/\.png$/, '');
+        return boundBackgroundId === backgroundId || directiveBackgroundId === backgroundId;
+      }),
+      `${backgroundId} should be used by a batch-counted ${route.id} scene.`
+    );
+  }
+}
+
+for (const requiredRumorBackground of ['day9-haeum-rumor', 'day9-yunho-rumor']) {
+  const manifestEntry = routeDepthManifestById.get(requiredRumorBackground);
+  assert.ok(manifestEntry, `${requiredRumorBackground} should be restored as a direct manifest entry.`);
+  assert.ok(manifestEntry.sourceGeneratedImage, `${requiredRumorBackground} should use direct generated-image provenance.`);
+  assert.equal(manifestEntry.derivedFrom, undefined, `${requiredRumorBackground} should not be derived or tint-only.`);
+}
 
 assert.match(
   scenarioSource,

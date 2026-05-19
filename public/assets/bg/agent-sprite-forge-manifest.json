@@ -209,7 +209,9 @@
       "sha256": "3f767285130b2ae8910e23ce5c22d6d0585cc22f44ac97667e30eb2325c0a86c",
       "bytes": 919381,
       "promptPath": "public/assets/bg/day6-dohun-study.prompt.txt",
-      "sceneUse": "day6 dohun longform dating-sim expansion direct import"
+      "sceneUse": "day6 dohun longform dating-sim expansion direct import",
+      "routeId": "dohun",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day6-haeum-study",
@@ -220,7 +222,9 @@
       "sha256": "c9897aa194fbbfc93d6ddee8b9e193b48adca5a594c8615ea757a179b02347e2",
       "bytes": 820145,
       "promptPath": "public/assets/bg/day6-haeum-study.prompt.txt",
-      "sceneUse": "day6 haeum longform dating-sim expansion direct import"
+      "sceneUse": "day6 haeum longform dating-sim expansion direct import",
+      "routeId": "haeum",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day6-yunho-study",
@@ -231,7 +235,9 @@
       "sha256": "e5e2b004e8ac0b9bce5733a6ea02ba8b0ea1d0471407d74231a953367b86c2cd",
       "bytes": 842847,
       "promptPath": "public/assets/bg/day6-yunho-study.prompt.txt",
-      "sceneUse": "day6 yunho longform dating-sim expansion direct import"
+      "sceneUse": "day6 yunho longform dating-sim expansion direct import",
+      "routeId": "yunho",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day7-hyeongyeom-rain",
@@ -308,7 +314,9 @@
       "sha256": "be8d854754fa513caf05e7a91e7f3ac4e88d34d94b15adf667b69e62058fd4fe",
       "bytes": 990945,
       "promptPath": "public/assets/bg/day7-dohun-rain.prompt.txt",
-      "sceneUse": "day7 dohun longform dating-sim expansion direct import"
+      "sceneUse": "day7 dohun longform dating-sim expansion direct import",
+      "routeId": "dohun",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day7-haeum-rain",
@@ -319,7 +327,9 @@
       "sha256": "7c1c4a3dfa70036c3511371b12eb774f580b1c12b5171fff2b323b6530e6b575",
       "bytes": 785332,
       "promptPath": "public/assets/bg/day7-haeum-rain.prompt.txt",
-      "sceneUse": "day7 haeum longform dating-sim expansion direct import"
+      "sceneUse": "day7 haeum longform dating-sim expansion direct import",
+      "routeId": "haeum",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day7-yunho-rain",
@@ -330,7 +340,9 @@
       "sha256": "95782ec61535fbc204c56912636fd0d446d7e57e146cd75d4dbf0ccaf6eb469d",
       "bytes": 819335,
       "promptPath": "public/assets/bg/day7-yunho-rain.prompt.txt",
-      "sceneUse": "day7 yunho longform dating-sim expansion direct import"
+      "sceneUse": "day7 yunho longform dating-sim expansion direct import",
+      "routeId": "yunho",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day8-hyeongyeom-festival",
@@ -407,7 +419,9 @@
       "sha256": "755e6441c88ac44cd8af6d003e12cd7321d94f862f7575a4780ed7bd8629965b",
       "bytes": 916183,
       "promptPath": "public/assets/bg/day8-dohun-festival.prompt.txt",
-      "sceneUse": "day8 dohun longform dating-sim expansion direct import"
+      "sceneUse": "day8 dohun longform dating-sim expansion direct import",
+      "routeId": "dohun",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day8-haeum-festival",
@@ -418,7 +432,9 @@
       "sha256": "bc1332c7b7fde046b7372bc4d35380b03c290fbde53339bcbb7eaf063e374c12",
       "bytes": 835477,
       "promptPath": "public/assets/bg/day8-haeum-festival.prompt.txt",
-      "sceneUse": "day8 haeum longform dating-sim expansion direct import"
+      "sceneUse": "day8 haeum longform dating-sim expansion direct import",
+      "routeId": "haeum",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day8-yunho-festival",
@@ -429,7 +445,9 @@
       "sha256": "ed5afa15de375f4113e0c25dc62f46aa9b44c3022622e9f1d386d85723b4a142",
       "bytes": 1020281,
       "promptPath": "public/assets/bg/day8-yunho-festival.prompt.txt",
-      "sceneUse": "day8 yunho longform dating-sim expansion direct import"
+      "sceneUse": "day8 yunho longform dating-sim expansion direct import",
+      "routeId": "yunho",
+      "expansionBatch": "route-depth-2026-05"
     },
     {
       "id": "day9-hyeongyeom-rumor",
@@ -506,7 +524,257 @@
       "sha256": "6ff64569ecad0887d23af44cfca1422018b16b19386c3911a11f1933cc2b180d",
       "bytes": 885920,
       "promptPath": "public/assets/bg/day9-dohun-rumor.prompt.txt",
-      "sceneUse": "day9 dohun longform dating-sim expansion direct import"
+      "sceneUse": "day9 dohun longform dating-sim expansion direct import",
+      "routeId": "dohun",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day11-hyeongyeom-morning",
+      "path": "public/assets/bg/day11-hyeongyeom-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be51fd78c81918c0c48df6feee393.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "3d58b42897a7e6daed03e7c9f3b0e04e0430db6e21aac09a638d0a8544be572b",
+      "bytes": 857030,
+      "promptPath": "public/assets/bg/day11-hyeongyeom-morning.prompt.txt",
+      "routeId": "hyeongyeom",
+      "sceneUse": "Day 11 selected-route morning hyeongyeom route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day13-hyeongyeom-truth",
+      "path": "public/assets/bg/day13-hyeongyeom-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be78f94848191bda47d871c762e95.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "70313a97959fcf44c3a3a47a23ee6f39b0524d1c6a1c641046563a8180f8a931",
+      "bytes": 997009,
+      "promptPath": "public/assets/bg/day13-hyeongyeom-truth.prompt.txt",
+      "routeId": "hyeongyeom",
+      "sceneUse": "Day 13 truth-before-confession hyeongyeom route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day11-ukhyun-morning",
+      "path": "public/assets/bg/day11-ukhyun-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be55cb56881919e1319280b20355d.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "0d8762b5206569c0bb1be388e10a9eab26b2e371644a01af0aecda2f574b1d69",
+      "bytes": 880909,
+      "promptPath": "public/assets/bg/day11-ukhyun-morning.prompt.txt",
+      "routeId": "ukhyun",
+      "sceneUse": "Day 11 selected-route morning ukhyun route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day13-ukhyun-truth",
+      "path": "public/assets/bg/day13-ukhyun-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be8464d0081918984d4b829a1c3f4.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "b20942baff1c601058eb53bae15d33e1e6cfd7326704762e6a93ac30f73466d4",
+      "bytes": 860397,
+      "promptPath": "public/assets/bg/day13-ukhyun-truth.prompt.txt",
+      "routeId": "ukhyun",
+      "sceneUse": "Day 13 truth-before-confession ukhyun route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day11-jaeseong-morning",
+      "path": "public/assets/bg/day11-jaeseong-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be59c8c508191aea1a82ea2a54b2b.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "cf1954b0691668240083dd66a9b59a521a170948fa695158076e007b6982a281",
+      "bytes": 885402,
+      "promptPath": "public/assets/bg/day11-jaeseong-morning.prompt.txt",
+      "routeId": "jaeseong",
+      "sceneUse": "Day 11 selected-route morning jaeseong route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day13-jaeseong-truth",
+      "path": "public/assets/bg/day13-jaeseong-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be88310448191a942a9d2f27917c4.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "6b257901143f73b90b9637d4f0bf98a9b34be0d932157a3007f151cc55b90ab8",
+      "bytes": 917044,
+      "promptPath": "public/assets/bg/day13-jaeseong-truth.prompt.txt",
+      "routeId": "jaeseong",
+      "sceneUse": "Day 13 truth-before-confession jaeseong route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day11-sangwon-morning",
+      "path": "public/assets/bg/day11-sangwon-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be5e25ba88191ba7941b82bf3c831.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "846fd035f34d225e753036ab291cdde53b68060641c96d64f7f7be960de55a78",
+      "bytes": 795556,
+      "promptPath": "public/assets/bg/day11-sangwon-morning.prompt.txt",
+      "routeId": "sangwon",
+      "sceneUse": "Day 11 selected-route morning sangwon route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day13-sangwon-truth",
+      "path": "public/assets/bg/day13-sangwon-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be8cc981881918ece27cd63743442.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "6c5a1a80b1abe6e2c7460afe26c553ce4b5039b17655f7c3990c47f9e0b97f77",
+      "bytes": 786990,
+      "promptPath": "public/assets/bg/day13-sangwon-truth.prompt.txt",
+      "routeId": "sangwon",
+      "sceneUse": "Day 13 truth-before-confession sangwon route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day11-sanguk-morning",
+      "path": "public/assets/bg/day11-sanguk-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be626d3d081919a02de6c5c6c7e93.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "8cc120ad00d07d786e3b42b308a656de8e7b1ac484d8961abe87c39e38632ad4",
+      "bytes": 780884,
+      "promptPath": "public/assets/bg/day11-sanguk-morning.prompt.txt",
+      "routeId": "sanguk",
+      "sceneUse": "Day 11 selected-route morning sanguk route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day13-sanguk-truth",
+      "path": "public/assets/bg/day13-sanguk-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf53eb6048191b8b55bad9435304f.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "db5ff5a3e3cc8520739ba862e2422e4fa99906ed494f8364bff79d52af3e635b",
+      "bytes": 838599,
+      "promptPath": "public/assets/bg/day13-sanguk-truth.prompt.txt",
+      "routeId": "sanguk",
+      "sceneUse": "Day 13 truth-before-confession sanguk route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day11-junhyeok-morning",
+      "path": "public/assets/bg/day11-junhyeok-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be66c4ae881919975768f01f3884c.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "16b34ea7c97e4c3cda6d3d9b2b0356738b784b2fb3c13303d87fe503d735de56",
+      "bytes": 747290,
+      "promptPath": "public/assets/bg/day11-junhyeok-morning.prompt.txt",
+      "routeId": "junhyeok",
+      "sceneUse": "Day 11 selected-route morning junhyeok route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day13-junhyeok-truth",
+      "path": "public/assets/bg/day13-junhyeok-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf57a0fd4819181c91ca76d2a1017.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "449b7f4dd594d779203d15cdfeba3f1cf96ea8e28fd41cd83935ca33822e13a5",
+      "bytes": 855863,
+      "promptPath": "public/assets/bg/day13-junhyeok-truth.prompt.txt",
+      "routeId": "junhyeok",
+      "sceneUse": "Day 13 truth-before-confession junhyeok route-depth-2026-05 direct import"
+    },
+    {
+      "id": "day11-dohun-morning",
+      "path": "public/assets/bg/day11-dohun-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be6af1a348191be4f1c77e3a16758.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "be8d854754fa513caf05e7a91e7f3ac4e88d34d94b15adf667b69e62058fd4fe",
+      "bytes": 990945,
+      "promptPath": "public/assets/bg/day11-dohun-morning.prompt.txt",
+      "routeId": "dohun",
+      "sceneUse": "Day 11 selected-route morning dohun route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day13-dohun-truth",
+      "path": "public/assets/bg/day13-dohun-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf5ba22a881918b1455ff14619d4b.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "755e6441c88ac44cd8af6d003e12cd7321d94f862f7575a4780ed7bd8629965b",
+      "bytes": 916183,
+      "promptPath": "public/assets/bg/day13-dohun-truth.prompt.txt",
+      "routeId": "dohun",
+      "sceneUse": "Day 13 truth-before-confession dohun route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day9-haeum-rumor",
+      "path": "public/assets/bg/day9-haeum-rumor.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf5ff9440819193a41c3f6473e444.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "bc1332c7b7fde046b7372bc4d35380b03c290fbde53339bcbb7eaf063e374c12",
+      "bytes": 835477,
+      "promptPath": "public/assets/bg/day9-haeum-rumor.prompt.txt",
+      "routeId": "haeum",
+      "sceneUse": "Day 9 rumor bridge haeum route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day11-haeum-morning",
+      "path": "public/assets/bg/day11-haeum-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be6f34b9c8191a270da79bee26b30.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "7c1c4a3dfa70036c3511371b12eb774f580b1c12b5171fff2b323b6530e6b575",
+      "bytes": 785332,
+      "promptPath": "public/assets/bg/day11-haeum-morning.prompt.txt",
+      "routeId": "haeum",
+      "sceneUse": "Day 11 selected-route morning haeum route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day13-haeum-truth",
+      "path": "public/assets/bg/day13-haeum-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf5ff9440819193a41c3f6473e444.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "bc1332c7b7fde046b7372bc4d35380b03c290fbde53339bcbb7eaf063e374c12",
+      "bytes": 835477,
+      "promptPath": "public/assets/bg/day13-haeum-truth.prompt.txt",
+      "routeId": "haeum",
+      "sceneUse": "Day 13 truth-before-confession haeum route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day9-yunho-rumor",
+      "path": "public/assets/bg/day9-yunho-rumor.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf64181a88191a3f90e0f6dfda490.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "ed5afa15de375f4113e0c25dc62f46aa9b44c3022622e9f1d386d85723b4a142",
+      "bytes": 1020281,
+      "promptPath": "public/assets/bg/day9-yunho-rumor.prompt.txt",
+      "routeId": "yunho",
+      "sceneUse": "Day 9 rumor bridge yunho route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day11-yunho-morning",
+      "path": "public/assets/bg/day11-yunho-morning.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0be73fc44c81918dda133a460c48ca.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "95782ec61535fbc204c56912636fd0d446d7e57e146cd75d4dbf0ccaf6eb469d",
+      "bytes": 819335,
+      "promptPath": "public/assets/bg/day11-yunho-morning.prompt.txt",
+      "routeId": "yunho",
+      "sceneUse": "Day 11 selected-route morning yunho route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
+    },
+    {
+      "id": "day13-yunho-truth",
+      "path": "public/assets/bg/day13-yunho-truth.png",
+      "sourceGeneratedImage": "/home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf64181a88191a3f90e0f6dfda490.png",
+      "width": 1129,
+      "height": 524,
+      "sha256": "ed5afa15de375f4113e0c25dc62f46aa9b44c3022622e9f1d386d85723b4a142",
+      "bytes": 1020281,
+      "promptPath": "public/assets/bg/day13-yunho-truth.prompt.txt",
+      "routeId": "yunho",
+      "sceneUse": "Day 13 truth-before-confession yunho route-depth-2026-05 direct import",
+      "expansionBatch": "route-depth-2026-05"
     }
   ]
 }

@@ -1,0 +1,5 @@
+agent-sprite-forge generate2dmap baked_scene_mode route-depth-2026-05
+Route: 하음 (haeum)
+Scene use: Day 13 truth-before-confession
+Style: Blue Archive inspired empty school dating-sim background, cinematic lighting, no characters, no UI, no text.
+Source generated image: /home/jio/.codex/generated_images/019e2b47-ad2b-7bc1-a502-3644e7a6d816/ig_0c9d63995d177d65016a0bf5ff9440819193a41c3f6473e444.png
