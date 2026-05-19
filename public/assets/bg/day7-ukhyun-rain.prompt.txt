@@ -1,0 +1,6 @@
+agent-sprite-forge generate2dmap baked_scene_mode prompt for Hakbeom Archive VN background.
+Scene: 비 오는 귀갓길과 작은 질투 / 욱현 route private dating-sim beat.
+Base style anchor: library-window.png from the existing agent-sprite-forge generated VN background bundle.
+Art direction: clean HD Korean academy visual novel background, 1129x524, no characters, no UI, no text, no labels; rainy blue light, wet windows, intimate tension after a rumor.
+Runtime intent: BCG for dialogue-forward route interaction, not a placeholder or SVG color plate.
+Postprocess: deterministic VN lighting/color/rain/bokeh pass using the project-local agent-sprite-forge Python environment to preserve 1129x524 raster contract.

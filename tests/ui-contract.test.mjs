@@ -1190,6 +1190,7 @@ assert.match(
   'Repo should record the GitHub source and commit used for the agent-sprite-forge install.'
 );
 const forgeManifest = readSource('public/assets/bg/agent-sprite-forge-manifest.json');
+const forgeManifestJson = JSON.parse(forgeManifest);
 assert.match(
   forgeManifest,
   /"tool":\s*"agent-sprite-forge\/generate2dmap"[\s\S]*"visualAssetSource":\s*"built-in image_gen"[\s\S]*"mapMode":\s*"baked_scene_mode"[\s\S]*"visualModel":\s*"baked_raster"/,
@@ -1226,10 +1227,37 @@ for (const backgroundName of generatedBackgrounds) {
   );
 }
 
-const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^']+\.png/g)].map((match) => match[0]);
+const longformExpansionBackgrounds = (forgeManifestJson.outputs || [])
+  .map((entry) => entry.id)
+  .filter((id) => /^day[6-9]-(hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho)-(study|rain|festival|rumor)$/.test(id));
+assert.equal(
+  longformExpansionBackgrounds.length,
+  36,
+  'Longform rewrite should add day 6-9 route-specific VN backgrounds through the agent-sprite-forge bundle.'
+);
+for (const backgroundName of longformExpansionBackgrounds) {
+  const backgroundPath = `public/assets/bg/${backgroundName}.png`;
+  const promptPath = `public/assets/bg/${backgroundName}.prompt.txt`;
+  assert.deepEqual(
+    readPngSize(backgroundPath),
+    { width: 1129, height: 524 },
+    `Longform background should preserve the BA stage size: ${backgroundName}.png`
+  );
+  assert.ok(
+    statSync(backgroundPath).size > 500_000,
+    `Longform background should be a real raster scene variant, not a flat placeholder: ${backgroundName}.png`
+  );
+  assert.match(
+    readSource(promptPath),
+    /agent-sprite-forge generate2dmap baked_scene_mode[\s\S]*no characters, no UI, no text/,
+    `Longform background should keep forge prompt provenance: ${backgroundName}.prompt.txt`
+  );
+}
+
+const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^'\"]+\.png/g)].map((match) => match[0]);
 assert.ok(
-  new Set(scenarioBackgroundRefs).size >= 6,
-  'Scenario BCG directives should use multiple generated PNG VN backgrounds instead of one repeated UI image.'
+  new Set(scenarioBackgroundRefs).size >= 42,
+  'Scenario BCG directives should use a broad generated PNG VN background set instead of one repeated UI image.'
 );
 
 assert.doesNotMatch(
@@ -1660,6 +1688,46 @@ for (const day of [6, 7, 8]) {
 assert.ok(
   scenario.some((item) => item.id === 'day8-closing' && item.nextId === 'day9-chapter-card'),
   'Day 8 should continue into Day 9 after the route-pressure expansion.'
+);
+
+const longformFreeTimeRoutes = ['hyeongyeom', 'ukhyun', 'jaeseong', 'sangwon', 'sanguk', 'junhyeok', 'dohun', 'haeum', 'yunho'];
+for (const day of [6, 7, 8, 9]) {
+  assert.equal(
+    scenario.find((item) => item.id === `day${day}-opening`)?.nextId,
+    `day${day}-free-hub-a`,
+    `Day ${day} opening should route into the dialogue-forward free-action expansion before the summary beats.`
+  );
+  for (const hubSuffix of ['a', 'b', 'c']) {
+    const hub = scenario.find((item) => item.id === `day${day}-free-hub-${hubSuffix}`);
+    assert.equal(hub?.type, 'choice', `Day ${day} free hub ${hubSuffix} should be a player action choice.`);
+    assert.equal(hub?.choices?.length, 3, `Day ${day} free hub ${hubSuffix} should keep the three-choice visual contract.`);
+    assert.equal(hub?.rewards?.length, 3, `Day ${day} free hub ${hubSuffix} should reward each action choice.`);
+    assert.ok(
+      hub.rewards.every((reward) => Object.keys(reward.affection || {}).length === 1 && (reward.flags || []).some((flag) => flag.endsWith('_route_seed'))),
+      `Day ${day} free hub ${hubSuffix} should seed a concrete dating route instead of a generic report choice.`
+    );
+  }
+  for (const routeId of longformFreeTimeRoutes) {
+    const entry = scenario.find((item) => item.id === `day${day}-free-${routeId}-entry`);
+    const answer = scenario.find((item) => item.id === `day${day}-free-${routeId}-answer`);
+    const reaction = scenario.find((item) => item.id === `day${day}-free-${routeId}-reaction`);
+    const close = scenario.find((item) => item.id === `day${day}-free-${routeId}-close`);
+    assert.ok(entry && answer && reaction && close, `Day ${day} should add a four-beat dialogue route for ${routeId}.`);
+    assert.ok(
+      (entry.directives || []).some((directive) => directive.type === 'BCG' && directive.src === `/assets/bg/day${day}-${routeId}-${day === 6 ? 'study' : day === 7 ? 'rain' : day === 8 ? 'festival' : 'rumor'}.png`),
+      `Day ${day} ${routeId} free route should use its matching generated background.`
+    );
+    assert.equal(answer.name, '학범', `Day ${day} ${routeId} branch should include Hakbeom's direct dialogue response.`);
+    assert.ok(
+      (close.variants || []).some((variant) => variant.affection?.[routeId]?.min === 70),
+      `Day ${day} ${routeId} branch should react differently at high affection.`
+    );
+  }
+}
+assert.doesNotMatch(
+  scenarioSource,
+  /발신자 없는|알 수 없음|범인|추리|누군가 일부러 동선을 흐린|없는 호출음/,
+  'Late story should read as dating-sim rehearsal/confession build-up, not a mystery plot.'
 );
 for (const day of [9, 10]) {
   assert.ok(

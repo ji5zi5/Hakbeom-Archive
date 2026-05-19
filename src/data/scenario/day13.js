@@ -24,7 +24,7 @@ export const day13Scenes = [
     "name": "학범",
     "role": "학생회",
     "place": "학생회 기록실",
-    "text": "축제 전날, 문화제 기록집 마지막 페이지는 아직 비어 있었다. 책상 위 초대장에는 학범의 이름과 “내일, 직접 써 주세요”라는 문장만 남아 있었다.",
+    "text": "축제 전날, 문화제 기록집 마지막 페이지는 비어 있었다. 학범은 초대장을 펼치며 말했다. “내일 직접 쓰라는 거지. 그럼 오늘은 직접 말하는 연습부터.”",
     "directives": [
       {
         "type": "BCG",
@@ -261,7 +261,7 @@ export const day13Scenes = [
       "quiet": "day13-hyeongyeom-crisis",
       "default": "day13-hyeongyeom-crisis"
     },
-    "text": "불안이 커질수록 학범은 혼자 움직이던 버릇부터 눌러 참았다. 오늘은 가장 먼저, 어제 함께 약점을 드러낸 사람에게 알리기로 했다."
+    "text": "불안이 올라올수록 학범은 기록집을 닫았다. 오늘은 혼자 해결하는 대신, 가장 먼저 보고 싶은 사람에게 “같이 있어 줘”라고 말하기로 했다."
   },
   {
     "id": "day13-hyeongyeom-crisis",
@@ -1427,7 +1427,7 @@ export const day13Scenes = [
     "id": "choice-day13-final-risk",
     "type": "choice",
     "choices": [
-      "혼자 고백 연습이 된다.",
+      "혼자 웅얼거리는 대신 직접 만나 연습한다.",
       "선택한 사람에게 전부 말한다.",
       "친구들 모두에게 역할을 나눈다."
     ],
@@ -1462,7 +1462,7 @@ export const day13Scenes = [
     "name": "학범",
     "role": "학생회",
     "place": "중앙 계단",
-    "text": "학범은 혼자 고백 연습이 되겠다고 적었다가, 바로 줄을 그었다. 혼자 해결하는 방식이야말로 이번 문화제 준비가 흔든 약점이었다.",
+    "text": "학범은 혼자 웅얼거리겠다고 적었다가 바로 줄을 그었다. “아니, 이번엔 직접 만나서 말할래.” 그 문장이 더 학범다웠다.",
     "nextId": "day13-night-message"
   },
   {
@@ -1492,19 +1492,19 @@ export const day13Scenes = [
     "type": "phone",
     "kind": "phone",
     "chapter": "day-13",
-    "name": "알 수 없음",
+    "name": "선택한 사람",
     "role": "메시지",
     "place": "밤의 화면",
-    "text": "밤 11시 11분, 발신자 없는 메시지가 도착했다.",
+    "text": "밤 11시 11분, 잠들기 직전 마지막 메시지가 도착했다.",
     "messages": [
       {
         "from": "unknown",
-        "text": "선택은 확인했다. 마지막 장은 축제에서 돌려준다.",
+        "text": "내일 네가 먼저 와. 마지막 장은 같이 쓰자.",
         "read": true
       },
       {
         "from": "unknown",
-        "text": "단, 고백을 기록으로 대신하지 말 것.",
+        "text": "단, 고백은 기록으로 대신하지 말고 직접 말해 줘.",
         "read": true
       }
     ],

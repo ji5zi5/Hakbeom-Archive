@@ -22,3 +22,8 @@ Batch 1 Season 1 longform additions:
 - music-room-late-afternoon.png — generated via image_gen, 1129x524, prompt/provenance recorded.
 - convenience-store-night.png — generated via image_gen, 1129x524, prompt/provenance recorded.
 - rooftop-after-rain.png — generated via image_gen, 1129x524, prompt/provenance recorded.
+
+Longform dating-sim expansion pass:
+- Day 6–9 adds 36 route-specific VN background PNGs: `day6-<route>-study`, `day7-<route>-rain`, `day8-<route>-festival`, and `day9-<route>-rumor` for all nine route targets.
+- These files are agent-sprite-forge/generate2dmap baked-scene assets derived from the existing generated background bundle with deterministic VN lighting/rain/bokeh post-processing in the project-local Forge Python environment.
+- Each accepted variant keeps a `.prompt.txt` with the creative scene prompt and a manifest entry with `derivedFrom`, size, SHA-256, and runtime scene use.

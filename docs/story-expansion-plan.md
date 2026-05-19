@@ -105,8 +105,9 @@ Each background requires:
    - First modularize `src/data/scenario.js`, then add six 3–5 beat mini-routes and first route flags.
    - Batch 2 started 2026-05-18: scenario data is split under `src/data/scenario/`; Day 5 adds the first route-seed pass for 상원/상욱/준혁/도훈/하음/윤호.
    - New generated backgrounds: `music-room-late-afternoon.png`, `convenience-store-night.png`, `rooftop-after-rain.png`.
-3. **Batch 3 — Days 6–8 pressure**
-   - Phone/SNS density, route variants, study/rain/festival prep pairs.
+3. **Batch 3 — Days 6–9 free-action rewrite**
+   - Phone/SNS density, route variants, study/rain/festival/rumor dating beats.
+   - 2026-05-19 autoresearch pass: Day 6–9 openings now route into 3×3 free-action hubs. Each route gets a four-beat dialogue branch with Hakbeom's direct answer, high-affection variants, and a matching generated background. The late story shifts away from mystery/culprit language toward rehearsal, rumor, jealousy, and confession build-up.
 4. **Batch 4 — Days 9–10 lock**
    - Festival arc, route-lock helper, route-lock tests.
    - Ultragoal pass: Day 9 adds festival pressure scenes; Day 10 adds a 3×3 route-lock choice structure so nine routes stay selectable without exceeding the 3-choice UI limit.

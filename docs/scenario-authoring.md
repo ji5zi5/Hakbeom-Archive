@@ -103,6 +103,17 @@
 - 정상 장면은 시작점에서 도달 가능해야 한다. 도달 불가능하면 validator가 `unreachable non-preview scene` 에러를 낸다.
 - 의도적으로 정상 흐름에서 제외하는 장면은 `previewOnly: true`를 붙인다.
 
+## 장기 자유행동 / 대화식 확장 규칙
+
+Day 6–9처럼 공통 루트가 길어지는 구간은 보고서형 요약으로 넘기지 않는다. 각 day opening은 `dayN-free-hub-a`로 들어가고, `a/b/c` 세 hub가 각각 3명씩 route 선택을 제공한다. 각 route branch는 다음 4-beat를 지킨다.
+
+1. `entry`: 상대가 먼저 학범을 부르며 BCG/SCG로 장소를 연다.
+2. `answer`: 학범이 직접 대답한다. 서술형 독백으로 대신하지 않는다.
+3. `reaction`: 상대가 자기 말투/성격으로 흔들린다.
+4. `close`: 다음 hub 또는 기존 day 본문으로 돌아가며, 70+ 호감도 variant를 넣어 관계 진전이 문장으로 보이게 한다.
+
+배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`처럼 장면 목적이 드러나야 한다. 각 파일은 `.prompt.txt`와 manifest entry를 같이 가진다.
+
 ## 초반 자유행동 / 장소 선택 규칙
 
 공통 루트 초반은 하루별 보고서처럼 넘기지 말고, 학범이 직접 어디로 갈지 고르는 `choice` 허브를 둔다. Day 1–2처럼 route lock 전에는 1개 정답이 아니라 현겸/욱현/재성 등 주요 인물의 장소 행동을 나란히 배치한다.

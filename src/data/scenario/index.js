@@ -8,6 +8,7 @@ import { day6Scenes } from './day6.js';
 import { day7Scenes } from './day7.js';
 import { day8Scenes } from './day8.js';
 import { day9Scenes } from './day9.js';
+import { longformDatingExpansionScenes } from './longformDatingExpansion.js';
 import { day10Scenes } from './day10.js';
 import { day11Scenes } from './day11.js';
 import { day12Scenes } from './day12.js';
@@ -27,6 +28,7 @@ export const scenario = [
   ...day7Scenes,
   ...day8Scenes,
   ...day9Scenes,
+  ...longformDatingExpansionScenes,
   ...day10Scenes,
   ...day11Scenes,
   ...day12Scenes,

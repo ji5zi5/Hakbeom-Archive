@@ -220,10 +220,12 @@ Tested: npm test; npm run build
 - Batch 1 이후 `src/data/scenario.js`가 약 1,400–1,600줄에 가까워지거나 둘 이상의 작업자가 서로 다른 챕터를 병렬 편집해야 하면, Batch 2 전에 `src/data/scenario/` 모듈 구조로 분리한다.
 - Batch 1 checkpoint (2026-05-18): `src/data/scenario.js` is 1,400 lines after Day 4, so Batch 2 should start by modularizing scenario data before adding Day 5.
 - Batch 2 checkpoint (2026-05-18): scenario content now lives in `src/data/scenario/day*.js` plus `endings.js`; keep `src/data/scenario.js` as the public facade so existing imports stay stable.
-- 10k-line contract: longform work is not complete until `npm run test:story-lines` reports at least 10,000 total source lines across `src/data/scenario.js` and `src/data/scenario/*.js`. The 2026-05-18 Ralph authorial rewrite currently verifies 19,775 scenario source lines.
+- 10k-line contract: longform work is not complete until `npm run test:story-lines` reports at least 10,000 total source lines across `src/data/scenario.js` and `src/data/scenario/*.js`. The 2026-05-19 autoresearch rewrite currently verifies 22,814 scenario source lines and 869 runtime scenes.
 - Day 11–14 route payoff uses `endingGate` scenes with `routeGate: true` as deterministic route gates. Route gates may follow explicit `route_lock_<id>` flags for payoff routing, but terminal route endings must still carry 85+ affection requirements. Keep replay target scoring aware of ending gates so long scenarios do not make `findReplayPath()` explore every branch first.
 - 저장 요약은 장기적으로 단일 `affectionTarget`이 아니라 dominant route / 대표 루트를 보여줘야 한다. 여러 호감도가 동시에 존재하면 `resolveDominantRoute()`의 tie-break 기준을 따른다.
 - route lock, 100점 호감도/status modal, dominant-route save summary, generated background manifest는 Season 1 확장의 핵심 계약이므로 테스트 없이 수정하지 않는다.
+- Day 6–9는 `longformDatingExpansionScenes`가 opening 뒤에 끼어드는 자유행동 구간을 가진다. 각 day는 3개 hub × 3개 선택으로 총 9명 route를 직접 만나게 하며, branch는 `entry -> answer -> reaction -> close` 4-beat 대화 구조를 유지한다. 새 branch는 반드시 학범의 직접 대답과 high-affection variant를 포함한다.
+- Longform route background는 `/assets/bg/day6-<route>-study.png`, `/assets/bg/day7-<route>-rain.png`, `/assets/bg/day8-<route>-festival.png`, `/assets/bg/day9-<route>-rumor.png` 규칙을 따른다. prompt sidecar와 `agent-sprite-forge-manifest.json` provenance 없이는 scenario BCG에 연결하지 않는다.
 
 ## Visual Regression Capture
 
