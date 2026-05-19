@@ -225,7 +225,7 @@ Tested: npm test; npm run build
 - 저장 요약은 장기적으로 단일 `affectionTarget`이 아니라 dominant route / 대표 루트를 보여줘야 한다. 여러 호감도가 동시에 존재하면 `resolveDominantRoute()`의 tie-break 기준을 따른다.
 - route lock, 100점 호감도/status modal, dominant-route save summary, generated background manifest는 Season 1 확장의 핵심 계약이므로 테스트 없이 수정하지 않는다.
 - Day 6–9는 `longformDatingExpansionScenes`가 opening 뒤에 끼어드는 자유행동 구간을 가진다. 각 day는 3개 hub × 3개 선택으로 총 9명 route를 직접 만나게 하며, branch는 `entry -> answer -> reaction -> close` 4-beat 대화 구조를 유지한다. 새 branch는 반드시 학범의 직접 대답과 high-affection variant를 포함한다.
-- Longform route background는 `/assets/bg/day6-<route>-study.png`, `/assets/bg/day7-<route>-rain.png`, `/assets/bg/day8-<route>-festival.png`, `/assets/bg/day9-<route>-rumor.png` 규칙을 따른다. prompt sidecar와 `agent-sprite-forge-manifest.json` provenance 없이는 scenario BCG에 연결하지 않는다.
+- Longform route background 명명(`day6-<route>-study`, `day7-<route>-rain`, `day8-<route>-festival`, `day9-<route>-rumor`)은 향후 500-map production batch의 목표 규칙이다. 직접 생성된 PNG + prompt sidecar + `agent-sprite-forge-manifest.json` `sourceGeneratedImage` provenance가 준비되기 전에는 기존 direct generated 배경만 scenario BCG에 연결한다. `derivedFrom`/색보정 파생 배경은 커밋하지 않는다.
 
 ## Visual Regression Capture
 

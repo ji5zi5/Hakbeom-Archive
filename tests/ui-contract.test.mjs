@@ -1227,37 +1227,26 @@ for (const backgroundName of generatedBackgrounds) {
   );
 }
 
-const longformExpansionBackgrounds = (forgeManifestJson.outputs || [])
-  .map((entry) => entry.id)
-  .filter((id) => /^day[6-9]-(hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho)-(study|rain|festival|rumor)$/.test(id));
+const committedDerivedBackgrounds = (forgeManifestJson.outputs || [])
+  .filter((entry) => entry.derivedFrom);
 assert.equal(
-  longformExpansionBackgrounds.length,
-  36,
-  'Longform rewrite should add day 6-9 route-specific VN backgrounds through the agent-sprite-forge bundle.'
+  committedDerivedBackgrounds.length,
+  0,
+  'Committed VN background manifest should not contain derivedFrom/tint-only backgrounds; future map expansion must use direct generate2dmap image sources.'
 );
-for (const backgroundName of longformExpansionBackgrounds) {
-  const backgroundPath = `public/assets/bg/${backgroundName}.png`;
-  const promptPath = `public/assets/bg/${backgroundName}.prompt.txt`;
-  assert.deepEqual(
-    readPngSize(backgroundPath),
-    { width: 1129, height: 524 },
-    `Longform background should preserve the BA stage size: ${backgroundName}.png`
-  );
-  assert.ok(
-    statSync(backgroundPath).size > 500_000,
-    `Longform background should be a real raster scene variant, not a flat placeholder: ${backgroundName}.png`
-  );
-  assert.match(
-    readSource(promptPath),
-    /agent-sprite-forge generate2dmap baked_scene_mode[\s\S]*no characters, no UI, no text/,
-    `Longform background should keep forge prompt provenance: ${backgroundName}.prompt.txt`
-  );
-}
+
+const removedDerivedBackgroundFiles = readdirSync('public/assets/bg')
+  .filter((file) => /^day[6-9]-.*(?:\.png|\.prompt\.txt)$/.test(file));
+assert.deepEqual(
+  removedDerivedBackgroundFiles,
+  [],
+  'Temporary Day 6-9 derived background files should stay deleted until direct agent-sprite-forge generation replaces them.'
+);
 
 const scenarioBackgroundRefs = [...scenarioSource.matchAll(/\/assets\/bg\/[^'\"]+\.png/g)].map((match) => match[0]);
 assert.ok(
-  new Set(scenarioBackgroundRefs).size >= 42,
-  'Scenario BCG directives should use a broad generated PNG VN background set instead of one repeated UI image.'
+  new Set(scenarioBackgroundRefs).size >= 12,
+  'Scenario BCG directives should keep using the accepted direct generated PNG VN background set instead of one repeated UI image.'
 );
 
 assert.doesNotMatch(
@@ -1713,9 +1702,18 @@ for (const day of [6, 7, 8, 9]) {
     const reaction = scenario.find((item) => item.id === `day${day}-free-${routeId}-reaction`);
     const close = scenario.find((item) => item.id === `day${day}-free-${routeId}-close`);
     assert.ok(entry && answer && reaction && close, `Day ${day} should add a four-beat dialogue route for ${routeId}.`);
+    const bgDirective = (entry.directives || []).find((directive) => directive.type === 'BCG');
     assert.ok(
-      (entry.directives || []).some((directive) => directive.type === 'BCG' && directive.src === `/assets/bg/day${day}-${routeId}-${day === 6 ? 'study' : day === 7 ? 'rain' : day === 8 ? 'festival' : 'rumor'}.png`),
-      `Day ${day} ${routeId} free route should use its matching generated background.`
+      bgDirective?.src?.startsWith('/assets/bg/'),
+      `Day ${day} ${routeId} free route should declare a generated background BCG.`
+    );
+    assert.ok(
+      existsSync(bgDirective.src.replace('/assets/', 'public/assets/')),
+      `Day ${day} ${routeId} free route background should exist on disk: ${bgDirective.src}`
+    );
+    assert.ok(
+      generatedBackgrounds.some((backgroundName) => bgDirective.src === `/assets/bg/${backgroundName}.png`),
+      `Day ${day} ${routeId} free route should use an accepted direct generated background until the 500-map production batch lands.`
     );
     assert.equal(answer.name, '학범', `Day ${day} ${routeId} branch should include Hakbeom's direct dialogue response.`);
     assert.ok(

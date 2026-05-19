@@ -112,7 +112,7 @@ Day 6–9처럼 공통 루트가 길어지는 구간은 보고서형 요약으�
 3. `reaction`: 상대가 자기 말투/성격으로 흔들린다.
 4. `close`: 다음 hub 또는 기존 day 본문으로 돌아가며, 70+ 호감도 variant를 넣어 관계 진전이 문장으로 보이게 한다.
 
-배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`처럼 장면 목적이 드러나야 한다. 각 파일은 `.prompt.txt`와 manifest entry를 같이 가진다.
+향후 route별 배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`처럼 장면 목적이 드러나게 명명한다. 단, 직접 생성된 PNG + `.prompt.txt` + manifest `sourceGeneratedImage` provenance가 모두 준비되기 전에는 해당 BCG를 시나리오에 연결하지 않는다. `derivedFrom` 파생 배경은 금지한다.
 
 ## 초반 자유행동 / 장소 선택 규칙
 
@@ -332,7 +332,7 @@ npm run build
 - 캐릭터 말투는 `src/data/characterProfiles.js`의 `archetype`/`voice`/`motif`를 기준으로 맞춘다. route별 핵심 톤은 현겸=정실 순애/우산, 욱현=무표정 쿨데레/노트, 재성=능글 플러팅/방송, 상원=기록집착 얀데레/기록, 상욱=직진 댕댕이/달리기, 준혁=무심한 두뇌파/지도, 도훈=장난치는 츤데레/정보값, 하음=치유계/박자, 윤호=후배 선배집착/옥상이다. 윤호 route 대사에는 `선배` 호칭을 유지한다.
 - 현재 선택지 UI는 1/2/3개 레이아웃만 계약으로 보호한다. 6명 중 고르는 장면은 두 개의 3지선다나 맥락별 초대로 나눈다.
 - 사진이 아직 없는 신규 캐릭터는 `characterProfiles`에 `baseSrc: ''`로 등록하고, 시나리오에서는 missing PNG를 가리키는 SCG `src`를 쓰지 않는다.
-- Generated background는 PNG, `.prompt.txt`, `agent-sprite-forge-manifest.json` provenance, scenario `BCG` reference가 한 세트다. SVG나 단색 배경으로 대체하지 않는다.
+- Generated background는 PNG, `.prompt.txt`, `agent-sprite-forge-manifest.json` `sourceGeneratedImage` provenance, scenario `BCG` reference가 한 세트다. SVG, 단색 배경, `derivedFrom`/색보정 파생 배경으로 대체하지 않는다.
 - Day 4 이후 장기 분량을 추가할 때는 `docs/story-expansion-plan.md`의 90분 최소 / 2–3시간 권장 목표와 batch roadmap을 기준으로 한다.
 - 답장 선택지가 없는 `phone` 컷신은 `nextId`로 다음 장면을 지정한다. 답장 선택지가 있는 `phone` 장면은 `replies`/`rewards`/`next` 길이를 맞추고 `nextId`를 함께 쓰지 않는다.
 - Batch 2부터 시나리오는 `src/data/scenario/day1.js`부터 `day14.js`, `endings.js`처럼 모듈별로 작성하고, `src/data/scenario/index.js`에서 순서를 조립한다. 외부 import는 계속 `src/data/scenario.js` facade를 사용한다.

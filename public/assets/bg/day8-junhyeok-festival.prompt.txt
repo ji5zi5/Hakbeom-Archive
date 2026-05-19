@@ -1,6 +1,0 @@
-agent-sprite-forge generate2dmap baked_scene_mode prompt for Hakbeom Archive VN background.
-Scene: 문화제 리허설 전날 / 준혁 route private dating-sim beat.
-Base style anchor: archive-club-room-evening.png from the existing agent-sprite-forge generated VN background bundle.
-Art direction: clean HD Korean academy visual novel background, 1129x524, no characters, no UI, no text, no labels; festival prep glow, paper flowers, rehearsal anticipation, romantic VN atmosphere.
-Runtime intent: BCG for dialogue-forward route interaction, not a placeholder or SVG color plate.
-Postprocess: deterministic VN lighting/color/rain/bokeh pass using the project-local agent-sprite-forge Python environment to preserve 1129x524 raster contract.

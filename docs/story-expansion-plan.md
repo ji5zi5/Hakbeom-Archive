@@ -16,10 +16,10 @@ Hakbeom Archive should no longer feel like a 3-minute prototype. Season 1 target
 | Route-specific beats | 12–18 | 180–300 |
 | Meaningful choices | 3–5 | 36–54 |
 | Phone/SNS scenes | 1–2 | 24–36 |
-| Generated backgrounds | 3 | 18–26 |
+| Direct generated map/background pool | 12 accepted direct assets | 500 production assets |
 | Korean displayed chars | 6k–10k | 70k–110k |
 
-Batch 1 is not the full season. It must open the longform continuation naturally and make the world feel bigger immediately.
+Batch 1 is not the full season. It must open the longform continuation naturally and make the world feel bigger immediately. As of 2026-05-19, the background target is upgraded from a small scene bundle to a 500-map production pool.
 
 ## Route Cast
 
@@ -97,6 +97,11 @@ Each background requires:
 - `agent-sprite-forge-manifest.json` entry with original generated source, dimensions, bytes, sha256, prompt path.
 - At least one scenario `BCG` directive reference.
 
+
+## 500-Map Background Expansion
+
+The production map/background expansion plan lives in `docs/superpowers/plans/2026-05-19-500-map-expansion.md`. Use that plan before generating new route-specific art: story demand first, five parallel generation lanes, batches of 50, and no `derivedFrom`/tint-only backgrounds.
+
 ## Batch Roadmap
 
 1. **Batch 1 — Day 4 foundation**
@@ -107,7 +112,7 @@ Each background requires:
    - New generated backgrounds: `music-room-late-afternoon.png`, `convenience-store-night.png`, `rooftop-after-rain.png`.
 3. **Batch 3 — Days 6–9 free-action rewrite**
    - Phone/SNS density, route variants, study/rain/festival/rumor dating beats.
-   - 2026-05-19 autoresearch pass: Day 6–9 openings now route into 3×3 free-action hubs. Each route gets a four-beat dialogue branch with Hakbeom's direct answer, high-affection variants, and a matching generated background. The late story shifts away from mystery/culprit language toward rehearsal, rumor, jealousy, and confession build-up.
+   - 2026-05-19 autoresearch pass: Day 6–9 openings now route into 3×3 free-action hubs. Each route gets a four-beat dialogue branch with Hakbeom's direct answer and high-affection variants. Temporary derived backgrounds were removed; route-specific map expansion now waits for the 500 direct-generation production plan. The late story shifts away from mystery/culprit language toward rehearsal, rumor, jealousy, and confession build-up.
 4. **Batch 4 — Days 9–10 lock**
    - Festival arc, route-lock helper, route-lock tests.
    - Ultragoal pass: Day 9 adds festival pressure scenes; Day 10 adds a 3×3 route-lock choice structure so nine routes stay selectable without exceeding the 3-choice UI limit.
@@ -132,5 +137,5 @@ Before hard route locks ship:
 - Keep choice/phone branching to 3 visible options or fewer.
 - Use placeholder-safe profiles until character photos exist.
 - Add route targets before rewards reference them.
-- Add background PNG + prompt + manifest before scenario BCG reference is committed.
+- Add direct-generated background PNG + prompt + manifest `sourceGeneratedImage` before scenario BCG reference is committed; do not use `derivedFrom`/tint-only variants as production backgrounds.
 - Run `npm test`, `npm run build`, `npm audit --audit-level=moderate`, `git diff --check` before handoff.
