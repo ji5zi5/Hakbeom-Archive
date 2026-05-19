@@ -1213,8 +1213,16 @@ button {
   z-index: 30;
 }
 
+.status-card {
+  display: flex;
+  flex-direction: column;
+}
+
 .status-list {
   background: rgba(255,255,255,.58);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .status-row {

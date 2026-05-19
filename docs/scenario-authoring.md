@@ -139,7 +139,7 @@
 - `affection`과 `flags` 조건이 모두 맞으면 해당 ending route가 선택된다.
 - 100점 만점 기준으로 루트락은 보통 `70+`, normal terminal ending은 `60+`, good/캐릭터 엔딩은 `85+` 이상으로 둔다. 30점대 엔딩 조건은 너무 낮으므로 쓰지 않는다.
 - `endingGate: true` 장면은 `endingNext`로 실제 terminal 장면을 고른다.
-- `routeGate: true`인 중간 게이트는 Day 11–14 같은 루트 분기용이다. 플레이어에게 엔딩 UI를 띄우거나 엔딩 해금으로 기록하면 안 된다.
+- `routeGate: true`인 중간 게이트는 Day 11–14 같은 루트 분기용이다. 플레이어에게 엔딩 UI를 띄우거나 엔딩 해금으로 기록하면 안 된다. route gate는 선택한 `route_lock_<id>` payoff를 이어 주는 용도이며, 최종 캐릭터 엔딩은 `episodeInfo.endingRules`의 85+ 호감도 조건을 별도로 통과해야 한다.
 - 실제 엔딩 장면은 `terminal: true`를 붙이고, 너무 갑자기 끊기지 않도록 고백 뒤 여운/다음 약속을 포함한다. 현재 계약 테스트는 terminal ending text가 최소 150자 이상인지 확인한다.
 - terminal ending에 도달하면 런타임이 `타이틀로`와 `처음부터` 버튼을 띄운다. 시나리오에서 홈 복귀용 가짜 choice를 추가하지 않는다.
 
@@ -253,7 +253,7 @@ variants: [
 ]
 ```
 
-`affection` 조건은 숫자(`{ hyeongyeom: 60 }`) 또는 범위(`{ hyeongyeom: { min: 60, max: 84 } }`)를 쓸 수 있다. 호감도별 반응 차이는 보상 토스트 대신 본문 variants로 보여준다.
+`affection` 조건은 숫자(`{ hyeongyeom: 60 }`) 또는 범위(`{ hyeongyeom: { min: 60, max: 84 } }`)를 쓸 수 있다. 범위 객체는 `min`/`max` 중 하나 이상을 숫자로 가져야 하며, 오타(`minimum`)나 알 수 없는 target은 validator가 에러로 막는다. 호감도별 반응 차이는 보상 토스트 대신 본문 variants로 보여준다.
 
 ### 캐릭터 위치 `pos` / `position`
 
@@ -317,7 +317,7 @@ npm run build
 - 호감도 선택은 “누구에게 더 가까이 가는가”만 바꾸고, 필수 소개/공통 일상 구간을 건너뛰게 만들지 않는다. 선택 branch가 끝나면 공통 소개 merge로 되돌아오게 `nextId`를 명시한다.
 - 조기 엔딩은 만들지 않는다. Day 3 약속, route seed, 회상 unlock은 모두 Day 4 이후 장기 루트로 이어져야 하며, 정상 진행에서 `ending-promise`로 들어가는 장면은 Day 14의 `day14-closing`뿐이어야 한다.
 - 루트락(route lock)은 암묵적인 ending rule 순서에 맡기지 않는다. `route_lock_<id>` 플래그, 100점 만점 호감도(`routeLockThreshold: 70`), route-specific flag 수, 정적 우선순위를 문서화하고 테스트한다.
-- Day 11–14처럼 lock 이후 분기해야 하는 장면은 `endingGate: true` + `routeGate: true` + `endingNext`를 route gate로 재사용한다. `routeGate`는 payoff 이동만 처리하고 terminal ending unlock은 기록하지 않는다. `episodeInfo.endingRules`의 `route_lock_<id>` 규칙을 terminal ending 규칙보다 먼저 둬야 같은 루트가 payoff 장면과 최종 엔딩까지 유지된다.
+- Day 11–14처럼 lock 이후 분기해야 하는 장면은 `endingGate: true` + `routeGate: true` + `endingNext`를 route gate로 재사용한다. `routeGate`는 payoff 이동만 처리하고 terminal ending unlock은 기록하지 않는다. 최종 terminal ending 규칙의 `route_lock_<id>` 항목에는 해당 캐릭터 호감도 85+ 조건을 같이 둬서 route lock 플래그만으로 엔딩이 뚫리지 않게 한다.
 - 캐릭터 말투는 `src/data/characterProfiles.js`의 `archetype`/`voice`/`motif`를 기준으로 맞춘다. route별 핵심 톤은 현겸=정실 순애/우산, 욱현=무표정 쿨데레/노트, 재성=능글 플러팅/방송, 상원=기록집착 얀데레/기록, 상욱=직진 댕댕이/달리기, 준혁=무심한 두뇌파/지도, 도훈=장난치는 츤데레/정보값, 하음=치유계/박자, 윤호=후배 선배집착/옥상이다. 윤호 route 대사에는 `선배` 호칭을 유지한다.
 - 현재 선택지 UI는 1/2/3개 레이아웃만 계약으로 보호한다. 6명 중 고르는 장면은 두 개의 3지선다나 맥락별 초대로 나눈다.
 - 사진이 아직 없는 신규 캐릭터는 `characterProfiles`에 `baseSrc: ''`로 등록하고, 시나리오에서는 missing PNG를 가리키는 SCG `src`를 쓰지 않는다.

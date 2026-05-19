@@ -1,4 +1,5 @@
 import { applyRouteRewards, createInitialGameState } from '../utils/vnState.js';
+import { resolveRouteLock } from '../utils/routeResolution.js';
 import { applyDirectorItem, createDirectorState } from './directorEngine.js';
 
 function clamp(value, min, max) {
@@ -43,16 +44,23 @@ export function resolveEndingRoute(gameState, endingRules = []) {
   }) || fallback;
 }
 
+function resolveRouteGateRoute(gameState, routeConfig = {}) {
+  const locked = resolveRouteLock(gameState, routeConfig, { threshold: 0 });
+  return locked?.id && locked.id !== 'common' ? locked : null;
+}
+
 export function findScenarioIndexById(scenario, id) {
   if (!id) return -1;
   return scenario.findIndex((line) => line.id === id);
 }
 
-export function resolveNextIndex({ scenario, index, currentItem, ending, gameState, endingRules = [] }) {
+export function resolveNextIndex({ scenario, index, currentItem, ending, gameState, endingRules = [], routeConfig = {} }) {
   if (!currentItem || currentItem?.terminal) return -1;
 
   const route = currentItem?.endingGate
-    ? ending || resolveEndingRoute(gameState, endingRules)
+    ? currentItem.routeGate
+      ? resolveRouteGateRoute(gameState, routeConfig) || ending || resolveEndingRoute(gameState, endingRules)
+      : ending || resolveEndingRoute(gameState, endingRules)
     : ending;
   const endingNext = currentItem?.endingNext || null;
   const endingTargetId = endingNext
@@ -144,7 +152,9 @@ export function getReplayCandidateSteps(scenario, index, gameState, options = {}
       if (explicitTargetIndex >= 0) return [{ index: explicitTargetIndex, gameState }];
     }
 
-    const route = endingRules.length > 0 ? resolveEndingRoute(gameState, endingRules) : null;
+    const route = item.routeGate
+      ? resolveRouteGateRoute(gameState, options.routeConfig) || (endingRules.length > 0 ? resolveEndingRoute(gameState, endingRules) : null)
+      : endingRules.length > 0 ? resolveEndingRoute(gameState, endingRules) : null;
     const targetId = route
       ? item.endingNext[route.id] || item.endingNext.default || item.endingNext.quiet
       : item.endingNext.default || item.endingNext.quiet;

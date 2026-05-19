@@ -18,9 +18,9 @@ export const routeConfig = {
   routePriority: ['hyeongyeom', 'sangwon', 'haeum', 'yunho', 'ukhyun', 'jaeseong', 'junhyeok', 'sanguk', 'dohun'],
   routeLockThreshold: 70,
   routeSeedFlags: {
-    hyeongyeom: ['hyeongyeom_route_focus', 'shared_umbrella'],
-    ukhyun: ['ukhyun_route'],
-    jaeseong: ['jaeseong_route'],
+    hyeongyeom: ['hyeongyeom_route_seed', 'hyeongyeom_route_focus', 'shared_umbrella'],
+    ukhyun: ['ukhyun_route_seed', 'ukhyun_route'],
+    jaeseong: ['jaeseong_route_seed', 'jaeseong_route'],
     sangwon: ['sangwon_route_seed'],
     sanguk: ['sanguk_route_seed'],
     junhyeok: ['junhyeok_route_seed'],

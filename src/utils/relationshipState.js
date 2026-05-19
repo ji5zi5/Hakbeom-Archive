@@ -8,6 +8,10 @@ function numberOrDefault(value, fallback) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+function hasFiniteNumber(value) {
+  return value !== undefined && Number.isFinite(Number(value));
+}
+
 function flagSet(gameState = {}) {
   return new Set(toList(gameState.flags));
 }
@@ -17,9 +21,11 @@ export function affectionConditionMatches(gameState = {}, affectionCondition = {
   return Object.entries(affectionCondition || {}).every(([target, condition]) => {
     const value = Number(affection[target] || 0);
     if (typeof condition === 'number') return value >= condition;
-    if (condition == null || typeof condition !== 'object') return true;
+    if (condition == null || typeof condition !== 'object') return false;
+    if (!hasFiniteNumber(condition.min) && !hasFiniteNumber(condition.max)) return false;
     const min = numberOrDefault(condition.min, Number.NEGATIVE_INFINITY);
     const max = numberOrDefault(condition.max, Number.POSITIVE_INFINITY);
+    if (min > max) return false;
     return value >= min && value <= max;
   });
 }

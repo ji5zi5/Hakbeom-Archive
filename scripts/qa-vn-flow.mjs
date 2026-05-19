@@ -287,6 +287,39 @@ async function main() {
     await page.locator('.config-row').first().waitFor();
   });
 
+  await check('status-modal', async () => {
+    await page.goto(buildUrl('?screen=game&id=opening&auto=1'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.game');
+    await page.getByRole('button', { name: 'STATUS' }).click();
+    await waitForOpenPanel(page, '.status-panel');
+    await page.waitForTimeout(1500);
+    assert.equal(await page.locator('.status-panel').getAttribute('aria-hidden'), 'false', 'STATUS should stay open while AUTO is enabled');
+
+    const metrics = await page.evaluate(() => {
+      const card = document.querySelector('.status-card');
+      const list = document.querySelector('.status-list');
+      const rows = [...document.querySelectorAll('.status-row')];
+      list.scrollTop = list.scrollHeight;
+      const cardRect = card.getBoundingClientRect();
+      const lastRect = rows[rows.length - 1].getBoundingClientRect();
+      return {
+        rowCount: rows.length,
+        overflowY: getComputedStyle(list).overflowY,
+        scrollable: list.scrollHeight > list.clientHeight,
+        lastRowVisibleAfterScroll: lastRect.bottom <= cardRect.bottom + 1
+      };
+    });
+
+    assert.equal(metrics.rowCount, 9, 'STATUS should list all nine relationship targets');
+    assert.match(metrics.overflowY, /auto|scroll/, 'STATUS list should be scrollable');
+    assert.equal(metrics.scrollable, true, 'STATUS list should scroll instead of clipping rows');
+    assert.equal(metrics.lastRowVisibleAfterScroll, true, 'Last STATUS row should be reachable by scrolling');
+
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator('.status-panel').getAttribute('aria-hidden'), 'true', 'Escape should close STATUS');
+  });
+
   await check('ending', async () => {
     await page.goto(buildUrl('?screen=game&id=ending-good'), { waitUntil: 'networkidle' });
     await page.waitForSelector('.game');

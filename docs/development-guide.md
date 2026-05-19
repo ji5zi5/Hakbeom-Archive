@@ -91,7 +91,7 @@ public/assets/                   런타임 asset
 ### routeConfig는 해금/호감도의 원본이다
 
 갤러리/회상 ID를 scenario reward에 직접 새로 쓰기 전에 `routeConfig.js`에 먼저 등록한다. validator가 없는 ID를 에러로 잡아야 정상이다.
-호감도는 100점 만점이 기본 계약이다. `routeLockThreshold`는 의미 있는 루트 투자선(현재 70), 엔딩 조건은 normal 60+, good/캐릭터 85+를 기준으로 맞춘다. 플레이 중 보상 토스트를 띄우기보다 `variants`와 STATUS 모달/save summary가 관계 변화를 보여줘야 한다.
+호감도는 100점 만점이 기본 계약이다. `routeLockThreshold`는 의미 있는 루트 투자선(현재 70), 엔딩 조건은 normal 60+, good/캐릭터 85+를 기준으로 맞춘다. 플레이 중 보상 토스트를 띄우기보다 `variants`와 STATUS 모달/save summary가 관계 변화를 보여줘야 한다. 0~10 스케일을 쓰던 저장 데이터는 `SAVE_VERSION = 2`에서 100점 스케일로 마이그레이션한다.
 
 ### 저장 데이터는 신뢰하지 않는다
 
@@ -107,7 +107,7 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 6. 대사 variants는 `variantMatchesState()`가 flags와 affection 범위를 함께 평가해 현재 관계 단계에 맞는 문장을 고른다.
 7. 자동 저장은 `createSavePayload()`를 통해 localStorage에 저장된다.
 8. 로드는 `normalizeSavePayload()`를 거쳐 index, settings, gameState, directorState를 안전하게 복원한다.
-9. 중간 `routeGate`는 루트 분기만 계산하고 엔딩 UI를 띄우지 않는다. 실제 `terminal` 엔딩에 도달하면 엔딩 패널에서 `타이틀로` 또는 `처음부터`를 선택할 수 있다.
+9. 중간 `routeGate`는 루트 분기만 계산하고 엔딩 UI를 띄우지 않는다. route gate는 `route_lock_<id>` 선택을 따라 Day 11~14 payoff를 고르지만, 실제 `terminal` 캐릭터 엔딩은 별도의 85+ 호감도 조건을 통과해야 한다. `terminal` 엔딩에 도달하면 엔딩 패널에서 `타이틀로` 또는 `처음부터`를 선택할 수 있다.
 
 ## 테스트 작성 기준
 
@@ -159,7 +159,7 @@ localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조�
 
 save 관련 코드를 바꾸면 다음을 확인한다.
 
-1. `SAVE_VERSION` 변경이 필요한지 판단한다.
+1. `SAVE_VERSION` 변경이 필요한지 판단한다. 호감도 스케일처럼 저장값 의미가 바뀌면 반드시 버전을 올리고 `normalizeSavePayload()`에 마이그레이션 테스트를 추가한다.
 2. 기존 payload를 읽었을 때 안전하게 normalize되는지 테스트한다.
 3. out-of-range index는 `itemId` 또는 fallback으로 복구되는지 확인한다.
 4. settings 숫자는 UI 범위 안으로 clamp되는지 확인한다. 현재 범위는 text 8~60ms, auto 500~2600ms, BGM/SE 0~100이다.
@@ -221,7 +221,7 @@ Tested: npm test; npm run build
 - Batch 1 checkpoint (2026-05-18): `src/data/scenario.js` is 1,400 lines after Day 4, so Batch 2 should start by modularizing scenario data before adding Day 5.
 - Batch 2 checkpoint (2026-05-18): scenario content now lives in `src/data/scenario/day*.js` plus `endings.js`; keep `src/data/scenario.js` as the public facade so existing imports stay stable.
 - 10k-line contract: longform work is not complete until `npm run test:story-lines` reports at least 10,000 total source lines across `src/data/scenario.js` and `src/data/scenario/*.js`. The 2026-05-18 Ralph authorial rewrite currently verifies 19,775 scenario source lines.
-- Day 11–14 route payoff uses `endingGate` scenes with `routeGate: true` as deterministic route gates. Keep `route_lock_<id>` ending rules before legacy good/normal/quiet rules, do not record route gates as terminal ending unlocks, and keep replay target scoring aware of ending gates so long scenarios do not make `findReplayPath()` explore every branch first.
+- Day 11–14 route payoff uses `endingGate` scenes with `routeGate: true` as deterministic route gates. Route gates may follow explicit `route_lock_<id>` flags for payoff routing, but terminal route endings must still carry 85+ affection requirements. Keep replay target scoring aware of ending gates so long scenarios do not make `findReplayPath()` explore every branch first.
 - 저장 요약은 장기적으로 단일 `affectionTarget`이 아니라 dominant route / 대표 루트를 보여줘야 한다. 여러 호감도가 동시에 존재하면 `resolveDominantRoute()`의 tie-break 기준을 따른다.
 - route lock, 100점 호감도/status modal, dominant-route save summary, generated background manifest는 Season 1 확장의 핵심 계약이므로 테스트 없이 수정하지 않는다.
 

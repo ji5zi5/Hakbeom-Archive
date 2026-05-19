@@ -7,58 +7,67 @@ export const episodeInfo = {
     {
       id: 'hyeongyeom',
       title: '현겸 엔딩: 같은 우산의 고백',
-      flags: ['route_lock_hyeongyeom']
+      flags: ['route_lock_hyeongyeom'],
+      affection: { hyeongyeom: 85 }
     },
     {
       id: 'ukhyun',
       title: '욱현 엔딩: 접힌 노트의 답장',
-      flags: ['route_lock_ukhyun']
+      flags: ['route_lock_ukhyun'],
+      affection: { ukhyun: 85 }
     },
     {
       id: 'jaeseong',
       title: '재성 엔딩: 방송실 너머의 목소리',
-      flags: ['route_lock_jaeseong']
+      flags: ['route_lock_jaeseong'],
+      affection: { jaeseong: 85 }
     },
     {
       id: 'sangwon',
       title: '상원 엔딩: 고쳐 쓴 마지막 줄',
-      flags: ['route_lock_sangwon']
+      flags: ['route_lock_sangwon'],
+      affection: { sangwon: 85 }
     },
     {
       id: 'sanguk',
       title: '상욱 엔딩: 멈춰 선 결승선',
-      flags: ['route_lock_sanguk']
+      flags: ['route_lock_sanguk'],
+      affection: { sanguk: 85 }
     },
     {
       id: 'junhyeok',
       title: '준혁 엔딩: 함께 그린 지도',
-      flags: ['route_lock_junhyeok']
+      flags: ['route_lock_junhyeok'],
+      affection: { junhyeok: 85 }
     },
     {
       id: 'dohun',
       title: '도훈 엔딩: 농담 뒤의 진심',
-      flags: ['route_lock_dohun']
+      flags: ['route_lock_dohun'],
+      affection: { dohun: 85 }
     },
     {
       id: 'haeum',
       title: '하음 엔딩: 기다려 준 박자',
-      flags: ['route_lock_haeum']
+      flags: ['route_lock_haeum'],
+      affection: { haeum: 85 }
     },
     {
       id: 'yunho',
       title: '윤호 엔딩: 비가 그친 옥상',
-      flags: ['route_lock_yunho']
+      flags: ['route_lock_yunho'],
+      affection: { yunho: 85 }
     },
     {
       id: 'ukhyun',
       title: '욱현 엔딩: 접힌 노트의 답장',
-      affection: { ukhyun: 70 },
+      affection: { ukhyun: 85 },
       flags: ['ukhyun_route']
     },
     {
       id: 'jaeseong',
       title: '재성 엔딩: 방송실 너머의 목소리',
-      affection: { jaeseong: 70 },
+      affection: { jaeseong: 85 },
       flags: ['jaeseong_route']
     },
     {

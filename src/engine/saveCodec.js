@@ -1,4 +1,4 @@
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -44,19 +44,33 @@ function clampAffection(target, value, routeConfig) {
   return Math.min(max, Math.max(min, value));
 }
 
-function normalizeAffection(value, routeConfig) {
+function shouldScaleLegacyAffection(target, score, routeConfig, legacyScale) {
+  if (!legacyScale) return false;
+  const configuredTargets = Array.isArray(routeConfig?.affectionTargets) ? routeConfig.affectionTargets : [];
+  const matchedTarget = configuredTargets.find((entry) => entry?.id === target);
+  const max = Number(matchedTarget?.max ?? routeConfig?.affectionTarget?.max ?? 0);
+  return max >= 100 && score > 0 && score <= 10;
+}
+
+function normalizeAffection(value, routeConfig, { legacyScale = false } = {}) {
   if (!isPlainObject(value)) return {};
   return Object.fromEntries(
     Object.entries(value)
       .filter(([, score]) => Number.isFinite(Number(score)))
-      .map(([target, score]) => [target, clampAffection(target, Number(score), routeConfig)])
+      .map(([target, score]) => {
+        const numeric = Number(score);
+        const migrated = shouldScaleLegacyAffection(target, numeric, routeConfig, legacyScale)
+          ? numeric * 10
+          : numeric;
+        return [target, clampAffection(target, migrated, routeConfig)];
+      })
   );
 }
 
-function normalizeGameState(value, routeConfig) {
+function normalizeGameState(value, routeConfig, options = {}) {
   const state = isPlainObject(value) ? value : {};
   return {
-    affection: normalizeAffection(state.affection, routeConfig),
+    affection: normalizeAffection(state.affection, routeConfig, options),
     flags: uniqueList(state.flags),
     choices: Array.isArray(state.choices) ? state.choices.filter(isPlainObject) : [],
     endings: uniqueList(state.endings),
@@ -118,6 +132,9 @@ export function normalizeSavePayload(payload, { scenario, fallbackIndex = 0, rou
   const index = byItemId >= 0 ? byItemId : byIndex >= 0 ? byIndex : safeFallback;
   const item = items[index] || items[0] || { id: '', type: 'dialogue' };
 
+  const payloadVersion = Number(payload?.version || 1);
+  const legacyScale = payloadVersion < SAVE_VERSION;
+
   return {
     version: SAVE_VERSION,
     slot: typeof payload?.slot === 'string' ? payload.slot : '',
@@ -127,7 +144,7 @@ export function normalizeSavePayload(payload, { scenario, fallbackIndex = 0, rou
     title: typeof payload?.title === 'string' ? payload.title : item.place || item.name || '스토리',
     line: typeof payload?.line === 'string' ? payload.line : '',
     summary: normalizeSaveSummary(payload?.summary),
-    gameState: normalizeGameState(payload?.gameState, routeConfig),
+    gameState: normalizeGameState(payload?.gameState, routeConfig, { legacyScale }),
     settings: normalizeSettings(payload?.settings),
     directorState: isDirectorState(payload?.directorState) ? payload.directorState : null,
     log: Array.isArray(payload?.log) ? payload.log : [],

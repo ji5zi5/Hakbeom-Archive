@@ -488,7 +488,8 @@ export function BAVisualNovel({
       currentItem,
       ending,
       gameState,
-      endingRules: episodeInfo.endingRules || []
+      endingRules: episodeInfo.endingRules || [],
+      routeConfig
     });
     if (targetIndex < 0) return;
     jumpToIndex(targetIndex);
@@ -758,10 +759,10 @@ export function BAVisualNovel({
   useEffect(() => {
     window.clearTimeout(autoTimerRef.current);
     const replyPhoneScene = mode === 'phone' && getItemChoices(item).length > 0;
-    if (!auto || mode === 'choice' || replyPhoneScene || typing || skipOpen || backlogOpen || uiHidden) return undefined;
+    if (!auto || mode === 'choice' || replyPhoneScene || typing || skipOpen || backlogOpen || statusOpen || uiHidden) return undefined;
     autoTimerRef.current = window.setTimeout(goNextRaw, settings.autoDelayMs || AUTO_DELAY_MS);
     return () => window.clearTimeout(autoTimerRef.current);
-  }, [auto, backlogOpen, goNextRaw, index, item, mode, settings.autoDelayMs, skipOpen, typing, uiHidden]);
+  }, [auto, backlogOpen, goNextRaw, index, item, mode, settings.autoDelayMs, skipOpen, statusOpen, typing, uiHidden]);
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -772,13 +773,14 @@ export function BAVisualNovel({
         setGalleryOpen(false);
         setSaveLoadMode(null);
         setSettingsOpen(false);
+        setStatusOpen(false);
         setUiHidden(false);
         return;
       }
 
       if (isInteractiveKeyTarget(event.target)) return;
 
-      const gameplayReady = screen === 'game' && !saveLoadMode && !settingsOpen && !galleryOpen && !skipOpen && !backlogOpen;
+      const gameplayReady = screen === 'game' && !saveLoadMode && !settingsOpen && !statusOpen && !galleryOpen && !skipOpen && !backlogOpen;
       if (event.key === ' ' || event.key === 'Enter') {
         if (!gameplayReady) return;
         event.preventDefault();
@@ -804,7 +806,7 @@ export function BAVisualNovel({
 
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [backlogOpen, galleryOpen, hideUi, loadGame, next, openBacklog, openGallery, openMenu, openSkip, saveGame, saveLoadMode, screen, setMode, settingsOpen, skipOpen, toggleAuto]);
+  }, [backlogOpen, galleryOpen, hideUi, loadGame, next, openBacklog, openGallery, openMenu, openSkip, saveGame, saveLoadMode, screen, setMode, settingsOpen, skipOpen, statusOpen, toggleAuto]);
 
   const handleSvgClick = useCallback((event) => {
     const target = event.target;

@@ -13,10 +13,10 @@ import {
 import { getChapterInfo, shouldShowChapterCard } from '../src/engine/chapterEngine.js';
 import { applyDirectorItem, getMoodOverlay } from '../src/engine/directorEngine.js';
 import { normalizePhoneMessages, normalizePhoneReplies } from '../src/engine/phoneEngine.js';
-import { normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCodec.js';
+import { SAVE_VERSION, normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCodec.js';
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
-import { findReplayPath, replayDirectorState, resolveNextIndex } from '../src/engine/vnEngine.js';
+import { findReplayPath, replayDirectorState, resolveEndingRoute, resolveNextIndex } from '../src/engine/vnEngine.js';
 import { affectionConditionMatches, variantMatchesState } from '../src/utils/relationshipState.js';
 import { resolveDominantRoute, resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
@@ -936,9 +936,24 @@ assert.match(
   'Status modal should list each heroine with an affection meter and numeric 100-point progress.'
 );
 assert.match(
+  component,
+  /if \(!auto \|\| mode === 'choice'[\s\S]*?statusOpen[\s\S]*?return undefined/,
+  'Status modal should block AUTO progression while open.'
+);
+assert.match(
+  component,
+  /if \(event\.key === 'Escape'\)[\s\S]*?setStatusOpen\(false\)/,
+  'Escape should close the STATUS modal with the rest of the modal stack.'
+);
+assert.match(
+  component,
+  /const gameplayReady = screen === 'game'[\s\S]*?!statusOpen/,
+  'Keyboard gameplay shortcuts should be disabled while STATUS is open.'
+);
+assert.match(
   styles,
-  /\.status-panel[\s\S]*?\.affection-meter[\s\S]*?\.affection-meter-fill/,
-  'Status modal affection meters should be styled separately from the normal gameplay overlay.'
+  /\.status-card\s*\{[\s\S]*?display:\s*flex[\s\S]*?\.status-list\s*\{[\s\S]*?overflow-y:\s*auto[\s\S]*?\.affection-meter[\s\S]*?\.affection-meter-fill/,
+  'Status modal should scroll all heroine meters inside the card instead of clipping rows.'
 );
 assert.match(
   component,
@@ -2234,6 +2249,27 @@ assert.ok(
   'Scenario validator should reject empty phone messages unless pending is true.'
 );
 
+const malformedVariantValidation = validateScenario([
+  {
+    id: 'start',
+    type: 'dialogue',
+    text: 'start',
+    variants: [
+      { requiredFlags: ['ok'], affection: { missing_target: { min: 10 } }, text: 'bad target' },
+      { affection: { hyeongyeom: { minimum: 60 } }, text: 'bad shape' },
+      { affection: { hyeongyeom: { min: 90, max: 60 } }, text: 'bad range' }
+    ],
+    nextId: 'end'
+  },
+  { id: 'end', type: 'dialogue', text: 'end', terminal: true }
+], routeConfigData);
+assert.ok(
+  malformedVariantValidation.errors.some((error) => error.includes('unknown variant affection target: missing_target'))
+    && malformedVariantValidation.errors.some((error) => error.includes('variant affection condition for hyeongyeom needs numeric min or max'))
+    && malformedVariantValidation.errors.some((error) => error.includes('variant affection min must be <= max')),
+  'Scenario validator should reject malformed affection variants instead of letting them silently match.'
+);
+
 const unreachableValidation = validateScenario([
   { id: 'start', type: 'dialogue', text: 'start', nextId: 'end' },
   { id: 'end', type: 'dialogue', text: 'end', terminal: true },
@@ -2293,6 +2329,22 @@ assert.equal(
   true,
   'Scenario variants should be able to require both flags and affection ranges.'
 );
+assert.equal(
+  variantMatchesState(
+    { affection: { hyeongyeom: { minimum: 60 } } },
+    { flags: [], affection: { hyeongyeom: 0 } }
+  ),
+  false,
+  'Malformed affection variant ranges should not match every game state.'
+);
+assert.equal(
+  variantMatchesState(
+    { affection: { hyeongyeom: '60' } },
+    { flags: [], affection: { hyeongyeom: 0 } }
+  ),
+  false,
+  'String affection thresholds should be rejected instead of matching every game state.'
+);
 
 const dominantRoute = resolveDominantRoute(
   {
@@ -2320,6 +2372,45 @@ const fallbackRouteLock = resolveRouteLock({ affection: {}, flags: [] }, routeCo
 assert.equal(fallbackRouteLock.id, 'common', 'Route lock should fall back to the common route when no route is eligible.');
 assert.equal(fallbackRouteLock.reason, 'fallback');
 
+const lowAffectionRouteEnding = resolveEndingRoute(
+  {
+    affection: { hyeongyeom: 30 },
+    flags: ['hyeongyeom_route_seed', 'route_lock_hyeongyeom']
+  },
+  episodeInfo.endingRules || []
+);
+assert.notEqual(
+  lowAffectionRouteEnding.id,
+  'hyeongyeom',
+  'Terminal route endings should not be unlocked by a 30-point route_lock flag alone.'
+);
+const highAffectionRouteEnding = resolveEndingRoute(
+  {
+    affection: { hyeongyeom: 85 },
+    flags: ['hyeongyeom_route_seed', 'route_lock_hyeongyeom']
+  },
+  episodeInfo.endingRules || []
+);
+assert.equal(highAffectionRouteEnding.id, 'hyeongyeom', 'Character endings should require high 100-point affection.');
+const day11RouteGateIndex = scenario.findIndex((item) => item.id === 'day11-route-gate');
+const lowAffectionRouteGateTarget = resolveNextIndex({
+  scenario,
+  index: day11RouteGateIndex,
+  currentItem: scenario[day11RouteGateIndex],
+  ending: null,
+  gameState: {
+    affection: { ukhyun: 30 },
+    flags: ['ukhyun_route_seed', 'route_lock_ukhyun']
+  },
+  endingRules: episodeInfo.endingRules || [],
+  routeConfig: routeConfigData
+});
+assert.equal(
+  scenario[lowAffectionRouteGateTarget]?.id,
+  'day11-ukhyun-morning',
+  'Route gates should still follow explicit route-lock payoff branches without granting terminal endings early.'
+);
+
 const normalizedByItem = normalizeSavePayload(
   { version: 1, index: 9999, itemId: scenario[2].id, gameState: {}, settings: {}, directorState: null, log: [] },
   { scenario, fallbackIndex: 0 }
@@ -2335,6 +2426,35 @@ assert.equal(normalizedFallback.index, 0);
 assert.equal(normalizedFallback.itemId, scenario[0].id);
 assert.equal(normalizedFallback.directorState, null);
 assert.deepEqual(normalizedFallback.log, []);
+
+const migratedLegacySave = normalizeSavePayload(
+  {
+    version: 1,
+    index: 0,
+    itemId: scenario[0].id,
+    gameState: { affection: { hyeongyeom: 7, ukhyun: 3 } },
+    settings: {},
+    directorState: null,
+    log: []
+  },
+  { scenario, fallbackIndex: 0, routeConfig: routeConfigData }
+);
+assert.equal(migratedLegacySave.version, SAVE_VERSION);
+assert.equal(migratedLegacySave.gameState.affection.hyeongyeom, 70);
+assert.equal(migratedLegacySave.gameState.affection.ukhyun, 30);
+const currentScaleSave = normalizeSavePayload(
+  {
+    version: SAVE_VERSION,
+    index: 0,
+    itemId: scenario[0].id,
+    gameState: { affection: { hyeongyeom: 70 } },
+    settings: {},
+    directorState: null,
+    log: []
+  },
+  { scenario, fallbackIndex: 0, routeConfig: routeConfigData }
+);
+assert.equal(currentScaleSave.gameState.affection.hyeongyeom, 70, 'Current 100-point saves should not be scaled again.');
 
 const normalizedSummarySave = normalizeSavePayload(
   {
@@ -2801,7 +2921,8 @@ assert.equal(phoneMessages[1].pending, true);
 const phoneReplies = normalizePhoneReplies({ replies: ['바로 답장한다.'], next: ['reply-warm'] });
 assert.deepEqual(phoneReplies[0], { index: 0, text: '바로 답장한다.', targetId: 'reply-warm' });
 
-assert.match(saveCodec, /export const SAVE_VERSION = 1/);
+assert.equal(SAVE_VERSION, 2, 'Save version should advance when migrating legacy 0-10 affection saves.');
+assert.match(saveCodec, /export const SAVE_VERSION = 2/);
 assert.match(scenarioValidator, /export function validateScenario/);
 assert.match(scenarioValidator, /messages[\s\S]*phone message text is required/);
 assert.match(component, /function playAudio\(src, volume = 0\.65\)/);

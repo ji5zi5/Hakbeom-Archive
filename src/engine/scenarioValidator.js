@@ -9,6 +9,10 @@ function asList(value) {
   return Array.isArray(value) ? value : [value];
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
 function addError(errors, item, message) {
   errors.push(`${item?.id || '<unknown>'}: ${message}`);
 }
@@ -59,6 +63,11 @@ export function validateScenario(scenario, routeConfig) {
   const ids = new Set();
   const galleryIds = new Set(asArray(routeConfig?.galleryItems || routeConfig?.gallery).map((entry) => entry.id));
   const recollectionIds = new Set(asArray(routeConfig?.recollectionItems || routeConfig?.recollections).map((entry) => entry.id));
+  const affectionTargetIds = new Set(asArray(routeConfig?.affectionTargets).map((entry) => entry.id).filter(Boolean));
+  const fallbackAffectionTarget = typeof routeConfig?.affectionTarget === 'string'
+    ? routeConfig.affectionTarget
+    : routeConfig?.affectionTarget?.id;
+  if (fallbackAffectionTarget) affectionTargetIds.add(fallbackAffectionTarget);
   const endingIds = new Set([
     ...Object.keys(routeConfig?.endings || {}),
     ...items.filter((item) => item?.terminal).map((item) => item.id)
@@ -85,6 +94,52 @@ export function validateScenario(scenario, routeConfig) {
     for (const endingId of asList(reward.endings || reward.ending)) {
       if (endingId && endingIds.size > 0 && !endingIds.has(endingId)) {
         addError(errors, item, `${label} unknown ending: ${endingId}`);
+      }
+    }
+  };
+
+  const validateVariantAffectionCondition = (item, target, condition, label) => {
+    if (affectionTargetIds.size > 0 && !affectionTargetIds.has(target)) {
+      addError(errors, item, `${label} unknown variant affection target: ${target}`);
+    }
+    if (typeof condition === 'number') return;
+    if (!isPlainObject(condition)) {
+      addError(errors, item, `${label} variant affection condition for ${target} needs numeric min or max`);
+      return;
+    }
+    const hasMin = condition.min !== undefined;
+    const hasMax = condition.max !== undefined;
+    const min = hasMin ? Number(condition.min) : Number.NEGATIVE_INFINITY;
+    const max = hasMax ? Number(condition.max) : Number.POSITIVE_INFINITY;
+    if ((!hasMin && !hasMax) || (hasMin && !Number.isFinite(min)) || (hasMax && !Number.isFinite(max))) {
+      addError(errors, item, `${label} variant affection condition for ${target} needs numeric min or max`);
+      return;
+    }
+    if (min > max) addError(errors, item, `${label} variant affection min must be <= max for ${target}`);
+  };
+
+  const validateVariant = (item, variant, index) => {
+    const label = `variants[${index}]`;
+    if (!isPlainObject(variant)) {
+      addError(errors, item, `${label} must be an object`);
+      return;
+    }
+    if (!variant.default && typeof variant.text !== 'string') {
+      addError(errors, item, `${label} text is required`);
+    }
+    for (const flagField of ['requiredFlags', 'flags']) {
+      const flags = variant[flagField];
+      if (flags != null && !Array.isArray(flags) && typeof flags !== 'string') {
+        addError(errors, item, `${label}.${flagField} must be a string or array`);
+      }
+    }
+    if (variant.affection != null) {
+      if (!isPlainObject(variant.affection)) {
+        addError(errors, item, `${label} affection must be an object`);
+        return;
+      }
+      for (const [target, condition] of Object.entries(variant.affection)) {
+        validateVariantAffectionCondition(item, target, condition, label);
       }
     }
   };
@@ -138,6 +193,10 @@ export function validateScenario(scenario, routeConfig) {
       validateReward(item, reward, `rewards[${index}]`);
     }
     validateReward(item, item.reward || item.routeReward, 'reward');
+
+    for (const [index, variant] of asArray(item.variants).entries()) {
+      validateVariant(item, variant, index);
+    }
 
     for (const [index, directive] of asArray(item.directives).entries()) {
       const type = String(directive?.type || directive?.command || directive?.cmd || '').toUpperCase();
