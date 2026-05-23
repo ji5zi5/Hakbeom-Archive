@@ -53,6 +53,7 @@ public/assets/                   런타임 asset
 | --- | --- | --- |
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
 | route date loop / phone follow-up 추가 | `src/data/scenario/batch3RouteDates/`, `src/data/scenario/routeDepthExpansionRegistry.js` | route-date matrix audit, memory consumer audit, deterministic replay tests |
+| route별 말투/미연시 기억 라벨 변경 | `src/data/routeConfig.js`의 `datingSimProfiles`, `src/data/scenario/batch3RouteDates/` | save summary latest memory tests, route-date dialogue ratio tests |
 | 호감도/갤러리/회상 조건 변경 | `src/data/routeConfig.js`, `src/utils/relationshipState.js` | `src/utils/vnState.js`, status modal/tests |
 | 분기/스킵/엔딩/replay 동작 변경 | `src/engine/vnEngine.js` | semantic tests 추가 |
 | BCG/SCG/SE/E/BGM/AMBIENT 연출 명령 변경 | `src/engine/directorEngine.js`, `src/engine/audioEngine.js` | scenario directive docs/tests |
@@ -84,6 +85,7 @@ public/assets/                   런타임 asset
 - Chapter/day card visibility is calculated by `src/engine/chapterEngine.js`; scenario authors control it with `kind: 'chapter'` and `chapter` metadata.
 - Character expression asset fallback belongs in `src/data/characterProfiles.js`; scenario files should reference expression names, not duplicate fallback paths.
 - 새 히로인을 추가할 때는 `routeConfig.affectionTargets`, `characterProfiles`, scenario reward/endingRules, terminal ending, contract test를 함께 갱신한다.
+- 미연시 route voice는 `routeConfig.datingSimProfiles`가 원본이다. route date matrix의 `profileId`/`memoryLabel`은 이 profile과 맞춰서 저장 슬롯/상태 화면에 보여도 자연스러운 짧은 기억 문장으로 유지한다.
 
 ### scenario는 데이터, validator는 계약이다
 
@@ -184,10 +186,11 @@ Route date loop를 추가/수정할 때는 추가로 확인한다.
 1. Matrix가 `previousSceneId`, `entrySceneId`, `exitSceneId`, `returnSceneId`만 anchor로 쓰고 `entryAfterId`를 만들지 않는다.
 2. `entrySceneId === sceneIds[0]`, `exitSceneId === sceneIds.at(-1)`.
 3. 각 route가 route-prefixed `${routeId}_date_*`와 `${routeId}_phone_*` flag를 보상으로 남긴다.
-4. date/phone flag가 뒤쪽 `variants.requiredFlags`나 route payoff에서 소비된다.
+4. `profileId`, `dateMotif`, `memoryLabel`, `payoffConsumerSceneIds`가 모두 있고, date/phone flag가 뒤쪽 `variants.requiredFlags`나 route payoff에서 소비된다.
 5. phone reply scene은 `replies`/`rewards`/`next` 길이가 같고 reply branching과 `nextId`를 섞지 않는다.
 6. `PHONE_CONTACT_NAMES` 또는 message-level `name`이 `routeConfig.affectionTargets.name`과 맞아 sender fallback이 틀어지지 않는다.
-7. deterministic committed replay가 route lock 70+, terminal eligibility 85+, affection cap 100을 증명한다.
+7. route-date branch는 상대 캐릭터의 직접 대사가 최소 2개 이상이고, 학범 독백/무명 서술이 그보다 많지 않다.
+8. deterministic committed replay가 route lock 70+, terminal eligibility 85+, affection cap 100을 증명한다.
 
 ## Git/커밋 규칙
 

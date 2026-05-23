@@ -1,3 +1,60 @@
+export const datingSimProfiles = {
+  hyeongyeom: {
+    role: '다정한 동급생',
+    tension: '말을 아끼다가 같은 우산과 약속으로 마음을 확인한다',
+    latestMemoryLabel: '같은 우산 아래의 약속',
+    noGo: ['설명충 독백', '수동적인 기다림만 반복']
+  },
+  ukhyun: {
+    role: '차분한 기록 담당',
+    tension: '접지 않은 메모와 창가 시선으로 숨긴 마음을 천천히 드러낸다',
+    latestMemoryLabel: '창가 노트에 남은 답장',
+    noGo: ['무표정 원툴', '감정 없는 정보 전달']
+  },
+  jaeseong: {
+    role: '능글맞은 방송 담당',
+    tension: '장난스러운 비공개 멘트 뒤에 진심을 숨긴다',
+    latestMemoryLabel: '꺼진 마이크 앞의 진심',
+    noGo: ['가벼운 농담만 반복', '방송부 소재만 소비']
+  },
+  sangwon: {
+    role: '직진형 기록 담당',
+    tension: '확정하려는 습관이 허락을 묻는 다정함으로 바뀐다',
+    latestMemoryLabel: '승부 뒤에 남은 손길',
+    noGo: ['명령조만 반복', '감시처럼 보이는 기록']
+  },
+  sanguk: {
+    role: '속도를 맞추는 운동부',
+    tension: '먼저 달려가던 마음이 학범의 보폭을 기다리는 쪽으로 변한다',
+    latestMemoryLabel: '같은 속도로 걸은 무대 뒤',
+    noGo: ['무작정 돌진', '체육계 열혈만 반복']
+  },
+  junhyeok: {
+    role: '계산적인 분위기 메이커',
+    tension: '효율과 농담 뒤에 숨긴 불안을 기다림으로 들킨다',
+    latestMemoryLabel: '농담이 멈춘 좌표',
+    noGo: ['개그만 반복', '확률 말장난만 남발']
+  },
+  dohun: {
+    role: '무뚝뚝한 실무형',
+    tension: '정보값이라는 핑계로 먼저 챙기는 행동이 마음을 들킨다',
+    latestMemoryLabel: '말없이 챙긴 귀갓길',
+    noGo: ['감정 부재', '츤데레 한 문장 반복']
+  },
+  haeum: {
+    role: '부드러운 예술가',
+    tension: '박자와 숨을 맞추며 말보다 가까운 리듬으로 다가온다',
+    latestMemoryLabel: '같은 박자로 맞춘 오후',
+    noGo: ['몽환적 표현 남발', '구체 행동 없는 분위기만 반복']
+  },
+  yunho: {
+    role: '후배',
+    tension: '존경과 질투 사이에서 좋은 후배가 아니라 한 사람으로 다가오려 한다',
+    latestMemoryLabel: '처음으로 이름을 낮춰 부른 저녁',
+    noGo: ['어른스러운 선배처럼 말함', '후배 속성만 소비']
+  }
+};
+
 export const routeConfig = {
   affectionTarget: {
     id: 'hyeongyeom',
@@ -28,6 +85,7 @@ export const routeConfig = {
     haeum: ['haeum_route_seed'],
     yunho: ['yunho_route_seed']
   },
+  datingSimProfiles,
   affectionLabels: [
     { min: 0, label: '어색한 동급생' },
     { min: 20, label: '신경 쓰이는 사이' },

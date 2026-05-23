@@ -1,4 +1,4 @@
-import { routeConfig } from '../../routeConfig.js';
+import { datingSimProfiles, routeConfig } from '../../routeConfig.js';
 
 export const ROUTE_DATE_BATCH3_ID = 'route-dates-2026-05-batch3';
 
@@ -151,6 +151,7 @@ function routeReturnSceneId(routeId) {
 
 export const routeDateBatch3Routes = routeConfig.affectionTargets.map((target) => {
   const routeId = target.id;
+  const spec = routeDateRouteSpecs[routeId];
   const entrySceneId = `date-day7-${routeId}-invite`;
   const sceneIds = [
     entrySceneId,
@@ -163,15 +164,19 @@ export const routeDateBatch3Routes = routeConfig.affectionTargets.map((target) =
   return {
     id: routeId,
     routeId,
+    profileId: routeId,
     name: target.name,
     day: 7,
     expansionBatch: ROUTE_DATE_BATCH3_ID,
     arcId: `day7-${routeId}-rain-date`,
+    dateMotif: `${spec.place}에서 ${target.name}이 ${spec.motif}를 핑계로 학범에게 사적인 시간을 제안한다.`,
+    memoryLabel: datingSimProfiles[routeId]?.latestMemoryLabel || spec.motif,
     previousSceneId: `day7-free-${routeId}-close`,
     entrySceneId,
     exitSceneId: sceneIds[sceneIds.length - 1],
     returnSceneId: routeReturnSceneId(routeId),
     sceneIds,
+    payoffConsumerSceneIds: [sceneIds[2], sceneIds[4]],
     backgroundIds: [`day7-${routeId}-rain`],
     memoryFlags: [`${routeId}_date_day7_shared_rain`],
     phoneFlags: [`${routeId}_phone_day7_warm_reply`],

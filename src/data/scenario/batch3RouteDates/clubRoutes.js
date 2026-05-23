@@ -1,3 +1,5 @@
+import { datingSimProfiles } from '../../routeConfig.js';
+
 export const ROUTE_DATE_BATCH3_ID = 'route-dates-2026-05-batch3';
 
 const clubRouteDateSpecs = {
@@ -111,7 +113,10 @@ const clubRouteDateSpecs = {
 export const clubRouteDateBatch3Matrix = Object.values(clubRouteDateSpecs).map((spec) => ({
   routeId: spec.routeId,
   id: spec.routeId,
+  profileId: spec.routeId,
   arcId: spec.arcId,
+  dateMotif: `${spec.place}에서 ${spec.name}이 문화제 준비를 핑계로 학범과 둘만의 기억을 남긴다.`,
+  memoryLabel: datingSimProfiles[spec.routeId]?.latestMemoryLabel || spec.place,
   previousSceneId: spec.previousSceneId,
   entrySceneId: spec.entrySceneId,
   exitSceneId: spec.exitSceneId,
@@ -119,6 +124,11 @@ export const clubRouteDateBatch3Matrix = Object.values(clubRouteDateSpecs).map((
   sceneIds: [
     spec.entrySceneId,
     `date-day8-${spec.routeId}-phone-followup`,
+    `date-day8-${spec.routeId}-phone-warm`,
+    `date-day8-${spec.routeId}-phone-steady`,
+    spec.exitSceneId
+  ],
+  payoffConsumerSceneIds: [
     `date-day8-${spec.routeId}-phone-warm`,
     `date-day8-${spec.routeId}-phone-steady`,
     spec.exitSceneId

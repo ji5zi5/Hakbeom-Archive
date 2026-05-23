@@ -1,4 +1,5 @@
 import { resolveDominantRoute, resolveRouteLock } from '../utils/routeResolution.js';
+import { resolveLatestRouteMemory } from '../utils/relationshipState.js';
 import { safeText } from '../utils/vnText.js';
 
 function getAffectionTarget(routeConfig, gameState) {
@@ -33,13 +34,16 @@ function buildRouteDisplay(gameState, routeConfig, target, affectionValue) {
   const routeLocked = Boolean(lock && lock.reason !== 'fallback' && lock.id !== 'common');
   const routeName = safeText((routeLocked ? lock.name : target?.name) || target?.id || '공통 루트');
   const affectionLabel = getAffectionLabel(affectionValue, routeConfig);
+  const latestMemoryLabel = resolveLatestRouteMemory(gameState?.flags, routeConfig?.datingSimProfiles || {});
+  const memoryProgressText = latestMemoryLabel ? `${routeName} · ${latestMemoryLabel}` : '';
   return {
     routeId: safeText((routeLocked ? lock.id : target?.id) || 'common'),
     routeName,
     routeLabel: routeLocked ? `${routeName} 루트 확정` : `${routeName} 루트`,
     routeLocked,
-    routeProgressText: routeLocked ? `${routeName} · 루트 확정` : `${routeName} · ${affectionLabel}`,
-    affectionLabel
+    routeProgressText: memoryProgressText || (routeLocked ? `${routeName} · 루트 확정` : `${routeName} · ${affectionLabel}`),
+    affectionLabel,
+    latestMemoryLabel
   };
 }
 
@@ -63,6 +67,7 @@ export function buildSaveSummary({ item, gameState, routeConfig, backgroundSrc =
     routeLabel: routeDisplay.routeLabel,
     routeLocked: routeDisplay.routeLocked,
     routeProgressText: routeDisplay.routeProgressText,
+    latestMemoryLabel: routeDisplay.latestMemoryLabel,
     thumbnail: item?.thumbnail || item?.backgroundSrc || backgroundSrc || chapterDisplay.thumbnail || ''
   };
 }

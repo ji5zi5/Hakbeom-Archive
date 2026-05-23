@@ -37,3 +37,15 @@ export function variantMatchesState(variant = {}, gameState = {}) {
   if (!requiredFlags.every((flag) => flags.has(flag))) return false;
   return affectionConditionMatches(gameState, variant.affection || {});
 }
+
+export function resolveLatestRouteMemory(flags = [], profiles = {}) {
+  const flagList = Array.isArray(flags) ? flags : [];
+  const latestMemoryFlag = [...flagList].reverse().find((flag) => (
+    typeof flag === 'string' && /_(date|phone)_/.test(flag)
+  ));
+  if (!latestMemoryFlag) return '';
+
+  const routeId = Object.keys(profiles || {}).find((id) => latestMemoryFlag.startsWith(`${id}_`));
+  if (!routeId) return '';
+  return profiles[routeId]?.latestMemoryLabel || profiles[routeId]?.role || '';
+}

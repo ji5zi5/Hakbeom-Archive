@@ -133,6 +133,9 @@ Matrix 항목은 다음 필드를 사용한다.
 Route date 보상/기억 규칙:
 
 - 각 route는 최소 하나의 `${routeId}_date_*` memory flag와 하나의 `${routeId}_phone_*` follow-up flag를 가져야 한다.
+- 각 route date matrix 항목은 `profileId`, `dateMotif`, `memoryLabel`, `payoffConsumerSceneIds`를 가진다. `profileId`는 `src/data/routeConfig.js`의 `datingSimProfiles` 키와 일치해야 하고, `memoryLabel`은 save/status 같은 수동 화면에서 “최근 기억”으로 보여도 어색하지 않은 짧은 문장이어야 한다.
+- date branch는 직접 대화 중심이어야 한다. 한 route-date arc 안에서 이름 있는 상대 캐릭터 `dialogue`가 최소 2개 이상 있어야 하며, `학범` 독백/무명 서술 장면 수가 상대 대사 수를 넘지 않게 한다.
+- 선택지는 `조사한다`, `단서를 찾는다`, `수색한다` 같은 추리물 행동이 아니라 학범이 어떤 온도/거리/말투로 답할지 고르는 문장으로 쓴다.
 - route-resolution tie-break에 쓰일 flag는 route prefix로 시작한다. 단순 payoff/display 전용 flag는 `memory_payoff_${routeId}_...`처럼 별도 이름으로 둔다.
 - date choice와 phone reply는 합쳐서 승인된 pre-lock delta(현재 Batch3.5 `+18`)를 제공하며, 엔진의 100점 cap을 넘는 값을 요구하지 않는다.
 - 모든 date/phone flag는 이후 `variants.requiredFlags`, route-lock/payoff line, gallery/recollection, terminal text 중 하나 이상에서 소비되어야 한다.

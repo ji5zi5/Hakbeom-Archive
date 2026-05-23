@@ -1,3 +1,5 @@
+import { datingSimProfiles } from '../../routeConfig.js';
+
 export const CORE_ROUTE_DATE_BATCH_ID = 'route-date-2026-05-batch3-core';
 
 export const coreRouteDateIds = ['hyeongyeom', 'ukhyun', 'jaeseong'];
@@ -102,16 +104,21 @@ function sceneIds(routeId) {
 
 export const coreRouteDateMatrix = coreRouteDateIds.map((routeId) => {
   const ids = sceneIds(routeId);
+  const spec = routeSpecs[routeId];
   return {
     routeId,
+    profileId: routeId,
     day: 9,
     expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
     arcId: `${routeId}-day9-private-date-loop`,
+    dateMotif: `${spec.place}에서 ${spec.name}이 소문 뒤에 숨겨 둔 사적인 신호를 건네고, 학범이 답장 톤으로 관계를 정한다.`,
+    memoryLabel: datingSimProfiles[routeId]?.latestMemoryLabel || spec.place,
     previousSceneId: `day9-free-${routeId}-close`,
     entrySceneId: ids[0],
     exitSceneId: ids[ids.length - 1],
     returnSceneId: 'day9-free-hub-b',
     sceneIds: ids,
+    payoffConsumerSceneIds: [ids[2], ids[4]],
     backgroundIds: [routeSpecs[routeId].backgroundId],
     memoryFlags: [dateFlag(routeId)],
     phoneFlags: [phoneFlag(routeId)],

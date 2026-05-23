@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import assert from 'node:assert/strict';
-import { routeConfig as routeConfigData } from '../src/data/routeConfig.js';
+import { datingSimProfiles, routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
 import {
@@ -38,7 +38,7 @@ import { SAVE_VERSION, normalizeSavePayload, normalizeSaveSummary } from '../src
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
 import { findReplayPath, replayDirectorState, resolveEndingRoute, resolveNextIndex } from '../src/engine/vnEngine.js';
-import { affectionConditionMatches, variantMatchesState } from '../src/utils/relationshipState.js';
+import { affectionConditionMatches, resolveLatestRouteMemory, variantMatchesState } from '../src/utils/relationshipState.js';
 import { resolveDominantRoute, resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
 
@@ -2922,6 +2922,52 @@ const coreRouteDateIds = ['hyeongyeom', 'ukhyun', 'jaeseong'];
 const coreRouteDateScenesById = new Map(coreRouteDateScenes.map((item) => [item.id, item]));
 const scenarioScenesById = new Map(scenario.map((item) => [item.id, item]));
 
+function countRouteDateCharacterDialogue(items) {
+  return items.filter((item) => item?.type === 'dialogue' && item.name && item.name !== '학범' && item.text).length;
+}
+
+function countRouteDateNarration(items) {
+  return items.filter((item) => item?.type === 'dialogue' && (!item.name || item.name === '학범') && item.text).length;
+}
+
+for (const target of routeConfigData.affectionTargets) {
+  const profile = datingSimProfiles[target.id];
+  assert.ok(profile, `${target.id} should have a dating-sim profile.`);
+  assert.equal(typeof profile.role, 'string', `${target.id} dating-sim profile should define a role.`);
+  assert.equal(typeof profile.tension, 'string', `${target.id} dating-sim profile should define a romantic tension.`);
+  assert.equal(typeof profile.latestMemoryLabel, 'string', `${target.id} dating-sim profile should define a latest-memory label.`);
+  assert.ok(Array.isArray(profile.noGo) && profile.noGo.length > 0, `${target.id} dating-sim profile should define no-go voice rules.`);
+}
+
+for (const route of routeDateBatch3Routes) {
+  const routeId = route.routeId || route.id;
+  assert.equal(route.profileId, routeId, `${routeId} route date should link to its dating-sim profile.`);
+  assert.equal(typeof route.dateMotif, 'string', `${routeId} route date should declare a concrete date motif.`);
+  assert.ok(route.dateMotif.length >= 18, `${routeId} route date motif should be specific enough to guide prose.`);
+  assert.equal(typeof route.memoryLabel, 'string', `${routeId} route date should declare a memory label for passive UI.`);
+  assert.ok(route.memoryLabel.length >= 6, `${routeId} route date memory label should be readable.`);
+  assert.ok(
+    Array.isArray(route.payoffConsumerSceneIds) && route.payoffConsumerSceneIds.length > 0,
+    `${routeId} route date should name scenes that consume date/phone memory.`
+  );
+
+  const routeDateScenes = route.sceneIds.map((sceneId) => scenarioScenesById.get(sceneId)).filter(Boolean);
+  assert.ok(
+    countRouteDateCharacterDialogue(routeDateScenes) >= 2,
+    `${routeId} route date should include at least two direct character dialogue beats.`
+  );
+  assert.ok(
+    countRouteDateNarration(routeDateScenes) <= countRouteDateCharacterDialogue(routeDateScenes),
+    `${routeId} route date should not read like narration-first prose.`
+  );
+
+  const routeDateChoices = routeDateScenes.filter((item) => item?.type === 'choice').flatMap((item) => item.choices || []);
+  assert.ok(routeDateChoices.length > 0, `${routeId} route date should include player tone choices.`);
+  for (const choice of routeDateChoices) {
+    assert.doesNotMatch(choice, /조사|단서|수색|추리/, `${routeId} route date choice should be romantic tone/action, not mystery investigation: ${choice}`);
+  }
+}
+
 for (const routeId of coreRouteDateIds) {
   const entry = coreRouteDateMatrix.find((route) => route.routeId === routeId);
   assert.ok(entry, `Core route-date matrix should include ${routeId}.`);
@@ -3085,6 +3131,7 @@ const normalizedRichSummarySave = normalizeSavePayload(
       routeLabel: '상원 루트 확정',
       routeLocked: true,
       routeProgressText: '상원 · 루트 확정',
+      latestMemoryLabel: '전시 카드의 빈칸',
       thumbnail: '/assets/bg/archive-club-room-evening.png'
     },
     gameState: {},
@@ -3110,6 +3157,7 @@ assert.deepEqual(
     routeLabel: '상원 루트 확정',
     routeLocked: true,
     routeProgressText: '상원 · 루트 확정',
+    latestMemoryLabel: '전시 카드의 빈칸',
     thumbnail: '/assets/bg/archive-club-room-evening.png'
   },
   'Save codec should preserve normalized route/chapter display metadata for sub-screen cards.'
@@ -3130,6 +3178,7 @@ assert.deepEqual(
     routeLabel: '',
     routeLocked: false,
     routeProgressText: '',
+    latestMemoryLabel: '',
     thumbnail: ''
   },
   'Corrupt save-summary display values should normalize to safe defaults.'
@@ -3398,6 +3447,25 @@ assert.equal(multiRouteSaveSummary.routeName, '상원');
 assert.equal(multiRouteSaveSummary.routeLabel, '상원 루트 확정');
 assert.equal(multiRouteSaveSummary.routeLocked, true);
 assert.equal(multiRouteSaveSummary.routeProgressText, '상원 · 루트 확정');
+
+assert.equal(resolveLatestRouteMemory([], datingSimProfiles), '');
+assert.equal(resolveLatestRouteMemory(['unknown_flag'], datingSimProfiles), '');
+assert.equal(
+  resolveLatestRouteMemory(['yunho_date_day7_shared_rain'], datingSimProfiles),
+  '처음으로 이름을 낮춰 부른 저녁'
+);
+
+const memorySaveSummary = buildSaveSummary({
+  item: { id: 'date-day7-yunho-phone-close', chapter: 'day-7', sectionTitle: 'Day 7', text: '윤호의 답장이 도착했다.' },
+  gameState: {
+    affection: { yunho: 88 },
+    flags: ['yunho_route_seed', 'yunho_date_day7_shared_rain', 'yunho_phone_day7_warm_reply']
+  },
+  routeConfig: routeConfigData,
+  backgroundSrc: '/assets/bg/rooftop-after-rain.png'
+});
+assert.equal(memorySaveSummary.latestMemoryLabel, '처음으로 이름을 낮춰 부른 저녁');
+assert.equal(memorySaveSummary.routeProgressText, '윤호 · 처음으로 이름을 낮춰 부른 저녁');
 
 assert.equal(characterProfiles.hyeongyeom.name, '현겸');
 assert.equal(resolveCharacterAsset({ id: 'hyeongyeom', expression: 'smile' }), '/assets/character/hyungyeom.png');

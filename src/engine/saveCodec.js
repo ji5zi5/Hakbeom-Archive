@@ -115,6 +115,7 @@ export function normalizeSaveSummary(value) {
     routeLabel: typeof summary.routeLabel === 'string' ? summary.routeLabel : '',
     routeLocked: normalizeBoolean(summary.routeLocked),
     routeProgressText: typeof summary.routeProgressText === 'string' ? summary.routeProgressText : '',
+    latestMemoryLabel: typeof summary.latestMemoryLabel === 'string' ? summary.latestMemoryLabel : '',
     thumbnail: typeof summary.thumbnail === 'string' ? summary.thumbnail : ''
   };
 }
