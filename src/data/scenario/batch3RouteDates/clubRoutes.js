@@ -113,6 +113,7 @@ const clubRouteDateSpecs = {
 export const clubRouteDateBatch3Matrix = Object.values(clubRouteDateSpecs).map((spec) => ({
   routeId: spec.routeId,
   id: spec.routeId,
+  ownership: 'club',
   profileId: spec.routeId,
   arcId: spec.arcId,
   dateMotif: `${spec.place}에서 ${spec.name}이 문화제 준비를 핑계로 학범과 둘만의 기억을 남긴다.`,
@@ -131,7 +132,9 @@ export const clubRouteDateBatch3Matrix = Object.values(clubRouteDateSpecs).map((
   payoffConsumerSceneIds: [
     `date-day8-${spec.routeId}-phone-warm`,
     `date-day8-${spec.routeId}-phone-steady`,
-    spec.exitSceneId
+    spec.exitSceneId,
+    'day11-opening',
+    'day11-moe-route-message'
   ],
   backgroundIds: [spec.backgroundId],
   memoryFlags: [spec.memoryFlag],

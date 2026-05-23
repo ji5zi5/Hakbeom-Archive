@@ -107,6 +107,7 @@ export const coreRouteDateMatrix = coreRouteDateIds.map((routeId) => {
   const spec = routeSpecs[routeId];
   return {
     routeId,
+    ownership: 'core',
     profileId: routeId,
     day: 9,
     expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
@@ -118,7 +119,7 @@ export const coreRouteDateMatrix = coreRouteDateIds.map((routeId) => {
     exitSceneId: ids[ids.length - 1],
     returnSceneId: 'day9-free-hub-b',
     sceneIds: ids,
-    payoffConsumerSceneIds: [ids[2], ids[4]],
+    payoffConsumerSceneIds: [ids[2], ids[4], 'day11-opening', 'day11-moe-route-message'],
     backgroundIds: [routeSpecs[routeId].backgroundId],
     memoryFlags: [dateFlag(routeId)],
     phoneFlags: [phoneFlag(routeId)],

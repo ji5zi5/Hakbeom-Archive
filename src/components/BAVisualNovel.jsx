@@ -14,7 +14,8 @@ import {
   resolveSkipTargetIndex
 } from '../engine/vnEngine.js';
 import { createKeyboardActivationHandler } from '../utils/accessibility.js';
-import { variantMatchesState } from '../utils/relationshipState.js';
+import { resolveLatestRouteMemory, variantMatchesState } from '../utils/relationshipState.js';
+import { resolveDominantRoute, resolveRouteLock } from '../utils/routeResolution.js';
 import { safeText, wrapDialogueText } from '../utils/vnText.js';
 import { applyRouteRewards, createInitialGameState, markLineRead, unlockGalleryItem, unlockRecollectionItem } from '../utils/vnState.js';
 
@@ -1744,7 +1745,49 @@ function resolveAffectionLabel(value) {
   ), labels[0]?.label || '관계 시작');
 }
 
+function resolveStatusRoute(gameState = {}) {
+  const lockedRoute = resolveRouteLock(gameState, routeConfig);
+  if (lockedRoute?.id && lockedRoute.id !== 'common' && lockedRoute.reason !== 'fallback') {
+    return { target: lockedRoute, locked: true };
+  }
+
+  const dominantRoute = resolveDominantRoute(gameState, routeConfig);
+  if (!dominantRoute?.id || dominantRoute.id === 'common') return null;
+  const hasProgress = Number(dominantRoute.affection || 0) > 0 || Number(dominantRoute.flagCount || 0) > 0;
+  return hasProgress ? { target: dominantRoute, locked: false } : null;
+}
+
+function resolveStatusDateLog(flags = [], targets = [], profiles = {}) {
+  const routeNameById = new Map(targets.map((target) => [target.id, target.name]));
+  const entries = [];
+  const seen = new Set();
+
+  for (const flag of [...(Array.isArray(flags) ? flags : [])].reverse()) {
+    if (typeof flag !== 'string' || !/_(date|phone)_/.test(flag)) continue;
+    const routeId = Object.keys(profiles || {}).find((id) => flag.startsWith(`${id}_`));
+    if (!routeId) continue;
+    const kind = flag.includes('_phone_') ? '답장' : '데이트';
+    const key = `${routeId}:${kind}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    entries.push({
+      routeId,
+      kind,
+      name: routeNameById.get(routeId) || profiles[routeId]?.role || routeId,
+      memoryLabel: profiles[routeId]?.latestMemoryLabel || profiles[routeId]?.role || '기억'
+    });
+    if (entries.length >= 3) break;
+  }
+
+  return entries;
+}
+
 function StatusModal({ open, gameState, onClose }) {
+  const flags = Array.isArray(gameState?.flags) ? gameState.flags : [];
+  const latestMemoryLabel = resolveLatestRouteMemory(flags, routeConfig.datingSimProfiles);
+  const statusRoute = resolveStatusRoute(gameState);
+  const dateLogEntries = resolveStatusDateLog(flags, routeConfig.affectionTargets, routeConfig.datingSimProfiles);
+
   return (
     <div className="ba-modal-layer status-panel" aria-hidden={open ? 'false' : 'true'}>
       <div className="ba-modal-card status-card" role="dialog" aria-modal="true" aria-label="호감도 상태">
@@ -1753,6 +1796,24 @@ function StatusModal({ open, gameState, onClose }) {
           <button className="ba-modal-close" type="button" onClick={onClose} aria-label="닫기">×</button>
         </div>
         <div className="status-list">
+          <section className="status-date-log" aria-label="최근 데이트 기억">
+            <div className="status-date-log-head">
+              <span>현재 루트</span>
+              <strong>{statusRoute ? `${statusRoute.target.name}${statusRoute.locked ? ' · LOCK' : ' · 관심'}` : '아직 미정'}</strong>
+            </div>
+            <p className="status-date-memory">
+              {latestMemoryLabel ? `최근 기억 · ${latestMemoryLabel}` : '아직 저장된 데이트 기억이 없습니다.'}
+            </p>
+            {dateLogEntries.length > 0 && (
+              <div className="status-date-chips">
+                {dateLogEntries.map((entry) => (
+                  <span className="status-date-chip" key={`${entry.routeId}-${entry.kind}`}>
+                    {entry.name} · {entry.kind} · {entry.memoryLabel}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
           {routeConfig.affectionTargets.map((target) => {
             const max = Number(target.max || 100);
             const value = clamp(Number(gameState?.affection?.[target.id] || 0), 0, max);

@@ -1225,6 +1225,61 @@ button {
   overscroll-behavior: contain;
 }
 
+.status-date-log {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid rgba(64, 126, 174, .24);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(121, 216, 255, .22), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,.82), rgba(242,248,255,.66));
+  color: #20344a;
+  box-shadow: 0 12px 24px rgba(45, 83, 120, .10);
+}
+
+.status-date-log-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-date-log-head span {
+  color: #5f7890;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.status-date-log-head strong {
+  color: #1f4d73;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.status-date-memory {
+  margin: 0;
+  color: #2e4d66;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.status-date-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.status-date-chip {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(61, 128, 183, .12);
+  color: #315873;
+  font-size: 11px;
+  font-weight: 850;
+}
+
 .status-row {
   display: grid;
   grid-template-columns: 1fr minmax(180px, 42%) 66px;

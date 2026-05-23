@@ -966,6 +966,26 @@ assert.match(
 );
 assert.match(
   component,
+  /function StatusModal\(\{ open, gameState, onClose \}\)[\s\S]*?resolveLatestRouteMemory[\s\S]*?className="status-date-log"/,
+  'Status modal should include a passive date-log section derived from existing route-date memory flags.'
+);
+assert.match(
+  component,
+  /import \{ resolveDominantRoute, resolveRouteLock \} from '\.\.\/utils\/routeResolution\.js';[\s\S]*function resolveStatusRoute\(gameState = \{\}\)[\s\S]*resolveRouteLock\(gameState, routeConfig\)[\s\S]*resolveDominantRoute\(gameState, routeConfig\)/,
+  'Status current-route display should reuse canonical route resolution instead of raw affection-target ordering.'
+);
+assert.match(
+  styles,
+  /\.status-date-log\s*\{[\s\S]*?\.status-date-memory/,
+  'Passive status date-log should have dedicated styling without behaving like an in-scene reward toast.'
+);
+assert.doesNotMatch(
+  component,
+  /reward-toast|dateCalendarState|calendarSlots|setDateLogOpen|setRewardToast/i,
+  'Status/date-log polish should not introduce reward toasts, calendar state, or extra popup state.'
+);
+assert.match(
+  component,
   /if \(!auto \|\| mode === 'choice'[\s\S]*?statusOpen[\s\S]*?return undefined/,
   'Status modal should block AUTO progression while open.'
 );
@@ -1578,6 +1598,27 @@ assert.ok(
   'Batch3 route-date club routes should live in a dedicated batch3RouteDates/clubRoutes.js module.'
 );
 const clubRouteDateSource = existsSync(clubRouteDateModulePath) ? readSource(clubRouteDateModulePath) : '';
+const afterSchoolRouteDateModulePath = 'src/data/scenario/batch3RouteDates/afterSchoolRoutes.js';
+assert.ok(
+  existsSync(afterSchoolRouteDateModulePath),
+  'Batch3 route-date after-school routes should live in a dedicated batch3RouteDates/afterSchoolRoutes.js module.'
+);
+const routeDateIndexSource = readSource('src/data/scenario/batch3RouteDates/index.js');
+assert.match(
+  routeDateIndexSource,
+  /afterSchoolRouteDate(Matrix|Batch3Matrix)[\s\S]*afterSchoolRouteDate(Scenes|Batch3Scenes)[\s\S]*afterSchoolRouteDate(BackgroundBindings|Batch3BackgroundBindings)/,
+  'Batch3 route-date index should import explicit after-school matrix/scenes/background bindings.'
+);
+assert.doesNotMatch(
+  routeDateIndexSource,
+  /buildRouteDateBatch3Scenes\(afterSchoolFallbackRoutes\)/,
+  'Active Batch3 route-date scenes should not be generated from afterSchoolFallbackRoutes after ownership promotion.'
+);
+assert.doesNotMatch(
+  routeDateIndexSource,
+  /afterSchoolFallbackRoutes\s*=\s*fallbackRouteDateBatch3Routes\.filter/,
+  'After-school route-date ownership should not depend on filtering fallbackRouteDateBatch3Routes.'
+);
 for (const routeId of ['sangwon', 'sanguk', 'junhyeok']) {
   const entrySceneId = `date-day8-${routeId}-memory-choice`;
   const phoneSceneId = `date-day8-${routeId}-phone-followup`;
@@ -2941,6 +2982,22 @@ for (const target of routeConfigData.affectionTargets) {
 
 for (const route of routeDateBatch3Routes) {
   const routeId = route.routeId || route.id;
+  const expectedOwnership = {
+    hyeongyeom: 'core',
+    ukhyun: 'core',
+    jaeseong: 'core',
+    sangwon: 'club',
+    sanguk: 'club',
+    junhyeok: 'club',
+    dohun: 'after-school',
+    haeum: 'after-school',
+    yunho: 'after-school'
+  }[routeId];
+  assert.equal(
+    route.ownership,
+    expectedOwnership,
+    `${routeId} route date should declare explicit ${expectedOwnership} ownership.`
+  );
   assert.equal(route.profileId, routeId, `${routeId} route date should link to its dating-sim profile.`);
   assert.equal(typeof route.dateMotif, 'string', `${routeId} route date should declare a concrete date motif.`);
   assert.ok(route.dateMotif.length >= 18, `${routeId} route date motif should be specific enough to guide prose.`);
@@ -2966,6 +3023,40 @@ for (const route of routeDateBatch3Routes) {
   for (const choice of routeDateChoices) {
     assert.doesNotMatch(choice, /조사|단서|수색|추리/, `${routeId} route date choice should be romantic tone/action, not mystery investigation: ${choice}`);
   }
+}
+
+const routeDatePersistentFlags = routeDateBatch3Routes.flatMap((route) => (
+  [...(route.memoryFlags || []), ...(route.phoneFlags || [])].map((flag) => ({
+    routeId: route.routeId || route.id,
+    flag,
+    payoffConsumerSceneIds: route.payoffConsumerSceneIds || []
+  }))
+));
+const latePayoffScenes = scenario.filter((item) => (
+  /^day1[0-4]/.test(item.id || '')
+  || /^day1[0-4]/.test(item.chapter || '')
+  || item.terminal
+));
+const latePayoffSceneIds = new Set(latePayoffScenes.map((item) => item.id));
+const lateConsumedFlags = new Map();
+for (const scene of latePayoffScenes) {
+  for (const variant of scene.variants || []) {
+    for (const flag of variant.requiredFlags || variant.flags || []) {
+      if (!lateConsumedFlags.has(flag)) lateConsumedFlags.set(flag, []);
+      lateConsumedFlags.get(flag).push(scene.id);
+    }
+  }
+}
+
+for (const { routeId, flag, payoffConsumerSceneIds } of routeDatePersistentFlags) {
+  assert.ok(
+    lateConsumedFlags.has(flag),
+    `${routeId} persistent route-date flag should be consumed by a Day10-14 or terminal payoff variant: ${flag}`
+  );
+  assert.ok(
+    payoffConsumerSceneIds.some((sceneId) => latePayoffSceneIds.has(sceneId)),
+    `${routeId} payoffConsumerSceneIds should include a Day10-14 or terminal payoff scene for ${flag}.`
+  );
 }
 
 for (const routeId of coreRouteDateIds) {

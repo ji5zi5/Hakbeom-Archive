@@ -120,6 +120,14 @@ Route별 배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain
 
 Route date는 기존 Day 6–9 free-action close 뒤에 끼워 넣는 데이터 확장이다. 새 date loop는 `src/data/scenario/batch3RouteDates/`에 cohort별 matrix/scenes로 추가하고, `src/data/scenario/routeDepthExpansionRegistry.js`가 Batch 2 뒤에서 통합한다.
 
+활성 cohort 소유권은 고정한다.
+
+- `coreRoutes.js`: `hyeongyeom`, `ukhyun`, `jaeseong`
+- `clubRoutes.js`: `sangwon`, `sanguk`, `junhyeok`
+- `afterSchoolRoutes.js`: `dohun`, `haeum`, `yunho`
+
+각 matrix 항목에는 `ownership: 'core' | 'club' | 'after-school'`를 넣는다. `index.js`는 세 cohort 모듈을 합치기만 해야 하며, active route를 `routeDateSceneFactory` fallback으로 생성하면 안 된다. fallback matrix/factory는 참고용이나 레거시 비교용으로만 유지한다.
+
 Matrix 항목은 다음 필드를 사용한다.
 
 - `previousSceneId`: 기존 free-action close나 안전한 anchor. 통합 시 이 장면의 `nextId`가 `entrySceneId`로 바뀐다.
@@ -134,6 +142,7 @@ Route date 보상/기억 규칙:
 
 - 각 route는 최소 하나의 `${routeId}_date_*` memory flag와 하나의 `${routeId}_phone_*` follow-up flag를 가져야 한다.
 - 각 route date matrix 항목은 `profileId`, `dateMotif`, `memoryLabel`, `payoffConsumerSceneIds`를 가진다. `profileId`는 `src/data/routeConfig.js`의 `datingSimProfiles` 키와 일치해야 하고, `memoryLabel`은 save/status 같은 수동 화면에서 “최근 기억”으로 보여도 어색하지 않은 짧은 문장이어야 한다.
+- `payoffConsumerSceneIds`는 route-date loop 내부 장면만 가리키면 부족하다. 모든 `${routeId}_date_*`/`${routeId}_phone_*` 플래그는 Day 10–14 또는 terminal 장면의 `variants.requiredFlags`에서 다시 소비되어야 하며, matrix에도 그 후반 scene id를 포함한다.
 - date branch는 직접 대화 중심이어야 한다. 한 route-date arc 안에서 이름 있는 상대 캐릭터 `dialogue`가 최소 2개 이상 있어야 하며, `학범` 독백/무명 서술 장면 수가 상대 대사 수를 넘지 않게 한다.
 - 선택지는 `조사한다`, `단서를 찾는다`, `수색한다` 같은 추리물 행동이 아니라 학범이 어떤 온도/거리/말투로 답할지 고르는 문장으로 쓴다.
 - route-resolution tie-break에 쓰일 flag는 route prefix로 시작한다. 단순 payoff/display 전용 flag는 `memory_payoff_${routeId}_...`처럼 별도 이름으로 둔다.
@@ -143,6 +152,11 @@ Route date 보상/기억 규칙:
 - Ukhyun/Jaeseong처럼 contact table에 빠지기 쉬운 발신자는 `src/engine/phoneEngine.js`의 sender lookup 또는 message-level `name`으로 명시한다. 현재 preferred contract는 `PHONE_CONTACT_NAMES`가 `routeConfig.affectionTargets.name`과 맞는 것이다.
 
 검증은 `tests/ui-contract.test.mjs`의 Batch3.5 matrix audit, memory consumer audit, deterministic committed replay, all-route phone sender normalization을 함께 통과해야 한다.
+장르 이탈 단어, 생성체 문장, 조사 오류 같은 prose 품질은 런타임 validator가 아니라 contract test나 story lint에서 다룬다. `scenarioValidator`는 graph/DSL 안전성만 담당한다.
+
+### STATUS date log 표시 규칙
+
+STATUS의 date log는 저장 구조를 늘리지 않는 passive UI다. `gameState.flags`에 남은 date/phone flag, `routeConfig.affectionTargets`, `datingSimProfiles`, `resolveLatestRouteMemory()`만으로 “현재 루트”, “최근 기억”, 최근 date/phone 칩을 계산한다. 새 calendar state, reward toast, date-log 전용 save field를 만들지 않는다.
 
 ## 초반 자유행동 / 장소 선택 규칙
 

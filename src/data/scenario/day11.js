@@ -1,3 +1,156 @@
+const routeDateMemoryPayoffVariants = [
+  {
+    "requiredFlags": [
+      "route_lock_hyeongyeom",
+      "hyeongyeom_date_day9_private_signal"
+    ],
+    "text": "학범은 교문 우산꽂이 앞에서 현겸의 파란 리본을 먼저 알아봤다. Day 9에 먼저 기다리겠다고 말했던 기억 때문에, 오늘은 자신이 우산 손잡이를 잡는 속도가 더 빨랐다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_ukhyun",
+      "ukhyun_date_day9_private_signal"
+    ],
+    "text": "학범의 책상에는 접히지 않은 메모가 놓여 있었다. Day 9 창가에서 접지 않은 마음을 읽었던 기억이 남아, 빈칸은 더 이상 숨는 자리가 아니라 같이 채울 자리처럼 보였다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_jaeseong",
+      "jaeseong_date_day9_private_signal"
+    ],
+    "text": "방송실 표시등은 꺼져 있었지만 재성의 쪽지는 스피커 아래 붙어 있었다. Day 9의 비공개 멘트를 기억한 학범은, 오늘 첫 목소리를 장난이 아니라 약속으로 듣기로 했다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sangwon",
+      "sangwon_date_day8_shared_archive_card"
+    ],
+    "text": "상원은 준비 명단을 들고도 학범의 이름 옆에 아무 표시를 하지 않았다. Day 8 전시 카드의 빈칸을 같이 남긴 뒤라, 기록하지 않는 배려도 분명한 고백처럼 읽혔다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sanguk",
+      "sanguk_date_day8_same_speed_steps"
+    ],
+    "text": "체육관 쪽에서 급한 발소리가 오다가 학범 앞 세 걸음에서 멈췄다. Day 8 무대 뒤에서 같은 속도로 걸었던 기억이 남아, 상욱의 멈춤은 기다림이라는 약속으로 보였다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_junhyeok",
+      "junhyeok_date_day8_saved_route_marker"
+    ],
+    "text": "준혁은 지도의 최단 경로를 접어 가방에 넣었다. Day 8에 저장해 둔 별표 좌표 때문에, 오늘 돌아가는 복도는 실수가 아니라 학범을 기다리는 길이었다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_dohun",
+      "dohun_date_day7_shared_rain"
+    ],
+    "text": "편의점 봉투가 학생회실 손잡이에 걸려 있었다. Day 7 처마 아래에서 따뜻한 캔을 받았던 기억 탓에, 도훈의 툴툴거림은 아침밥보다 먼저 도착한 걱정처럼 따뜻했다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_haeum",
+      "haeum_date_day7_shared_rain"
+    ],
+    "text": "음악실 문은 반쯤 열려 있었고 낮은 건반 하나가 천천히 울렸다. Day 7의 느린 메트로놈을 기억한 학범은, 하음이 다음 음을 누르지 않는 이유를 기다림이라고 알아챘다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_yunho",
+      "yunho_date_day7_shared_rain"
+    ],
+    "text": "옥상 계단 중간에서 윤호가 내려오고 있었다. Day 7 옥상 문 앞에서 반 걸음 가까워졌던 기억이 남아, 학범은 후배의 예의보다 윤호의 욕심을 먼저 발견했다."
+  }
+];
+
+const routeDatePhonePayoffVariants = [
+  {
+    "requiredFlags": [
+      "route_lock_hyeongyeom",
+      "hyeongyeom_phone_day9_after_date"
+    ],
+    "text": "현겸에게서 “점심 같이 먹을래?”라는 메시지가 왔다. Day 9 밤에 “기다릴게”라고 짧게 답했던 그 두 단어가 떠올라, 학범은 이번엔 오래 기다리게 두지 않기로 했다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_ukhyun",
+      "ukhyun_phone_day9_after_date"
+    ],
+    "text": "욱현은 “도서관 창가 비워 뒀어”라고만 보냈다. Day 9 밤의 답장처럼 짧은 문장이었지만, 학범은 그 짧음 안에 접히지 않은 기다림이 있다는 걸 이제 알았다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_jaeseong",
+      "jaeseong_phone_day9_after_date"
+    ],
+    "text": "재성은 “오늘 방송실 예약 완료”라고 보낸 뒤, “예약자는 학범이 웃는 얼굴 한 명”이라고 덧붙였다. Day 9의 비공개 답장이 아직 이어지는 것처럼, 화면은 작게 떨렸다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sangwon",
+      "sangwon_phone_day8_warm_reply"
+    ],
+    "text": "상원은 전시 카드 사진 대신 빈칸을 다시 보냈다. 학범이 열쇠를 같이 갖자고 답했던 밤을 기억하는 듯, 그는 “오늘도 같이 확인할래?”라고 조심스럽게 물었다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sangwon",
+      "sangwon_phone_day8_steady_reply"
+    ],
+    "text": "상원은 전시 카드 아래에 물음표 하나를 찍어 보냈다. Day 8 밤에 먼저 물어봐 달라고 했던 답장을 기억한 학범은, 그 물음표가 확정 대신 허락을 구하는 방식임을 알았다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sanguk",
+      "sanguk_phone_day8_warm_reply"
+    ],
+    "text": "상욱은 운동화 사진과 함께 “오늘도 네 옆에서 걸어도 돼?”라고 보냈다. Day 8 밤에 같이 걸어 달라고 답했던 기억 때문에, 학범은 그 문장을 달려오는 고백보다 더 크게 느꼈다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sanguk",
+      "sanguk_phone_day8_steady_reply"
+    ],
+    "text": "상욱은 “학범아”라는 세 글자 뒤에 긴 입력 중을 띄웠다. Day 8 밤에 이름부터 불러 달라고 했던 답이 남아, 그 느린 호흡조차 가까워지는 연습처럼 보였다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_junhyeok",
+      "junhyeok_phone_day8_warm_reply"
+    ],
+    "text": "준혁은 지도 사진에 별표를 하나 더 붙여 보냈다. Day 8 밤에 일부러 그 좌표로 가겠다고 답했던 기억이 있어, 학범은 오늘의 별표도 우연이 아님을 바로 알았다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_junhyeok",
+      "junhyeok_phone_day8_steady_reply"
+    ],
+    "text": "준혁은 돌아가는 길을 더 굵게 표시한 사진을 보냈다. 기다리는 길이면 돌아가도 괜찮다고 했던 Day 8의 답장이, 오늘 지도 위에서 다시 빛났다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_dohun",
+      "dohun_phone_day7_warm_reply"
+    ],
+    "text": "도훈은 “점심 안 먹으면 진짜 화낸다”라고 보냈다. Day 7 밤에 캔을 데이트 신청으로 받겠다고 답했던 뒤라, 학범은 그 협박 같은 문장을 걱정의 다른 이름으로 읽었다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_haeum",
+      "haeum_phone_day7_warm_reply"
+    ],
+    "text": "하음은 “오늘 박자도 천천히 가자”라고 보냈다. Day 7 밤에 느린 걸음이 좋았다고 답했던 기억이 남아, 학범은 그 문장을 서두르지 않는 고백처럼 오래 바라봤다."
+  },
+  {
+    "requiredFlags": [
+      "route_lock_yunho",
+      "yunho_phone_day7_warm_reply"
+    ],
+    "text": "윤호는 “선배, 오늘 옥상 문 조금 늦게 잠가도 돼요?”라고 보냈다. Day 7 밤에 먼저 옥상으로 가겠다고 약속했던 학범은, 그 조심스러운 물음이 기다림의 신호임을 알았다."
+  }
+];
+
 export const day11Scenes = [
   {
     "id": "day11-chapter-card",
@@ -26,6 +179,7 @@ export const day11Scenes = [
     "place": "아침 복도",
     "text": "학범은 빈 출석부 맨 아래에 어제 쓴 이름을 다시 보았다. 복도는 아직 덜 깬 색이었고, 오늘은 그 이름을 숨길 곳이 없었다.",
     "variants": [
+      ...routeDateMemoryPayoffVariants,
       {
         "requiredFlags": [
           "route_lock_hyeongyeom"
@@ -240,6 +394,7 @@ export const day11Scenes = [
     "place": "휴대폰 화면",
     "text": "수업 사이 짧은 알림 하나가 하루를 다음 방과 후까지 끌고 갔다.",
     "variants": [
+      ...routeDatePhonePayoffVariants,
       {
         "requiredFlags": [
           "route_lock_hyeongyeom"
