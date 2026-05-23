@@ -100,7 +100,7 @@ Each background requires:
 
 ## 500-Map Background Expansion
 
-The production map/background expansion plan lives in `docs/superpowers/plans/2026-05-19-500-map-expansion.md`. Use that plan before generating new route-specific art: story demand first, five parallel generation lanes, batches of 50, and no `derivedFrom`/tint-only backgrounds. The cancelled direct-generation batch has been recovered as 34 direct Day 6–9 route backgrounds; `day9-haeum-rumor` and `day9-yunho-rumor` remain future direct-generation targets.
+The production map/background expansion plan lives in `docs/superpowers/plans/2026-05-19-500-map-expansion.md`. Use that plan before generating new route-specific art: story demand first, five parallel generation lanes, batches of 50, and no `derivedFrom`/tint-only backgrounds. The cancelled direct-generation batch has been recovered as 36 direct Day 6–9 route backgrounds, including restored direct `day9-haeum-rumor` and `day9-yunho-rumor` assets with prompt sidecars and manifest provenance.
 
 ## Batch Roadmap
 
@@ -112,7 +112,7 @@ The production map/background expansion plan lives in `docs/superpowers/plans/20
    - New generated backgrounds: `music-room-late-afternoon.png`, `convenience-store-night.png`, `rooftop-after-rain.png`.
 3. **Batch 3 — Days 6–9 free-action rewrite**
    - Phone/SNS density, route variants, study/rain/festival/rumor dating beats.
-   - 2026-05-19 autoresearch pass: Day 6–9 openings now route into 3×3 free-action hubs. Each route gets a four-beat dialogue branch with Hakbeom's direct answer and high-affection variants. The cancelled direct-generation batch was recovered as 34 route-specific backgrounds with source provenance; the remaining Day 9 하음/윤호 rumor backgrounds stay on accepted base art until direct generation resumes. The late story shifts away from mystery/culprit language toward rehearsal, rumor, jealousy, and confession build-up.
+   - 2026-05-19 autoresearch pass: Day 6–9 openings now route into 3×3 free-action hubs. Each route gets a four-beat dialogue branch with Hakbeom's direct answer and high-affection variants. The cancelled direct-generation batch was recovered as 36 route-specific backgrounds with source provenance, including direct Day 9 하음/윤호 rumor backgrounds. The late story shifts away from mystery/culprit language toward rehearsal, rumor, jealousy, and confession build-up.
 4. **Batch 4 — Days 9–10 lock**
    - Festival arc, route-lock helper, route-lock tests.
    - Ultragoal pass: Day 9 adds festival pressure scenes; Day 10 adds a 3×3 route-lock choice structure so nine routes stay selectable without exceeding the 3-choice UI limit.

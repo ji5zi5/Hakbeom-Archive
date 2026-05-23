@@ -15,7 +15,7 @@ import { day12Scenes } from './day12.js';
 import { day13Scenes } from './day13.js';
 import { day14Scenes } from './day14.js';
 import { endingScenes } from './endings.js';
-import { integrateBatch1RouteDepth } from './batch1RouteDepth/index.js';
+import { integrateRouteDepthExpansions } from './routeDepthExpansionRegistry.js';
 
 export { episodeInfo };
 
@@ -38,4 +38,4 @@ const baseScenario = [
   ...endingScenes
 ];
 
-export const scenario = integrateBatch1RouteDepth(baseScenario);
+export const scenario = integrateRouteDepthExpansions(baseScenario);

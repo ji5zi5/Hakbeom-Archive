@@ -28,8 +28,8 @@ Longform dating-sim expansion pass:
 - These files are direct generated sources, not `derivedFrom`/tint-only variants. Each accepted image keeps a `.prompt.txt` and manifest `sourceGeneratedImage`, dimensions, SHA-256, byte size, and intended scene use.
 - The previously missing direct `day9-haeum-rumor` and `day9-yunho-rumor` assets are restored as direct generated PNGs with prompt sidecars, manifest `sourceGeneratedImage`, route binding, and no `derivedFrom` provenance.
 
-Route-depth 2026-05 cohort C provenance:
-- `day6-dohun-study.png`, `day7-dohun-rain.png`, `day8-dohun-festival.png`, `day9-dohun-rumor.png`, `day11-dohun-morning.png`, `day13-dohun-truth.png` are direct route-bound 도훈 backgrounds.
-- `day6-haeum-study.png`, `day7-haeum-rain.png`, `day8-haeum-festival.png`, `day9-haeum-rumor.png`, `day11-haeum-morning.png`, `day13-haeum-truth.png` are direct route-bound 하음 backgrounds.
-- `day6-yunho-study.png`, `day7-yunho-rain.png`, `day8-yunho-festival.png`, `day9-yunho-rumor.png`, `day11-yunho-morning.png`, `day13-yunho-truth.png` are direct route-bound 윤호 backgrounds.
-- These entries are bound in `agent-sprite-forge-manifest.json` with `routeId` and `expansionBatch: route-depth-2026-05` and remain direct raster imports, not derived or placeholder art.
+Route-depth 2026-05 route-bound provenance catalog:
+- Core routes 현겸/욱현/재성 use direct route-bound `day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`, `day11-<route>-morning.png`, and `day13-<route>-truth.png` backgrounds.
+- Club routes 상원/상욱/준혁 use the same six direct route-bound day/beat filename pattern.
+- After-school routes 도훈/하음/윤호 use the same six direct route-bound day/beat filename pattern, including restored direct `day9-haeum-rumor.png` and `day9-yunho-rumor.png`.
+- Every route-depth entry is bound in `agent-sprite-forge-manifest.json` with `routeId`, `expansionBatch: route-depth-2026-05`, `sourceGeneratedImage`, dimensions, SHA-256, byte size, prompt sidecar, and no `derivedFrom` provenance.

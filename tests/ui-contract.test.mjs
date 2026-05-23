@@ -9,6 +9,12 @@ import {
   routeDepthSceneBackgroundBindings
 } from '../src/data/scenario/batch1RouteDepth/routeDepthBatchMatrix.js';
 import {
+  ROUTE_DEPTH_BATCH2_ID,
+  routeDepthBatch2BackgroundBindings,
+  routeDepthBatch2Routes,
+  routeDepthExpansionBatches
+} from '../src/data/scenario/routeDepthExpansionRegistry.js';
+import {
   applyAudioDirective,
   applyAudioItem,
   clampVolumePercent,
@@ -34,6 +40,7 @@ const app = readSource('src/App.jsx');
 const indexHtml = readSource('index.html');
 const styles = readSource('src/styles.css');
 const routeConfig = readSource('src/data/routeConfig.js');
+const scenarioIndex = readSource('src/data/scenario/index.js');
 const packageJson = readSource('package.json');
 const vnState = readSource('src/utils/vnState.js');
 const vnText = readSource('src/utils/vnText.js');
@@ -1293,6 +1300,16 @@ const routeDepthBackgroundBindingsByScene = new Map(
   routeDepthSceneBackgroundBindings.map((binding) => [binding.sceneId, binding.backgroundId])
 );
 const routeDepthManifestById = new Map((forgeManifestJson.outputs || []).map((entry) => [entry.id, entry]));
+const registeredRouteDepthBatchIds = routeDepthExpansionBatches.map((batch) => batch.id);
+assert.ok(
+  registeredRouteDepthBatchIds.includes(ROUTE_DEPTH_BATCH_ID),
+  'Route depth expansion registry should preserve the completed batch1 integration before batch2 work is added.'
+);
+assert.match(
+  scenarioIndex,
+  /integrateRouteDepthExpansions\(baseScenario\)/,
+  'Scenario wiring should use the coordinator-owned route-depth expansion registry so future batch2 modules do not rewrite completed batch1 artifacts.'
+);
 for (const cohortModule of ['coreRoutes', 'clubRoutes', 'afterSchoolRoutes']) {
   assert.ok(
     existsSync(`src/data/scenario/batch1RouteDepth/${cohortModule}.js`),
@@ -1385,6 +1402,140 @@ for (const route of routeDepthRoutes) {
         return boundBackgroundId === backgroundId || directiveBackgroundId === backgroundId;
       }),
       `${backgroundId} should be used by a batch-counted ${route.id} scene.`
+    );
+  }
+}
+
+const routeDepthBatch2BackgroundBindingsByScene = new Map(
+  routeDepthBatch2BackgroundBindings.map((binding) => [binding.sceneId, binding.backgroundId])
+);
+assert.ok(
+  registeredRouteDepthBatchIds.includes(ROUTE_DEPTH_BATCH2_ID),
+  'Route depth expansion registry should include the batch2 continuation after preserving batch1.'
+);
+assert.equal(
+  routeDepthBatch2Routes.length,
+  routeDepthRoutes.length,
+  'Batch2 route-depth integration should cover the same 9 routes as completed batch1.'
+);
+const batch2PreviousSceneIds = routeDepthBatch2Routes.map((route) => route.previousSceneId);
+assert.equal(
+  new Set(batch2PreviousSceneIds).size,
+  batch2PreviousSceneIds.length,
+  'Batch2 route-depth routes should have unique previousSceneId anchors.'
+);
+for (const cohortModule of [
+  'batch2CoreRouteDepth/coreRoutes',
+  'batch2RouteDepth/clubRoutes',
+  'batch2RouteDepth/afterSchoolRoutes'
+]) {
+  assert.ok(
+    existsSync(`src/data/scenario/${cohortModule}.js`),
+    `Batch2 route-depth integration should keep the ${cohortModule}.js cohort module.`
+  );
+}
+for (const route of routeDepthBatch2Routes) {
+  assert.ok(route.id, 'Batch2 route depth matrix entries should include stable route ids.');
+  assert.ok(Array.isArray(route.sceneIds), `${route.id} batch2 should list scene ids.`);
+  assert.ok(Array.isArray(route.backgroundIds), `${route.id} batch2 should list deterministic route background ids.`);
+  assert.ok(route.sceneIds.length >= 8, `${route.id} batch2 should target at least 8 continuation scenes.`);
+  assert.ok(
+    new Set(route.backgroundIds).size >= 4,
+    `${route.id} batch2 should reuse multiple direct route-bound backgrounds instead of one generic placeholder.`
+  );
+  assert.ok(
+    route.sceneIds.every((sceneId) => sceneId.startsWith(`batch2-${route.id}-`)),
+    `${route.id} batch2 scene ids should stay isolated from completed batch1 scene ids.`
+  );
+
+  const routeScenes = route.sceneIds.map((sceneId) => scenario.find((item) => item.id === sceneId));
+  assert.equal(
+    routeScenes.filter(Boolean).length,
+    route.sceneIds.length,
+    `${route.id} batch2 matrix should only list existing integrated scenario scene ids.`
+  );
+  assert.equal(
+    scenario.find((item) => item.id === `batch1-${route.id}-08`)?.nextId,
+    route.sceneIds[0],
+    `${route.id} completed batch1 route-depth tail should enter batch2 before returning to merge.`
+  );
+  assert.equal(route.entrySceneId, route.sceneIds[0], `${route.id} batch2 entrySceneId should match the first scene.`);
+  assert.equal(
+    route.exitSceneId,
+    route.sceneIds[route.sceneIds.length - 1],
+    `${route.id} batch2 exitSceneId should match the final scene.`
+  );
+  assert.ok(
+    scenario.some((item) => item.id === route.returnSceneId),
+    `${route.id} batch2 returnSceneId should point to an existing scenario scene.`
+  );
+
+  const arcStagesByArc = new Map();
+  for (const scene of routeScenes) {
+    assert.equal(scene.type, 'dialogue', `${scene.id} should be a dialogue-forward batch2 route-depth scene.`);
+    assert.equal(scene.batchModule, 'batch2RouteDepth', `${scene.id} should come from the batch2 route-depth module.`);
+    assert.ok(
+      typeof scene.text === 'string' && scene.text.length >= 60 && /“|”|학범|선배|네가|내가|너/.test(scene.text),
+      `${scene.id} should contain substantial batch2 route-depth prose involving Hakbeom or the route relationship.`
+    );
+    assert.equal(scene.routeId, route.id, `${scene.id} should declare routeId ${route.id}.`);
+    assert.equal(
+      scene.expansionBatch,
+      ROUTE_DEPTH_BATCH2_ID,
+      `${scene.id} should declare expansionBatch ${ROUTE_DEPTH_BATCH2_ID}.`
+    );
+    assert.ok(scene.arcId, `${scene.id} should declare a batch2 arcId.`);
+    assert.ok(scene.arcStage, `${scene.id} should declare a batch2 arcStage.`);
+    if (!arcStagesByArc.has(scene.arcId)) arcStagesByArc.set(scene.arcId, new Set());
+    arcStagesByArc.get(scene.arcId).add(scene.arcStage);
+
+    const bgDirective = (scene.directives || []).find((directive) => directive.type === 'BCG');
+    assert.ok(bgDirective?.src, `${scene.id} should include a BCG directive.`);
+    assert.notEqual(
+      bgDirective.src,
+      '/assets/ui/image0_13_6.jpg',
+      `${scene.id} should not use the old UI placeholder as a batch2 BCG.`
+    );
+    const directiveBackgroundId = bgDirective.src.replace('/assets/bg/', '').replace(/\.png$/, '');
+    assert.equal(
+      directiveBackgroundId,
+      routeDepthBatch2BackgroundBindingsByScene.get(scene.id),
+      `${scene.id} BCG directive should match its deterministic batch2 background binding.`
+    );
+  }
+
+  assert.equal(
+    scenario.find((item) => item.id === route.exitSceneId)?.nextId,
+    route.returnSceneId,
+    `${route.id} batch2 exit scene should honor its declared returnSceneId.`
+  );
+
+  assert.ok(
+    [...arcStagesByArc.values()].some((stages) => (
+      stages.has('beginning') && stages.has('escalation') && stages.has('payoff')
+    )),
+    `${route.id} batch2 should have at least one complete beginning/escalation/payoff mini arc.`
+  );
+
+  for (const backgroundId of new Set(route.backgroundIds)) {
+    const manifestEntry = routeDepthManifestById.get(backgroundId);
+    assert.ok(manifestEntry, `${backgroundId} should exist in the background manifest for batch2.`);
+    assert.ok(
+      manifestEntry.routeId === route.id
+        || new RegExp(`^(day\\d+-${route.id}-|route-${route.id}-)`).test(backgroundId),
+      `${backgroundId} manifest entry or filename should deterministically bind batch2 to ${route.id}.`
+    );
+    assert.ok(manifestEntry.sourceGeneratedImage, `${backgroundId} should keep direct sourceGeneratedImage provenance for batch2.`);
+    assert.equal(manifestEntry.derivedFrom, undefined, `${backgroundId} should not use derivedFrom provenance in batch2.`);
+    assert.deepEqual(
+      readPngSize(manifestEntry.path),
+      { width: 1129, height: 524 },
+      `${backgroundId} should be imported at the BA stage size for batch2.`
+    );
+    assert.ok(existsSync(manifestEntry.promptPath), `${backgroundId} should keep a prompt sidecar for batch2.`);
+    assert.ok(
+      routeScenes.some((scene) => routeDepthBatch2BackgroundBindingsByScene.get(scene.id) === backgroundId),
+      `${backgroundId} should be used by a batch2-counted ${route.id} scene.`
     );
   }
 }
