@@ -17,6 +17,11 @@ const routeSpecs = {
     phoneLead: '오늘은 네가 먼저 걸어와 줘서 좋았어.',
     reply: '학범은 “내일도 내가 먼저 갈게”라고 적은 뒤 전송 버튼 위에서 손가락을 멈췄다.',
     returnText: '현겸은 마지막 답장을 길게 쓰지 않았다. 대신 “응. 기다릴게”라는 두 단어가 학범의 밤을 오래 붙잡았다.',
+    choiceReactions: [
+      '현겸은 “그럼 내일은 네가 먼저야?”라고 묻고는, 대답을 기다리기 전에 웃어 버렸다.',
+      '현겸은 손잡이를 조금 내밀었다. 닿을 듯 말 듯한 거리가 둘 다에게 충분히 길었다.',
+      '현겸은 고개를 숙였다가 작게 끄덕였다. “믿어 준다는 말, 생각보다 세다.”'
+    ],
     choices: [
       '내일은 내가 먼저 기다리겠다고 말한다.',
       '우산 손잡이를 같이 잡아도 되냐고 묻는다.',
@@ -40,6 +45,11 @@ const routeSpecs = {
     phoneLead: '창가 자리, 내일도 비워 둘게. 강요는 아니야.',
     reply: '학범은 화면에 뜬 짧은 문장을 몇 번이나 다시 읽었다. 욱현의 기다림은 말수가 적어서 더 분명했다.',
     returnText: '욱현은 “오면 좋고”라고 보낸 뒤 곧바로 “안 와도 기다릴 거야”를 덧붙였다. 학범은 그 두 번째 문장이 진짜 답이라는 걸 알았다.',
+    choiceReactions: [
+      '욱현은 메모를 접지 않은 채 밀어 줬다. “천천히 읽어. 도망갈 생각 없어.”',
+      '욱현은 창가 의자를 말없이 빼 두었다. 비어 있던 자리가 대답보다 먼저 가까워졌다.',
+      '욱현은 시선을 피했지만 메모 모서리는 학범 쪽으로 남겨 두었다. “그 말은… 저장해 둘게.”'
+    ],
     choices: [
       '접지 않은 메모를 그대로 읽겠다고 말한다.',
       '도서관 창가에 같이 앉고 싶다고 답한다.',
@@ -63,6 +73,11 @@ const routeSpecs = {
     phoneLead: '비공개 멘트 다시 듣고 싶으면 방송실 예약해 둘게.',
     reply: '학범은 재성의 메시지 끝에 붙은 웃는 표시가 농담인지 고백인지 오래 구분하지 못했다.',
     returnText: '재성은 “다음 멘트는 네가 정해”라고 보냈다. 장난처럼 보낸 문장인데도, 학범에게는 초대장처럼 도착했다.',
+    choiceReactions: [
+      '재성은 마이크를 내려놓고 웃었다. “비공개 요청 접수. 근데 나 긴장한 거 티 나?”',
+      '재성은 손가락으로 꺼진 표시등을 톡 쳤다. “그럼 다음 말은 너한테만 들려줄게.”',
+      '재성은 잠깐 말문이 막혔다가 웃었다. “오, 선공 들어오네. 이건 내가 졌다.”'
+    ],
     choices: [
       '네 목소리는 비공개로 더 듣고 싶다고 답한다.',
       '마이크 없이도 충분히 들렸다고 말한다.',
@@ -195,7 +210,7 @@ function buildCoreRouteDateScenes(routeId) {
       text: spec.reaction,
       variants: spec.choices.map((choice, index) => ({
         requiredFlags: [dateToneFlag(routeId, index)],
-        text: `${spec.reaction} 학범이 고른 말, “${choice}”는 그날 둘 사이의 사적인 기억으로 남았다.`
+        text: `${spec.reaction} ${spec.choiceReactions[index] || ''}`.trim()
       })),
       effect: { target: routeId, type: spec.effect },
       directives: [
@@ -248,11 +263,11 @@ function buildCoreRouteDateScenes(routeId) {
         {
           requiredFlags: [commonDateFlag, commonPhoneFlag],
           affection: { [routeId]: { min: 70 } },
-          text: `${spec.returnText} Day 10을 앞둔 학범의 마음은 이미 ${spec.name} 쪽으로 70점 이상의 선을 넘고 있었다.`
+          text: `${spec.returnText} 다음날 한 사람을 골라야 한다면, 학범의 발걸음은 자연스럽게 ${spec.name} 쪽으로 기울 것 같았다.`
         },
         {
           requiredFlags: [commonDateFlag, commonPhoneFlag],
-          text: `${spec.returnText} 날짜와 답장까지 이어진 기억은 다음 선택의 기준이 되었다.`
+          text: `${spec.returnText} 낮의 약속과 밤의 답장이 겹치자, 다음 선택은 생각보다 조용히 정리됐다.`
         },
         {
           default: true,

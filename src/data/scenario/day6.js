@@ -513,7 +513,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "hyeongyeom_route_seed"
         ],
-        "text": "이미 현겸 쪽으로 마음이 기울었던 탓일까. 학범은 같은 우산의 약속 옆의 작은 흔적보다 현겸의 숨소리에 먼저 반응했다."
+        "text": "현겸이 우산 손잡이를 책상 옆에 세워 두자, 학범은 문제보다 그 손끝부터 확인했다."
       }
     ],
     "effect": {
@@ -682,7 +682,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "ukhyun_route_seed"
         ],
-        "text": "이미 욱현 쪽으로 마음이 기울었던 탓일까. 학범은 접힌 노트 옆의 작은 흔적보다 욱현의 숨소리에 먼저 반응했다."
+        "text": "욱현이 빨간 펜을 멈추고 학범 쪽으로 노트를 돌렸다. 학범은 표시보다 그의 낮은 목소리에 먼저 고개를 들었다."
       }
     ]
   },
@@ -843,7 +843,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "jaeseong_route_seed"
         ],
-        "text": "이미 재성 쪽으로 마음이 기울었던 탓일까. 학범은 방송실 신호 옆의 작은 흔적보다 재성의 숨소리에 먼저 반응했다."
+        "text": "재성이 꺼 둔 알림음을 톡 건드리자, 학범은 대본보다 그가 삼킨 농담을 먼저 들었다."
       }
     ]
   },
@@ -1004,7 +1004,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "sangwon_route_seed"
         ],
-        "text": "이미 상원 쪽으로 마음이 기울었던 탓일까. 학범은 문화제 기록집 옆의 작은 흔적보다 상원의 숨소리에 먼저 반응했다."
+        "text": "상원이 기록집 여백을 비워 둔 걸 보고, 학범은 정리된 줄보다 그가 묻지 않은 말을 먼저 알아차렸다."
       }
     ],
     "effect": {
@@ -1173,7 +1173,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "sanguk_route_seed"
         ],
-        "text": "이미 상욱 쪽으로 마음이 기울었던 탓일까. 학범은 체육관 복도 옆의 작은 흔적보다 상욱의 숨소리에 먼저 반응했다."
+        "text": "상욱이 책상 옆에서 발끝을 멈췄다. 학범은 채점 표시보다 참느라 느려진 숨을 먼저 봤다."
       }
     ]
   },
@@ -1334,7 +1334,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "junhyeok_route_seed"
         ],
-        "text": "이미 준혁 쪽으로 마음이 기울었던 탓일까. 학범은 도서관 지도 옆의 작은 흔적보다 준혁의 숨소리에 먼저 반응했다."
+        "text": "준혁이 타이머를 다시 맞추는 동안, 학범은 숫자보다 일부러 늘린 휴식 시간을 먼저 눈치챘다."
       }
     ]
   },
@@ -1495,7 +1495,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "dohun_route_seed"
         ],
-        "text": "이미 도훈 쪽으로 마음이 기울었던 탓일까. 학범은 밤의 편의점 옆의 작은 흔적보다 도훈의 숨소리에 먼저 반응했다."
+        "text": "도훈이 캔을 문제집 옆에 밀어 두고 딴청을 피웠다. 학범은 가격표보다 아직 따뜻한 손끝을 먼저 봤다."
       }
     ],
     "effect": {
@@ -1664,7 +1664,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "haeum_route_seed"
         ],
-        "text": "이미 하음 쪽으로 마음이 기울었던 탓일까. 학범은 문소리의 잔향 옆의 작은 흔적보다 하음의 숨소리에 먼저 반응했다."
+        "text": "하음이 책상 위를 천천히 두드리자, 학범은 오답 표시보다 그 박자에 맞춰 느려지는 숨을 먼저 느꼈다."
       }
     ]
   },
@@ -1825,7 +1825,7 @@ export const day6Scenes = [
         "requiredFlags": [
           "yunho_route_seed"
         ],
-        "text": "이미 윤호 쪽으로 마음이 기울었던 탓일까. 학범은 비 갠 옥상 옆의 작은 흔적보다 윤호의 숨소리에 먼저 반응했다."
+        "text": "윤호가 옥상 열쇠를 만지작이다가 말을 삼켰다. 학범은 종이보다 그가 기다린 다음 말을 먼저 보게 됐다."
       }
     ]
   },

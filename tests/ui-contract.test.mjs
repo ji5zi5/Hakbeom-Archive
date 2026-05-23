@@ -1106,6 +1106,16 @@ function displayedStoryTexts() {
     for (const [index, message] of (item.messages || []).entries()) {
       if (message.text) texts.push({ id: `${item.id}.messages[${index}]`, text: message.text });
     }
+    for (const [index, variant] of (item.variants || []).entries()) {
+      if (variant.text) {
+        texts.push({
+          id: `${item.id}.variants[${index}]`,
+          text: variant.text,
+          skipDuplicateCheck: Boolean(variant.default) || variant.text === item.text,
+          skipTemplateDuplicateCheck: true
+        });
+      }
+    }
     return texts;
   });
 }
@@ -1122,6 +1132,7 @@ function assertNoDisplayedStoryPattern(pattern, label) {
 function assertNoLongDuplicateDisplayedTexts(label) {
   const seen = new Map();
   for (const entry of displayedStoryTexts()) {
+    if (entry.skipDuplicateCheck) continue;
     const normalized = entry.text.replace(/\s+/g, ' ').trim();
     if (normalized.length < 70) continue;
     if (!seen.has(normalized)) seen.set(normalized, []);
@@ -1150,6 +1161,7 @@ function normalizeRouteTemplateText(text) {
 function assertNoNormalizedRouteTemplateDuplicates(label) {
   const seen = new Map();
   for (const entry of displayedStoryTexts()) {
+    if (entry.skipTemplateDuplicateCheck) continue;
     const normalized = normalizeRouteTemplateText(entry.text);
     if (normalized.length < 70) continue;
     if (!seen.has(normalized)) seen.set(normalized, []);
@@ -2315,6 +2327,18 @@ assert.doesNotMatch(
 assertNoDisplayedStoryPattern(
   /Day\s*\d+의|Day\s*\d+ 조사|Day\s*\d+ 기록표/,
   'Displayed story prose should not expose meta day labels outside chapter cards.'
+);
+assertNoDisplayedStoryPattern(
+  /Day\s*\d+|학범이 고른 말|70점 이상의 선|사적인 (?:신호|기억)로 남았다/,
+  'Displayed route-date payoff prose should not expose meta day labels or template decision summaries.'
+);
+assertNoDisplayedStoryPattern(
+  /기억 때문에|기억 탓에|기억이 남아|기억한 학범|답장을 기억한 학범/,
+  'Displayed route-date payoff prose should avoid stiff memory-explanation phrasing.'
+);
+assertNoDisplayedStoryPattern(
+  /이미 .*쪽으로 마음이 기울었던 탓일까|작은 흔적보다 .*숨소리|쪽으로 이미 마음이 기운 탓인지|축제 소음 속에서 .*목소리만 이상하게 선명/,
+  'Displayed affection-variant prose should not reuse route-name-swapped generated scaffolding.'
 );
 assertNoDisplayedStoryPattern(
   /첫 단서가 되었다|같은 질문을 다른 목소리|축제 준비물 사이에서 자기 이름이 적힌 작은 표식|옥상 바람이 잠깐 멈춘 것 같았다/,

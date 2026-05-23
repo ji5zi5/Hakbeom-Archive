@@ -21,6 +21,11 @@ const afterSchoolRouteDateSpecs = {
     reaction: '도훈은 괜히 영수증을 접었다 폈다. 놀리는 말은 여전했지만, 학범이 고른 답 앞에서는 숨겨 둔 다정함이 먼저 들켰다.',
     phoneLead: '캔 식기 전에 마셨냐. 답 안 하면 다음엔 더 단 거 사 간다.',
     close: '학범은 도훈의 협박 같은 걱정을 읽고 캔을 굴렸다. 정보값이라고 부르기엔 너무 따뜻한 시간이 손에 남아 있었다.',
+    choiceReactions: [
+      '도훈은 “시간은 비싼데” 하고 투덜거리면서도, 학범 손에 쥔 캔이 식었는지 먼저 확인했다.',
+      '도훈은 대답을 못 하고 영수증만 구겼다. “그렇게 말하면… 취소 못 하잖아.”',
+      '도훈은 “시끄러워”라고 했지만 입꼬리는 이미 졌다. 다음엔 더 따뜻한 걸 사 오겠다는 말만 작게 남겼다.'
+    ],
     choices: [
       '정보값 말고 네 시간을 달라고 한다.',
       '그 캔은 데이트 신청으로 받아도 되냐고 묻는다.',
@@ -51,6 +56,11 @@ const afterSchoolRouteDateSpecs = {
     reaction: '하음은 학범의 대답에 맞춰 메트로놈을 멈췄다. 정확한 박자보다 둘의 숨이 맞는 순간을 더 믿겠다는 듯 부드럽게 웃었다.',
     phoneLead: '오늘 박자 좋았어. 조금 느렸는데, 그래서 더 같이 걷는 느낌이었어.',
     close: '학범은 하음의 메시지를 읽으며 자기 숨을 세었다. 느린 박자는 뒤처짐이 아니라, 함께 흔들리기 위해 남겨 둔 여유였다.',
+    choiceReactions: [
+      '하음은 메트로놈을 한 칸 더 늦췄다. “그럼 오늘은 네 속도부터 들을게.”',
+      '하음은 손끝으로 박자를 세다 학범을 봤다. “흔들리면 나도 같이 흔들리면 되지.”',
+      '하음은 웃느라 첫 음을 놓쳤다. “그 말, 다시 한 번만. 박자 맞춰서 듣고 싶어.”'
+    ],
     choices: [
       '네 박자에 맞춰 가겠다고 말한다.',
       '내가 흔들리면 같이 세어 달라고 부탁한다.',
@@ -81,6 +91,11 @@ const afterSchoolRouteDateSpecs = {
     reaction: '윤호는 선배라는 호칭 뒤에 숨지 못하고 웃었다. 허락을 기다리던 거리보다 반 걸음 가까워진 곳에, 처음으로 자기 욕심을 세워 두었다.',
     phoneLead: '오늘 옥상 문, 일부러 바로 안 잠갔어요. 선배가 더 계실까 봐요.',
     close: '학범은 윤호의 조심스러운 메시지를 읽고 옥상 문 손잡이를 떠올렸다. 기다림은 이제 후배의 예의가 아니라, 둘 사이의 약속으로 바뀌고 있었다.',
+    choiceReactions: [
+      '윤호는 난간을 잡은 손에 힘을 줬다가 풀었다. “그럼… 한 걸음만 더 가도 돼요?”',
+      '윤호는 “선배”를 삼키고 학범 이름을 작게 불렀다. 부르고 나서야 얼굴이 빨개졌다.',
+      '윤호는 열쇠고리를 손바닥 위에 올려 보였다. “그러면 다음엔 제가 먼저 기다릴게요.”'
+    ],
     choices: [
       '허락한 거리보다 조금 더 가까워도 된다고 말한다.',
       '좋은 후배 말고 윤호로 기다려 달라고 한다.',
@@ -225,7 +240,7 @@ function buildAfterSchoolRouteDateScenes(spec) {
       text: spec.reaction,
       variants: spec.choices.map((choice, index) => ({
         requiredFlags: [spec.memoryFlag, choiceToneFlag(spec.routeId, index)],
-        text: `${spec.reaction} 학범이 고른 말, “${choice}”는 비 내린 Day 7의 사적인 신호로 남았다.`
+        text: `${spec.reaction} ${spec.choiceReactions[index] || ''}`.trim()
       })),
       directives: [
         { type: 'E', target: spec.routeId, effect: spec.effect, motion: spec.effect === 'chatter' ? 'bounce' : 'nod' },
