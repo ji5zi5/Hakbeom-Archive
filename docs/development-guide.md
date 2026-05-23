@@ -52,6 +52,7 @@ public/assets/                   런타임 asset
 | 하고 싶은 일 | 주로 수정할 곳 | 같이 확인할 곳 |
 | --- | --- | --- |
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
+| route date loop / phone follow-up 추가 | `src/data/scenario/batch3RouteDates/`, `src/data/scenario/routeDepthExpansionRegistry.js` | route-date matrix audit, memory consumer audit, deterministic replay tests |
 | 호감도/갤러리/회상 조건 변경 | `src/data/routeConfig.js`, `src/utils/relationshipState.js` | `src/utils/vnState.js`, status modal/tests |
 | 분기/스킵/엔딩/replay 동작 변경 | `src/engine/vnEngine.js` | semantic tests 추가 |
 | BCG/SCG/SE/E/BGM/AMBIENT 연출 명령 변경 | `src/engine/directorEngine.js`, `src/engine/audioEngine.js` | scenario directive docs/tests |
@@ -177,6 +178,16 @@ save 관련 코드를 바꾸면 다음을 확인한다.
 6. 새 unlock ID는 `routeConfig.js`에 등록.
 7. terminal ending은 150자 이상의 여운/다음 약속을 포함해서 갑자기 끊기지 않게 한다.
 8. `npm test` 통과.
+
+Route date loop를 추가/수정할 때는 추가로 확인한다.
+
+1. Matrix가 `previousSceneId`, `entrySceneId`, `exitSceneId`, `returnSceneId`만 anchor로 쓰고 `entryAfterId`를 만들지 않는다.
+2. `entrySceneId === sceneIds[0]`, `exitSceneId === sceneIds.at(-1)`.
+3. 각 route가 route-prefixed `${routeId}_date_*`와 `${routeId}_phone_*` flag를 보상으로 남긴다.
+4. date/phone flag가 뒤쪽 `variants.requiredFlags`나 route payoff에서 소비된다.
+5. phone reply scene은 `replies`/`rewards`/`next` 길이가 같고 reply branching과 `nextId`를 섞지 않는다.
+6. `PHONE_CONTACT_NAMES` 또는 message-level `name`이 `routeConfig.affectionTargets.name`과 맞아 sender fallback이 틀어지지 않는다.
+7. deterministic committed replay가 route lock 70+, terminal eligibility 85+, affection cap 100을 증명한다.
 
 ## Git/커밋 규칙
 

@@ -251,6 +251,30 @@ async function main() {
     }
   });
 
+  await check('route-date-layout', async () => {
+    const routeDateScenes = [
+      { sceneId: 'date-day9-ukhyun-choice', kind: 'choice' },
+      { sceneId: 'phone-day9-ukhyun-after-date', kind: 'phone', minReplies: 3 },
+      { sceneId: 'date-day8-sangwon-memory-choice', kind: 'choice' },
+      { sceneId: 'date-day8-sangwon-phone-followup', kind: 'phone', minReplies: 2 },
+      { sceneId: 'date-day7-dohun-choice', kind: 'choice' },
+      { sceneId: 'phone-day7-dohun-after-date', kind: 'phone', minReplies: 1 }
+    ];
+
+    for (const scene of routeDateScenes) {
+      await page.goto(buildUrl(`?screen=game&id=${scene.sceneId}`), { waitUntil: 'networkidle' });
+      if (scene.kind === 'choice') {
+        await page.waitForSelector('.choice-row');
+        assert.equal(await visibleSvgScene(page, '.scene-choice'), true, `${scene.sceneId} route-date choice should be visible`);
+        await assertChoiceLayoutFits(page, scene.sceneId);
+      } else {
+        await page.waitForSelector('.scene-phone .phone-ui');
+        assert.equal(await visibleSvgScene(page, '.scene-phone'), true, `${scene.sceneId} route-date phone should be visible`);
+        await assertPhoneLayoutFits(page, scene.sceneId, { minReplies: scene.minReplies });
+      }
+    }
+  });
+
   await check('save-load', async () => {
     await page.goto(buildUrl('?screen=game&id=opening'), { waitUntil: 'networkidle' });
     await page.waitForSelector('.game');

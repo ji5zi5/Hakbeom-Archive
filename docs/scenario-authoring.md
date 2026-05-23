@@ -36,6 +36,7 @@
 선택지 장면이다.
 
 - `choices.length`, `rewards.length`, `next.length`는 같아야 한다.
+- 현재 선택지 UI 계약은 최대 3개다. 4개 이상이 필요하면 3개 이하 장면으로 나눈다.
 - 각 `next` 값은 존재하는 장면 ID여야 한다.
 - 선택지만 프리뷰로 남기고 싶으면 `previewOnly: true`를 붙인다.
 
@@ -58,6 +59,7 @@
 메시지 답장 장면이다. 현재 런타임에서는 `phone`을 선택지처럼 처리한다.
 
 - `replies.length`, `rewards.length`, `next.length`는 같아야 한다.
+- 답장 UI 계약도 최대 3개다. 4개 이상 답장이 필요하면 phone 장면을 나누거나 사전 선택지를 둔다.
 - `replies`와 `next`가 있는 phone 장면에는 `nextId`를 같이 쓰지 않는다.
 - 메시지만 보여주고 다음 장면으로 넘기는 phone이 필요하면 `replies`/`next` 없이 `nextId`만 쓰는 별도 형식으로 만든다.
 
@@ -113,6 +115,31 @@ Day 6–9처럼 공통 루트가 길어지는 구간은 보고서형 요약으�
 4. `close`: 다음 hub 또는 기존 day 본문으로 돌아가며, 70+ 호감도 variant를 넣어 관계 진전이 문장으로 보이게 한다.
 
 Route별 배경은 `public/assets/bg/day6-<route>-study.png`, `day7-<route>-rain.png`, `day8-<route>-festival.png`, `day9-<route>-rumor.png`처럼 장면 목적이 드러나게 명명한다. 단, 직접 생성된 PNG + `.prompt.txt` + manifest `sourceGeneratedImage`, `routeId`, asset provenance `expansionBatch: route-depth-2026-05`가 모두 준비된 파일만 BCG로 연결한다. Scene의 story batch 값(`route-depth-2026-05-batch2` 등)과 asset provenance batch 값은 의미가 다르므로 비교하지 않는다. `day9-haeum-rumor`, `day9-yunho-rumor`도 직접 생성 PNG로 복구되었으므로 base background로 되돌리지 않는다. `derivedFrom` 파생 배경은 금지한다.
+
+## Batch3.5 route-date loop 규칙
+
+Route date는 기존 Day 6–9 free-action close 뒤에 끼워 넣는 데이터 확장이다. 새 date loop는 `src/data/scenario/batch3RouteDates/`에 cohort별 matrix/scenes로 추가하고, `src/data/scenario/routeDepthExpansionRegistry.js`가 Batch 2 뒤에서 통합한다.
+
+Matrix 항목은 다음 필드를 사용한다.
+
+- `previousSceneId`: 기존 free-action close나 안전한 anchor. 통합 시 이 장면의 `nextId`가 `entrySceneId`로 바뀐다.
+- `entrySceneId`: route date 첫 장면. 반드시 `sceneIds[0]`와 같아야 한다.
+- `exitSceneId`: route date 마지막 장면. 반드시 `sceneIds.at(-1)`와 같아야 한다.
+- `returnSceneId`: date loop가 끝난 뒤 돌아갈 기존 장면.
+- `sceneIds`, `backgroundIds`, `memoryFlags`, `phoneFlags`, `affectionBudget`.
+
+`entryAfterId` 같은 legacy anchor 이름은 쓰지 않는다. 테스트는 이 필드가 다시 생기면 실패해야 한다.
+
+Route date 보상/기억 규칙:
+
+- 각 route는 최소 하나의 `${routeId}_date_*` memory flag와 하나의 `${routeId}_phone_*` follow-up flag를 가져야 한다.
+- route-resolution tie-break에 쓰일 flag는 route prefix로 시작한다. 단순 payoff/display 전용 flag는 `memory_payoff_${routeId}_...`처럼 별도 이름으로 둔다.
+- date choice와 phone reply는 합쳐서 승인된 pre-lock delta(현재 Batch3.5 `+18`)를 제공하며, 엔진의 100점 cap을 넘는 값을 요구하지 않는다.
+- 모든 date/phone flag는 이후 `variants.requiredFlags`, route-lock/payoff line, gallery/recollection, terminal text 중 하나 이상에서 소비되어야 한다.
+- phone reply 장면은 `replies`/`rewards`/`next` 길이를 맞추고, reply branching이 있으면 `nextId`를 함께 쓰지 않는다.
+- Ukhyun/Jaeseong처럼 contact table에 빠지기 쉬운 발신자는 `src/engine/phoneEngine.js`의 sender lookup 또는 message-level `name`으로 명시한다. 현재 preferred contract는 `PHONE_CONTACT_NAMES`가 `routeConfig.affectionTargets.name`과 맞는 것이다.
+
+검증은 `tests/ui-contract.test.mjs`의 Batch3.5 matrix audit, memory consumer audit, deterministic committed replay, all-route phone sender normalization을 함께 통과해야 한다.
 
 ## 초반 자유행동 / 장소 선택 규칙
 

@@ -1,4 +1,5 @@
 const DIRECTIVE_TYPES = new Set(['BG', 'BG_CG', 'BCG', 'SCG', 'SE', 'E', 'OVERLAY', 'MOOD', 'BGM', 'MUSIC', 'AMBIENT', 'AMBIENCE', 'STOP_BGM', 'STOP_AMBIENT']);
+const MAX_INTERACTIVE_OPTIONS = 3;
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -157,6 +158,9 @@ export function validateScenario(scenario, routeConfig) {
 
     if (item.type === 'choice') {
       const choiceCount = asArray(item.choices).length;
+      if (choiceCount > MAX_INTERACTIVE_OPTIONS) {
+        addError(errors, item, `choices length ${choiceCount} exceeds max ${MAX_INTERACTIVE_OPTIONS}`);
+      }
       if (asArray(item.rewards).length && asArray(item.rewards).length !== choiceCount) {
         addError(errors, item, `rewards length ${asArray(item.rewards).length} does not match choices length ${choiceCount}`);
       }
@@ -167,6 +171,9 @@ export function validateScenario(scenario, routeConfig) {
 
     if (item.type === 'phone') {
       const replyCount = asArray(item.replies).length;
+      if (replyCount > MAX_INTERACTIVE_OPTIONS) {
+        addError(errors, item, `phone replies length ${replyCount} exceeds max ${MAX_INTERACTIVE_OPTIONS}`);
+      }
       if (replyCount > 0 && item.nextId && hasTargets(item)) {
         addError(errors, item, 'phone reply scenes must not define nextId when next targets are present');
       }

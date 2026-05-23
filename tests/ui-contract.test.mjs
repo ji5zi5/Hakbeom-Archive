@@ -10,10 +10,20 @@ import {
 } from '../src/data/scenario/batch1RouteDepth/routeDepthBatchMatrix.js';
 import {
   ROUTE_DEPTH_BATCH2_ID,
+  ROUTE_DATE_BATCH3_ID,
+  ROUTE_DATE_AFFECTION_BUDGETS,
+  routeDateBatch3BackgroundBindings,
+  routeDateBatch3Routes,
   routeDepthBatch2BackgroundBindings,
   routeDepthBatch2Routes,
   routeDepthExpansionBatches
 } from '../src/data/scenario/routeDepthExpansionRegistry.js';
+import {
+  CORE_ROUTE_DATE_BATCH_ID,
+  coreRouteDateCommittedScripts,
+  coreRouteDateMatrix,
+  coreRouteDateScenes
+} from '../src/data/scenario/batch3RouteDates/coreRoutes.js';
 import {
   applyAudioDirective,
   applyAudioItem,
@@ -1046,6 +1056,28 @@ assert.match(
 
 const scenarioSource = readScenarioSourceTree();
 
+function collectResolvedPngRefs(value, refs = new Set()) {
+  if (typeof value === 'string') {
+    for (const match of value.matchAll(/\/assets\/[^'"\s)]+\.png/g)) refs.add(match[0]);
+    return refs;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((entry) => collectResolvedPngRefs(entry, refs));
+    return refs;
+  }
+  if (value && typeof value === 'object') {
+    Object.values(value).forEach((entry) => collectResolvedPngRefs(entry, refs));
+  }
+  return refs;
+}
+
+for (const ref of [...collectResolvedPngRefs({ scenario, routeConfigData, characterProfiles })].sort()) {
+  assert.ok(
+    existsSync(ref.replace('/assets/', 'public/assets/')),
+    `Resolved PNG asset reference should exist on disk: ${ref}`
+  );
+}
+
 function displayedStoryTexts() {
   return scenario.flatMap((item) => {
     if (item.kind === 'chapter') return [];
@@ -1538,6 +1570,90 @@ for (const route of routeDepthBatch2Routes) {
       `${backgroundId} should be used by a batch2-counted ${route.id} scene.`
     );
   }
+}
+
+const clubRouteDateModulePath = 'src/data/scenario/batch3RouteDates/clubRoutes.js';
+assert.ok(
+  existsSync(clubRouteDateModulePath),
+  'Batch3 route-date club routes should live in a dedicated batch3RouteDates/clubRoutes.js module.'
+);
+const clubRouteDateSource = existsSync(clubRouteDateModulePath) ? readSource(clubRouteDateModulePath) : '';
+for (const routeId of ['sangwon', 'sanguk', 'junhyeok']) {
+  const entrySceneId = `date-day8-${routeId}-memory-choice`;
+  const phoneSceneId = `date-day8-${routeId}-phone-followup`;
+  const exitSceneId = `date-day8-${routeId}-phone-close`;
+  const previousSceneId = `day8-free-${routeId}-close`;
+  const returnSceneId = 'day8-free-hub-c';
+  const routeName = routeConfigData.affectionTargets.find((target) => target.id === routeId)?.name;
+
+  assert.match(
+    clubRouteDateSource,
+    new RegExp(`routeId:\\s*'${routeId}'[\\s\\S]*?previousSceneId:\\s*'${previousSceneId}'[\\s\\S]*?entrySceneId:\\s*'${entrySceneId}'[\\s\\S]*?exitSceneId:\\s*'${exitSceneId}'[\\s\\S]*?returnSceneId:\\s*'${returnSceneId}'`),
+    `${routeId} route-date matrix should use previousSceneId/entrySceneId/exitSceneId/returnSceneId vocabulary.`
+  );
+  assert.equal(
+    scenario.find((item) => item.id === previousSceneId)?.nextId,
+    entrySceneId,
+    `${routeId} route-date integration should remap previousSceneId to entrySceneId.`
+  );
+
+  const routeDateScenes = scenario.filter((item) => item.routeId === routeId && item.batchModule === 'batch3RouteDates');
+  assert.ok(routeDateScenes.length >= 5, `${routeId} should add a compact date + phone follow-up scene chain.`);
+  assert.ok(
+    routeDateScenes.every((item) => item.expansionBatch === 'route-dates-2026-05-batch3'),
+    `${routeId} route-date scenes should declare the Batch3 route-date expansion id.`
+  );
+
+  const entryScene = scenario.find((item) => item.id === entrySceneId);
+  assert.equal(entryScene?.type, 'choice', `${entrySceneId} should be a player-facing date memory choice.`);
+  assert.ok((entryScene.choices || []).length > 0 && entryScene.choices.length <= 3, `${entrySceneId} should keep <=3 choices.`);
+  assert.equal(entryScene.rewards?.length, entryScene.choices.length, `${entrySceneId} should reward each date choice.`);
+  assert.equal(entryScene.next?.length, entryScene.choices.length, `${entrySceneId} should route each date choice.`);
+  assert.ok(
+    entryScene.rewards.every((reward) => reward.affection?.[routeId] === 10),
+    `${entrySceneId} should add the planned pre-lock date affection for ${routeId}.`
+  );
+  const dateMemoryFlags = [...new Set(entryScene.rewards.flatMap((reward) => reward.flags || []))]
+    .filter((flag) => flag.startsWith(`${routeId}_date_`));
+  assert.ok(dateMemoryFlags.length > 0, `${entrySceneId} should emit a route-prefixed date memory flag.`);
+  const entryBackgroundId = entryScene.directives
+    ?.find((directive) => directive.type === 'BCG')
+    ?.src
+    ?.replace('/assets/bg/', '')
+    .replace(/\.png$/, '');
+  assert.ok(acceptedDirectBackgroundIds.has(entryBackgroundId), `${entrySceneId} should reuse an accepted direct PNG background.`);
+
+  const phoneScene = scenario.find((item) => item.id === phoneSceneId);
+  assert.equal(phoneScene?.type, 'phone', `${phoneSceneId} should be a phone follow-up scene.`);
+  assert.ok((phoneScene.replies || []).length > 0 && phoneScene.replies.length <= 3, `${phoneSceneId} should keep <=3 replies.`);
+  assert.equal(phoneScene.rewards?.length, phoneScene.replies.length, `${phoneSceneId} should reward each reply.`);
+  assert.equal(phoneScene.next?.length, phoneScene.replies.length, `${phoneSceneId} should route each reply.`);
+  assert.equal(phoneScene.nextId, undefined, `${phoneSceneId} should not define nextId while reply targets exist.`);
+  assert.ok(
+    phoneScene.rewards.every((reward) => reward.affection?.[routeId] === 8),
+    `${phoneSceneId} should add the planned pre-lock phone affection for ${routeId}.`
+  );
+  const phoneFlags = [...new Set(phoneScene.rewards.flatMap((reward) => reward.flags || []))]
+    .filter((flag) => flag.startsWith(`${routeId}_phone_`));
+  assert.ok(phoneFlags.length > 0, `${phoneSceneId} should emit route-prefixed phone follow-up flags.`);
+  assert.equal(
+    normalizePhoneMessages(phoneScene).find((message) => message.from === routeId)?.name,
+    routeName,
+    `${phoneSceneId} should normalize the phone sender to ${routeName}.`
+  );
+
+  const flagConsumers = routeDateScenes.flatMap((scene) => scene.variants || []);
+  for (const flag of [...dateMemoryFlags, ...phoneFlags]) {
+    assert.ok(
+      flagConsumers.some((variant) => (variant.requiredFlags || variant.flags || []).includes(flag)),
+      `${routeId} route-date memory flag should have a later text consumer: ${flag}`
+    );
+  }
+  assert.equal(
+    scenario.find((item) => item.id === exitSceneId)?.nextId,
+    returnSceneId,
+    `${routeId} route-date exitSceneId should return to returnSceneId.`
+  );
 }
 
 for (const requiredRumorBackground of ['day9-haeum-rumor', 'day9-yunho-rumor']) {
@@ -2096,6 +2212,10 @@ const runtimeChoices = scenario.filter((item) => item.type === 'choice' && !item
 for (const item of runtimeChoices) {
   assert.ok((item.choices || []).length <= 3, `${item.id} should not exceed the current 3-choice layout contract.`);
 }
+const runtimeReplyPhones = scenario.filter((item) => item.type === 'phone' && !item.previewOnly && (item.replies || []).length > 0);
+for (const item of runtimeReplyPhones) {
+  assert.ok((item.replies || []).length <= 3, `${item.id} should not exceed the current 3-reply phone layout contract.`);
+}
 
 assert.match(
   scenarioSource,
@@ -2652,6 +2772,34 @@ assert.ok(
   'Scenario validator should catch missing targets and choice array mismatches.'
 );
 
+const tooManyOptionsValidation = validateScenario([
+  {
+    id: 'choice-overflow',
+    type: 'choice',
+    choices: ['A', 'B', 'C', 'D'],
+    rewards: [{}, {}, {}, {}],
+    next: ['phone-overflow', 'end-a', 'end-b', 'end-c']
+  },
+  {
+    id: 'phone-overflow',
+    type: 'phone',
+    text: 'message',
+    messages: [{ from: 'hyeongyeom', text: '확인했어.' }],
+    replies: ['A', 'B', 'C', 'D'],
+    rewards: [{}, {}, {}, {}],
+    next: ['end-a', 'end-b', 'end-c', 'end-d']
+  },
+  { id: 'end-a', type: 'dialogue', text: 'end a', terminal: true },
+  { id: 'end-b', type: 'dialogue', text: 'end b', terminal: true },
+  { id: 'end-c', type: 'dialogue', text: 'end c', terminal: true },
+  { id: 'end-d', type: 'dialogue', text: 'end d', terminal: true }
+], routeConfigData);
+assert.ok(
+  tooManyOptionsValidation.errors.some((error) => error.includes('choices length 4 exceeds max 3'))
+    && tooManyOptionsValidation.errors.some((error) => error.includes('phone replies length 4 exceeds max 3')),
+  'Scenario validator should reject choice/reply scenes that exceed the three-option UI contract.'
+);
+
 const cappedState = applyRouteRewards(
   { ...createInitialGameState(), affection: { hyeongyeom: routeConfigData.affectionTarget.max - 1 } },
   { id: 'test-overflow', rewards: [{ affection: { hyeongyeom: 99 } }] },
@@ -2768,6 +2916,89 @@ assert.equal(
   'day11-ukhyun-morning',
   'Route gates should still follow explicit route-lock payoff branches without granting terminal endings early.'
 );
+
+assert.equal(CORE_ROUTE_DATE_BATCH_ID, 'route-date-2026-05-batch3-core');
+const coreRouteDateIds = ['hyeongyeom', 'ukhyun', 'jaeseong'];
+const coreRouteDateScenesById = new Map(coreRouteDateScenes.map((item) => [item.id, item]));
+const scenarioScenesById = new Map(scenario.map((item) => [item.id, item]));
+
+for (const routeId of coreRouteDateIds) {
+  const entry = coreRouteDateMatrix.find((route) => route.routeId === routeId);
+  assert.ok(entry, `Core route-date matrix should include ${routeId}.`);
+  assert.equal(entry.entrySceneId, entry.sceneIds[0], `${routeId} route-date entry should be the first declared scene.`);
+  assert.equal(entry.exitSceneId, entry.sceneIds.at(-1), `${routeId} route-date exit should be the last declared scene.`);
+  assert.ok(!('entryAfterId' in entry), `${routeId} route-date matrix should not use legacy entryAfterId vocabulary.`);
+  assert.ok(scenarioScenesById.has(entry.previousSceneId), `${routeId} route-date previousSceneId should exist in the base scenario.`);
+  assert.ok(scenarioScenesById.has(entry.returnSceneId), `${routeId} route-date returnSceneId should exist in the base scenario.`);
+  assert.ok(
+    [entry.returnSceneId, entry.entrySceneId].includes(scenarioScenesById.get(entry.previousSceneId).nextId),
+    `${routeId} route-date previous scene should either retain its original returnSceneId or be remapped to entrySceneId by the integration lane.`
+  );
+  assert.ok(entry.memoryFlags.some((flag) => flag.startsWith(`${routeId}_date_`)), `${routeId} should declare a route-prefixed date memory flag.`);
+  assert.ok(entry.phoneFlags.some((flag) => flag.startsWith(`${routeId}_phone_`)), `${routeId} should declare a route-prefixed phone follow-up flag.`);
+
+  for (const sceneId of entry.sceneIds) {
+    const item = coreRouteDateScenesById.get(sceneId);
+    assert.ok(item, `${routeId} route-date scene ${sceneId} should be generated.`);
+    assert.ok(!('entryAfterId' in item), `${sceneId} should not use legacy entryAfterId vocabulary.`);
+    if (item.directives) {
+      for (const directive of item.directives) {
+        if (directive.type === 'BCG') {
+          const assetPath = directive.src.startsWith('/assets/')
+            ? `public${directive.src}`
+            : directive.src.replace(/^\//, '');
+          assert.ok(existsSync(assetPath), `${sceneId} should reference an existing background PNG: ${directive.src}`);
+        }
+      }
+    }
+    if (item.type === 'choice') {
+      assert.ok(item.choices.length <= 3, `${sceneId} should keep choices within the 3-option UI contract.`);
+      assert.equal(item.choices.length, item.rewards.length, `${sceneId} choices/rewards should align.`);
+      assert.equal(item.choices.length, item.next.length, `${sceneId} choices/next should align.`);
+    }
+    if (item.type === 'phone' && item.replies) {
+      assert.ok(item.replies.length <= 3, `${sceneId} should keep phone replies within the 3-option UI contract.`);
+      assert.equal(item.replies.length, item.rewards.length, `${sceneId} replies/rewards should align.`);
+      assert.equal(item.replies.length, item.next.length, `${sceneId} replies/next should align.`);
+      assert.ok(!item.nextId, `${sceneId} should not mix phone reply branching with nextId.`);
+    }
+  }
+
+  const exitScene = coreRouteDateScenesById.get(entry.exitSceneId);
+  const consumedFlags = new Set((exitScene.variants || []).flatMap((variant) => variant.requiredFlags || []));
+  assert.ok(entry.memoryFlags.some((flag) => consumedFlags.has(flag)), `${routeId} date memory flag should be consumed by a later variant.`);
+  assert.ok(entry.phoneFlags.some((flag) => consumedFlags.has(flag)), `${routeId} phone follow-up flag should be consumed by a later variant.`);
+}
+
+function applyCommittedStep(state, sceneById, step) {
+  const item = sceneById.get(step.sceneId);
+  assert.ok(item, `Committed replay scene should exist: ${step.sceneId}`);
+  if (Number.isInteger(step.choice)) return applyRouteRewards(state, item, step.choice, routeConfigData);
+  if (Number.isInteger(step.reply)) return applyRouteRewards(state, item, step.reply, routeConfigData);
+  return state;
+}
+
+const replaySceneById = new Map([...scenarioScenesById, ...coreRouteDateScenesById]);
+for (const routeId of coreRouteDateIds) {
+  const script = coreRouteDateCommittedScripts[routeId];
+  assert.ok(script, `Committed route-date replay script should exist for ${routeId}.`);
+  let state = createInitialGameState();
+  for (const step of script.preLock) state = applyCommittedStep(state, replaySceneById, step);
+  assert.ok(
+    state.affection[routeId] >= routeConfigData.routeLockThreshold,
+    `${routeId} committed replay should reach route lock threshold before the Day 10 lock choice.`
+  );
+  assert.ok(state.affection[routeId] <= 100, `${routeId} pre-lock affection should stay capped at 100.`);
+  assert.ok(script.requiredDateFlags.every((flag) => state.flags.includes(flag)), `${routeId} replay should include required route-date flags before lock.`);
+  assert.ok(script.requiredPhoneFlags.every((flag) => state.flags.includes(flag)), `${routeId} replay should include required phone follow-up flags before lock.`);
+
+  for (const step of script.lock) state = applyCommittedStep(state, replaySceneById, step);
+  assert.ok(state.flags.includes(`route_lock_${routeId}`), `${routeId} committed replay should record the explicit route lock flag.`);
+  assert.ok(state.affection[routeId] >= 85, `${routeId} committed replay should be terminal-eligible after route lock.`);
+  assert.ok(state.affection[routeId] <= 100, `${routeId} post-lock affection should stay capped at 100.`);
+  assert.equal(resolveRouteLock(state, routeConfigData).id, routeId, `${routeId} should resolve as the committed route lock.`);
+  assert.equal(resolveEndingRoute(state, episodeInfo.endingRules || []).id, routeId, `${routeId} should be eligible for its terminal route ending.`);
+}
 
 const normalizedByItem = normalizeSavePayload(
   { version: 1, index: 9999, itemId: scenario[2].id, gameState: {}, settings: {}, directorState: null, log: [] },
@@ -3276,8 +3507,29 @@ assert.equal(phoneMessages[0].side, 'other');
 assert.equal(phoneMessages[1].side, 'me');
 assert.equal(phoneMessages[1].pending, true);
 
+for (const target of routeConfigData.affectionTargets) {
+  const [routePhoneMessage] = normalizePhoneMessages({
+    id: `phone-sender-${target.id}`,
+    name: '메시지',
+    messages: [{ from: target.id, text: `${target.name} route follow-up`, read: true }]
+  });
+  assert.equal(
+    routePhoneMessage.name,
+    target.name,
+    `Phone messages from ${target.id} should display the configured route sender name.`
+  );
+}
+
 const phoneReplies = normalizePhoneReplies({ replies: ['바로 답장한다.'], next: ['reply-warm'] });
 assert.deepEqual(phoneReplies[0], { index: 0, text: '바로 답장한다.', targetId: 'reply-warm' });
+assert.deepEqual(
+  normalizePhoneReplies({
+    replies: ['첫 번째', '두 번째', '세 번째', '네 번째'],
+    next: ['reply-one', 'reply-two', 'reply-three', 'reply-four']
+  }).map((reply) => reply.targetId),
+  ['reply-one', 'reply-two', 'reply-three'],
+  'Phone reply normalization should expose at most three replies in UI order.'
+);
 
 assert.equal(SAVE_VERSION, 2, 'Save version should advance when migrating legacy 0-10 affection saves.');
 assert.match(saveCodec, /export const SAVE_VERSION = 2/);
