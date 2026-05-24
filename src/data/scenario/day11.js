@@ -258,7 +258,7 @@ export const day11Scenes = [
     "mood": "warm",
     "chapter": "day-11",
     "name": "학범",
-    "role": "독백",
+    "role": "학생회",
     "place": "아침 복도",
     "text": "어제 한 사람을 향해 걸어간 뒤, 아침 인사는 평소보다 조금 더 가까운 거리에서 시작됐다.",
     "variants": [
@@ -457,7 +457,7 @@ export const day11Scenes = [
     "chapter": "day-11",
     "mood": "warm",
     "name": "학범",
-    "role": "독백",
+    "role": "학생회",
     "place": "아침 복도",
     "endingGate": true,
     "routeGate": true,
@@ -476,7 +476,7 @@ export const day11Scenes = [
       "quiet": "day11-hyeongyeom-morning",
       "default": "day11-hyeongyeom-morning"
     },
-    "text": "선택은 밤새 흐려지지 않았다. 학범은 어제 적은 이름을 주머니에 넣고, 가장 먼저 확인하고 싶은 얼굴 쪽으로 걸었다."
+    "text": "선택은 밤새 흐려지지 않았다. 학범은 주머니 속 이름을 손끝으로 눌렀다. “오늘은 내가 먼저 갈게.” 그는 가장 먼저 확인하고 싶은 얼굴 쪽으로 걸었다."
   },
   {
     "id": "day11-hyeongyeom-morning",

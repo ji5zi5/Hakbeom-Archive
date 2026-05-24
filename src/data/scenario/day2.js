@@ -153,9 +153,9 @@ export const day2Scenes = [
       type: 'dialogue',
       chapter: 'day-2',
       name: '학범',
-      role: '독백',
+      role: '학생회 기록 담당',
       place: '점심시간',
-      text: '점심이 끝날 즈음, 기록집에는 새 이름들이 늘어났고 현겸은 우산을 돌려준 뒤에도 바로 돌아서지 않았다. 여러 사람의 부탁이 쌓일수록, 학범은 자기 손에 다시 무언가를 쥐여 주려는 마음이 누구에게 향하는지 더 의식하게 됐다.',
+      text: '점심 종이 울리자 학범은 기록집을 닫고 현겸 쪽으로 고개를 들었다. “이제 이름만 적는 건 그만할래. 누가 내 손에 뭘 쥐여 줬는지도, 내가 누구를 다시 보고 싶었는지도 내가 말할게.”',
       variants: [
         {
           flags: ['warm_reply'],
@@ -255,7 +255,7 @@ export const day2Scenes = [
       name: '학범',
       role: '학생회 기록 담당',
       place: '학생회 기록실',
-      text: '짧은 자유 시간이 끝나자 학범은 협조 요청서 더미를 다시 들었다. 누구에게 마음이 기울든, 기록 담당으로서는 문화제를 함께 만드는 사람들을 모두 만나야 했다.',
+      text: '학범은 협조 요청서 더미를 가슴에 안고 말했다. “한 사람만 보러 온 건 아니야. 그래도 내가 어디서 더 오래 웃는지는, 오늘부터 숨기지 않을게.”',
       directives: [
         { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
         { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' },
@@ -319,7 +319,7 @@ export const day2Scenes = [
       name: '학범',
       role: '학생회 기록 담당',
       place: '학생회 기록실',
-      text: '학생회 기록실 책상 위에는 문화제 협조 요청서가 쌓였다. 학범은 기록집 첫 장에 “봄날의 방과 후”라고 적었다가, 오늘 새로 만날 이름들이 그 제목을 완성할지도 모른다고 생각했다.',
+      text: '학범은 빈 기록집 첫 장에 “봄날의 방과 후”라고 쓰다 말고 펜을 멈췄다. “제목보다 먼저, 직접 얼굴 보고 부탁하자.” 종이 더미가 갑자기 누군가를 만나러 가는 초대장처럼 보였다.',
       directives: [
         { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
         { type: 'SCG', id: 'hyeongyeom', action: 'delete', transition: 'fade-out' }

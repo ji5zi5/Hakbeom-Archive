@@ -46,9 +46,9 @@ export const day3Scenes = [
       mood: 'warm',
       chapter: 'day-3',
       name: '학범',
-      role: '독백',
+      role: '학생회',
       place: '도서관 앞',
-      text: '학범은 결재 도장을 평소보다 반듯하게 찍었다. 기다리게 하지 않겠다는 말은 가벼운 답장이었는데, 손끝은 그 약속을 문서보다 먼저 처리하고 있었다.',
+      text: '학범은 결재 도장을 찍자마자 서류를 덮었다. “기다리게 안 한다고 했으니까.” 말은 혼잣말처럼 작았지만, 발걸음은 이미 도서관 쪽으로 빨라졌다.',
       directives: [
         { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' }
       ],
@@ -60,9 +60,9 @@ export const day3Scenes = [
       mood: 'warm',
       chapter: 'day-3',
       name: '학범',
-      role: '독백',
+      role: '학생회',
       place: '도서관 앞',
-      text: '학범은 약속 시간보다 일찍 도서관 앞에 섰다. 누군가를 기다리는 일은 낯설었지만, 현겸이 복도 끝에서 걸어올 장면만은 이미 여러 번 본 것 같았다.',
+      text: '학범은 약속 시간보다 일찍 도서관 앞에 섰다. “이번엔 내가 먼저 기다릴게.” 누군가에게 들려주기 전의 한마디가, 우산 없는 복도에서도 이상하게 떨렸다.',
       directives: [
         { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' }
       ],
@@ -100,9 +100,9 @@ export const day3Scenes = [
       mood: 'tense',
       chapter: 'day-3',
       name: '학범',
-      role: '독백',
+      role: '학생회',
       place: '빈 학생회실',
-      text: '현겸은 책을 빌리러 왔다고 했지만 책등보다 학범 쪽을 더 자주 보았다. 학범은 그 시선이 요구인지, 초대인지, 아직 이름 붙이지 못했다.',
+      text: '현겸은 책을 빌리러 왔다고 했지만 책등보다 학범 쪽을 더 자주 보았다. 학범은 의자를 하나 더 빼며 물었다. “책 핑계면, 조금 더 오래 있어도 되는 거지?”',
       variants: [
         {
           requiredFlags: ['shared_umbrella'],

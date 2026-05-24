@@ -331,12 +331,12 @@ export const day1Scenes = [
       type: 'choice',
       chapter: 'day-1',
       choices: [
-        '현겸과 현관에서 조금 더 걷는다.',
+        '현겸이 우산 손잡이를 놓지 않는 걸 보고, 현관에 남는다.',
         '도서관에 들러 욱현이 남긴 접힌 노트를 펼친다.',
         '방송실 호출에 답해 재성이 마이크를 끈 이유를 묻는다.'
       ],
       rewards: [
-        { affection: { hyeongyeom: 10 }, flags: ['hyeongyeom_day1_action'] },
+        { affection: { hyeongyeom: 10 }, flags: ['hyeongyeom_day1_action', 'hyeongyeom_day1_private_walk'] },
         { affection: { ukhyun: 10 }, flags: ['ukhyun_early_interest'] },
         { affection: { jaeseong: 10 }, flags: ['jaeseong_early_signal'] }
       ],
@@ -350,7 +350,7 @@ export const day1Scenes = [
       name: '현겸',
       role: '동급생',
       place: '현관',
-      text: '“아직 안 가?” 현겸은 우산 손잡이를 놓지 않았다. “네가 다른 데 들를까 봐 기다린 거 아니야. 그냥… 오늘은 내가 먼저 같이 가자고 말하고 싶었어.”',
+      text: '현겸은 우산 손잡이를 놓지 않은 채 현관등 아래에 섰다. “아직 안 가?” 학범이 “네가 기다리는 것 같아서”라고 답하자, 현겸은 손잡이를 학범 쪽으로 반쯤 내밀었다. “그럼 오늘은 내가 먼저 같이 가자고 해도 돼?”',
       effect: { target: 'hyeongyeom', type: 'heart' },
       directives: [
         { type: 'SCG', id: 'hyeongyeom', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'blush', transition: 'fade-in' },
@@ -493,11 +493,15 @@ export const day1Scenes = [
       name: '학범',
       role: '독백',
       place: '교문 앞',
-      text: '우산은 생각보다 작았다. 학범은 젖는 쪽을 계산하다가, 자기가 현겸의 보폭에 맞춰 느려지고 있다는 사실을 뒤늦게 알아차렸다.',
+      text: '학범은 우산을 현겸 쪽으로 더 기울였다. “젖으면 말해. 오늘은 내가 맞출게.” 현겸의 어깨가 닿자, 둘 다 일부러 속도를 늦췄다.',
       variants: [
         {
           flags: ['shared_umbrella'],
           text: '같이 쓰자고 먼저 말한 사람은 학범이었다. 그래서 어깨가 스칠 때마다, 단순한 배려였다는 변명이 조금씩 물러났다.'
+        },
+        {
+          flags: ['hyeongyeom_day1_private_walk'],
+          text: '학범이 현관에 남자 현겸은 우산을 접지 않았다. “나만 기다린 거 아니지?”라는 작은 질문이, 빗소리보다 가까이 들렸다.'
         }
       ],
       directives: [

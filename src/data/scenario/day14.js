@@ -195,7 +195,72 @@ export const day14Scenes = [
       "quiet": "day14-hyeongyeom-festival",
       "default": "day14-hyeongyeom-festival"
     },
-    "text": "마지막 장은 소란 속에서도 한 사람의 자리로 이어졌다. 학범은 관객이 많은 쪽이 아니라, 어제 약속한 곳으로 걸었다."
+    "text": "마지막 장은 소란 속에서도 한 사람의 자리로 이어졌다. 학범은 관객이 많은 쪽이 아니라, 어제 약속한 곳으로 걸었다.",
+    "variants": [
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom",
+          "hyeongyeom_phone_day9_after_date"
+        ],
+        "text": "휴대폰에는 아직 “내일은 네가 먼저 잡아”라는 현겸의 답장이 남아 있었다. 학범은 관객이 많은 쪽이 아니라, 우산 손잡이를 먼저 잡을 수 있는 교문 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_ukhyun",
+          "ukhyun_phone_day9_after_date"
+        ],
+        "text": "욱현이 비워 둔 창가 자리 사진이 아침 알림에 남아 있었다. 학범은 오늘도 접어 두지 않겠다고 마음먹고, 도서관 마지막 장 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_jaeseong",
+          "jaeseong_phone_day9_after_date"
+        ],
+        "text": "방송실 예약 알림에는 재성의 장난 표시가 없었다. 학범은 공개 멘트가 아니라 비공개 대답을 들려주기 위해 꺼진 마이크가 있는 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sangwon",
+          "sangwon_phone_day8_warm_reply"
+        ],
+        "text": "상원이 보낸 빈 카드 사진은 아직 답을 재촉하지 않았다. 학범은 오늘 그 빈칸을 혼자 채우지 않고, 같이 열 열쇠를 들고 기록실 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_sanguk",
+          "sanguk_phone_day8_warm_reply"
+        ],
+        "text": "상욱이 보낸 운동화 사진 아래에는 “오늘도 네 옆에서 걸어도 돼?”가 남아 있었다. 학범은 뛰기보다 같이 멈출 수 있는 체육관 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_junhyeok",
+          "junhyeok_phone_day8_warm_reply"
+        ],
+        "text": "준혁의 지도 사진에는 별표 옆에 ‘일부러 남김’이라는 작은 글씨가 있었다. 학범은 빠른 길 대신, 다시 멈춰도 되는 좌표 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_dohun",
+          "dohun_phone_day7_warm_reply"
+        ],
+        "text": "도훈의 답장에는 농담보다 따뜻한 캔 사진이 먼저 와 있었다. 학범은 장난 뒤에 숨지 않을 대답을 들고, 밤에도 불이 남는 매점 쪽으로 걸었다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_haeum",
+          "haeum_phone_day7_warm_reply"
+        ],
+        "text": "하음이 보낸 느린 박자표를 보며 학범은 숨을 맞췄다. 오늘 고백은 빠르게 끝내는 문장이 아니라, 같이 늦어도 되는 음악실 쪽으로 이어졌다."
+      },
+      {
+        "requiredFlags": [
+          "route_lock_yunho",
+          "yunho_phone_day7_warm_reply"
+        ],
+        "text": "윤호가 잠그지 않고 기다린 옥상 문이 떠올랐다. 학범은 선배라는 호칭 뒤가 아니라, 윤호가 바로 옆으로 올 수 있는 계단 쪽으로 걸었다."
+      }
+    ]
   },
   {
     "id": "day14-hyeongyeom-festival",

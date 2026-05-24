@@ -54,6 +54,7 @@ public/assets/                   런타임 asset
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
 | route date loop / phone follow-up 추가 | `src/data/scenario/batch3RouteDates/`, `src/data/scenario/routeDepthExpansionRegistry.js` | route-date ownership audit, memory consumer audit, deterministic replay tests |
 | route별 말투/미연시 기억 라벨 변경 | `src/data/routeConfig.js`의 `datingSimProfiles`, `src/data/scenario/batch3RouteDates/` | save summary latest memory tests, route-date dialogue ratio tests |
+| 보이스 리라이트/story-lint 변경 | `src/data/routeConfig.js`, `src/data/characterProfiles.js`, `tests/ui-contract.test.mjs` | `docs/scenario-authoring.md`의 story-lint surface, baseline/pilot report |
 | 호감도/갤러리/회상 조건 변경 | `src/data/routeConfig.js`, `src/utils/relationshipState.js` | `src/utils/vnState.js`, status modal/tests |
 | 분기/스킵/엔딩/replay 동작 변경 | `src/engine/vnEngine.js` | semantic tests 추가 |
 | BCG/SCG/SE/E/BGM/AMBIENT 연출 명령 변경 | `src/engine/directorEngine.js`, `src/engine/audioEngine.js` | scenario directive docs/tests |
@@ -86,6 +87,7 @@ public/assets/                   런타임 asset
 - Character expression asset fallback belongs in `src/data/characterProfiles.js`; scenario files should reference expression names, not duplicate fallback paths.
 - 새 히로인을 추가할 때는 `routeConfig.affectionTargets`, `characterProfiles`, scenario reward/endingRules, terminal ending, contract test를 함께 갱신한다.
 - 미연시 route voice는 `routeConfig.datingSimProfiles`가 원본이다. route date matrix의 `profileId`/`memoryLabel`은 이 profile과 맞춰서 저장 슬롯/상태 화면에 보여도 자연스러운 짧은 기억 문장으로 유지한다.
+- 전면 보이스 리라이트의 `voiceRules`, `tensionMarkers`, `tabooPhrases`, `sampleLine`도 `datingSimProfiles`가 원본이다. 선택지/답장/phone까지 검사해야 하므로 story-lint는 `item.text`뿐 아니라 `choices[]`, `replies[]`, `messages[].text`, `variants[].text`, 변경된 label을 수집한다.
 - STATUS의 date log는 별도 저장 스키마가 아니다. `gameState.flags`, `routeConfig.affectionTargets`, `routeConfig.datingSimProfiles`, `resolveLatestRouteMemory()`로만 현재 루트/최근 기억을 파생한다. calendar state, reward toast, date-log 전용 save field는 추가하지 않는다.
 
 ### scenario는 데이터, validator는 계약이다

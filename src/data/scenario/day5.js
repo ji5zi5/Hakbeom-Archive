@@ -230,9 +230,9 @@ export const day5Scenes = [
     mood: 'warm',
     chapter: 'day-5',
     name: '학범',
-    role: '독백',
+    role: '학생회 기록 담당',
     place: '점심시간',
-    text: '점심 종이 울릴 때도 소문은 완전히 가라앉지 않았다. 하지만 학범의 손에는 안내문 초안, 포스터 테이프, 접힌 동선표가 남았다. 각자 다른 방식으로 “괜찮아?”라고 묻는 대답이었다.',
+    text: '점심 종이 울리자 학범은 안내문 초안, 포스터 테이프, 접힌 동선표를 한 줄로 놓았다. “다들 괜찮냐고 물어준 거지. 그러면 나도 괜찮은 척만 하지는 않을게.”',
     variants: [
       { requiredFlags: ['day5_records_copy'], text: '점심 종이 울릴 때, 상원의 빈칸은 소문보다 오래 남았다. 누가 대신 말하지 않도록 기다리는 칸이었다.' },
       { requiredFlags: ['day5_gym_trace'], text: '점심 종이 울릴 때, 상욱의 테이프 조각이 학범 손등에 붙어 있었다. 먼저 달리지 않고 멈춘 흔적이었다.' },
@@ -402,9 +402,9 @@ export const day5Scenes = [
     mood: 'warm',
     chapter: 'day-5',
     name: '학범',
-    role: '독백',
+    role: '학생회 기록 담당',
     place: '학생회 기록실',
-    text: '방과 후가 끝났을 때, 소문은 아직 복도에 남아 있었다. 하지만 학범의 기록집에는 복숭아 음료, 빈 공연표, 옥상 예약석 같은 작은 마음들이 먼저 적혔다.',
+    text: '방과 후가 끝났을 때도 복도는 시끄러웠다. 학범은 복숭아 음료, 빈 공연표, 옥상 예약석을 차례로 보며 말했다. “남이 만든 말보다, 오늘 내가 받은 마음을 먼저 남길게.”',
     variants: [
       { requiredFlags: ['day5_cctv_check'], text: '도훈이 접어 준 영수증에는 정보값보다 먼저 학범이 좋아하는 음료가 남았다. 농담 뒤의 진심은 생각보다 오래 손에 남았다.' },
       { requiredFlags: ['day5_music_room_echo'], text: '하음의 공연표 마지막 칸은 비어 있었다. 그 빈칸은 재촉이 아니라 학범의 박자를 기다리는 쉼표처럼 보였다.' },
@@ -436,7 +436,7 @@ export const day5Scenes = [
     name: '학범',
     role: '학생회 기록 담당',
     place: '학생회 기록실',
-    text: '학범은 기록집 첫 장 아래에 작은 글씨로 적었다. “소문은 남이 만든 문장이고, 고백은 내가 골라야 할 문장.” 문화제 준비가 갑자기 더 가까워졌다.',
+    text: '학범은 기록집 첫 장 아래에 작은 글씨로 적었다. “남이 만든 말에 끌려가지 말 것. 고백은 내가 고를 문장.” 펜을 내려놓자, 문화제 준비보다 먼저 누군가의 얼굴들이 떠올랐다.',
     directives: [
       { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
       { type: 'SCG', id: 'dohun', action: 'delete', transition: 'fade-out' },

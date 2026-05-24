@@ -93,8 +93,8 @@ export const day4Scenes = [
     mood: 'warm',
     chapter: 'day-4',
     name: '학범',
-    role: '독백',
-    text: '상원은 기록집을 넘길 때마다 학범의 손이 멈추는 위치를 보았다. 정확한 사람이라 부담스러웠지만, 아무렇게나 넘기지 않는 다정함이기도 했다.'
+    role: '학생회 기록 담당',
+    text: '상원이 넘기는 페이지마다 학범의 손이 멈췄다. 학범은 펜을 내려놓고 말했다. “부담스럽긴 한데, 네가 아무렇게나 넘기지 않는 건 알아.” 상원의 시선이 그제야 조금 풀렸다.'
   },
   {
     id: 'day4-sanguk-corridor',
@@ -200,8 +200,8 @@ export const day4Scenes = [
     mood: 'warm',
     chapter: 'day-4',
     name: '학범',
-    role: '독백',
-    text: '기록집의 첫 페이지는 아직 비어 있었다. 하지만 빈칸 옆에는 장소 이름과 친구들의 말투가 조금씩 쌓였다. 학범은 방과 후가 기록보다 먼저 마음을 움직인다는 걸 알았다.'
+    role: '학생회 기록 담당',
+    text: '학범은 빈칸 옆에 장소 이름을 적다가 펜을 멈췄다. “말투까지 남기고 싶어. 누가 어떤 얼굴로 나를 기다렸는지, 그건 내가 직접 봤으니까.”'
   },
   {
     id: 'day4-moe-jaeseong-mic-check',
@@ -319,8 +319,8 @@ export const day4Scenes = [
     mood: 'warm',
     chapter: 'day-4',
     name: '학범',
-    role: '독백',
-    text: '학생회 기록 양식, 체육관 사진, 도서관 동선표가 한 장에 모였다. 세 사람은 서로 다른 방식으로 학범의 속도를 확인했고, 학범은 처음으로 도움받는 쪽의 이름도 기록했다.'
+    role: '학생회 기록 담당',
+    text: '학범은 양식, 사진, 동선표를 한 장 위에 모았다. “오늘은 도움받은 쪽도 내 이름으로 남길게.” 상원과 상욱과 준혁의 시선이 동시에 올라오자, 학범은 도망가지 않고 웃었다.'
   },
   {
     id: 'choice-day4-focus-b',
@@ -408,7 +408,7 @@ export const day4Scenes = [
     name: '학범',
     role: '학생회 기록 담당',
     place: '학생회 기록실',
-    text: '학범은 기록집 첫 장에 오늘 만난 장소를 적었다. 방송실은 내일로 미뤄졌고, 체육관과 음악실과 옥상에는 각자의 목소리가 남았다. 방과 후가 이렇게 길게 느껴진 건 처음이었다.',
+    text: '학범은 오늘 만난 장소를 적고 마지막 줄을 비워 두었다. “내일은 방송실까지 갈게. 오늘 못 들은 목소리도 내가 직접 들을 거야.” 방과 후는 아직 끝나지 않은 약속처럼 길었다.',
     directives: [
       { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
       { type: 'SCG', id: 'sangwon', action: 'delete', transition: 'fade-out' },

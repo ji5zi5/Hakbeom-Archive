@@ -46,6 +46,10 @@ function readSource(path) {
   return readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 }
 
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
 const app = readSource('src/App.jsx');
 const indexHtml = readSource('index.html');
 const styles = readSource('src/styles.css');
@@ -1102,14 +1106,15 @@ function displayedStoryTexts() {
   return scenario.flatMap((item) => {
     if (item.kind === 'chapter') return [];
     const texts = [];
-    if (item.text) texts.push({ id: item.id, text: item.text });
+    if (item.text) texts.push({ id: item.id, kind: 'text', text: item.text });
     for (const [index, message] of (item.messages || []).entries()) {
-      if (message.text) texts.push({ id: `${item.id}.messages[${index}]`, text: message.text });
+      if (message.text) texts.push({ id: `${item.id}.messages[${index}]`, kind: 'message', text: message.text });
     }
     for (const [index, variant] of (item.variants || []).entries()) {
       if (variant.text) {
         texts.push({
           id: `${item.id}.variants[${index}]`,
+          kind: 'variant',
           text: variant.text,
           skipDuplicateCheck: Boolean(variant.default) || variant.text === item.text,
           skipTemplateDuplicateCheck: true
@@ -1120,8 +1125,56 @@ function displayedStoryTexts() {
   });
 }
 
+function storyQualityTexts() {
+  const interactionTexts = scenario.flatMap((item) => {
+    if (item.kind === 'chapter') return [];
+    return [
+      ...(item.choices || []).map((text, index) => ({
+        id: `${item.id}.choices[${index}]`,
+        kind: 'choice',
+        text
+      })),
+      ...(item.replies || []).map((text, index) => ({
+        id: `${item.id}.replies[${index}]`,
+        kind: 'reply',
+        text
+      }))
+    ];
+  });
+  const routeLabelTexts = Object.entries(datingSimProfiles).flatMap(([routeId, profile]) => ([
+    { id: `datingSimProfiles.${routeId}.latestMemoryLabel`, kind: 'routeLabel', text: profile.latestMemoryLabel },
+    { id: `datingSimProfiles.${routeId}.sampleLine`, kind: 'routeLabel', text: profile.sampleLine || '' },
+    ...asArray(profile.voiceRules).map((text, index) => ({
+      id: `datingSimProfiles.${routeId}.voiceRules[${index}]`,
+      kind: 'routeLabel',
+      text
+    }))
+  ]));
+  const archiveLabelTexts = [
+    ...asArray(routeConfigData.galleryItems).flatMap((item) => [
+      { id: `galleryItems.${item.id}.title`, kind: 'archiveLabel', text: item.title },
+      { id: `galleryItems.${item.id}.hint`, kind: 'archiveLabel', text: item.hint || '' }
+    ]),
+    ...asArray(routeConfigData.recollectionItems).flatMap((item) => [
+      { id: `recollectionItems.${item.id}.title`, kind: 'archiveLabel', text: item.title },
+      { id: `recollectionItems.${item.id}.hint`, kind: 'archiveLabel', text: item.hint || '' }
+    ])
+  ];
+  return [...displayedStoryTexts(), ...interactionTexts, ...routeLabelTexts, ...archiveLabelTexts]
+    .filter((entry) => typeof entry.text === 'string' && entry.text.trim());
+}
+
 function assertNoDisplayedStoryPattern(pattern, label) {
   const hits = displayedStoryTexts().filter((entry) => pattern.test(entry.text));
+  assert.deepEqual(
+    hits.map((entry) => entry.id),
+    [],
+    `${label}: ${hits.map((entry) => `${entry.id}: ${entry.text}`).join('\n')}`
+  );
+}
+
+function assertNoStoryQualityPattern(pattern, label) {
+  const hits = storyQualityTexts().filter((entry) => pattern.test(entry.text));
   assert.deepEqual(
     hits.map((entry) => entry.id),
     [],
@@ -1186,6 +1239,18 @@ function routeLockOrEndingIdPattern(routeId) {
   );
 }
 
+const storyQualityKinds = new Set(storyQualityTexts().map((entry) => entry.kind));
+for (const expectedStorySurface of ['text', 'choice', 'reply', 'message', 'variant', 'routeLabel', 'archiveLabel']) {
+  assert.ok(
+    storyQualityKinds.has(expectedStorySurface),
+    `Story quality lint should collect ${expectedStorySurface} text, not only dialogue body copy.`
+  );
+}
+assertNoStoryQualityPattern(
+  /그날의 기록|선택의 무게|묘한 긴장감|작은 약속|따뜻한 분위기|범인|추리|없는 호출음|누군가 일부러 동선을 흐린/,
+  'Story quality text should reject mystery/report and generic AI-template phrases across dialogue, choices, replies, phone messages, variants, and labels.'
+);
+
 assert.match(
   readSource('src/data/scenario.js'),
   /export \{ episodeInfo, scenario \} from '\.\/scenario\/index\.js';/,
@@ -1214,9 +1279,24 @@ assert.match(
   'Scenario authoring guide should document longform route locks, placeholder photos, <=3 choices, and generated background provenance.'
 );
 assert.match(
+  readSource('docs/scenario-authoring.md'),
+  /choices\[\][\s\S]*replies\[\][\s\S]*messages\[\]\.text[\s\S]*variants\[\]\.text[\s\S]*scenarioValidator/,
+  'Scenario authoring guide should define story-lint surfaces and keep prose quality checks out of scenarioValidator.'
+);
+assert.match(
+  readSource('docs/scenario-authoring.md'),
+  /17금[\s\S]*직접적인 성행위[\s\S]*폭력, 강제, 명시적 성적 강압/,
+  'Scenario authoring guide should preserve the non-explicit 17금 romance boundary.'
+);
+assert.match(
   readSource('docs/development-guide.md'),
   /post-Batch-1|Batch 1|모듈화|dominant route|대표 루트|save summary|저장 요약/i,
   'Development guide should document the post-Batch-1 modularization checkpoint and dominant-route save summary expectation.'
+);
+assert.match(
+  readSource('docs/development-guide.md'),
+  /voiceRules[\s\S]*choices\[\][\s\S]*replies\[\][\s\S]*messages\[\]\.text[\s\S]*variants\[\]\.text/,
+  'Development guide should route full voice rewrites through datingSimProfiles and expanded story-lint surfaces.'
 );
 
 assert.match(
@@ -1803,7 +1883,7 @@ assert.ok(day1ActionChoice, 'Day 1 should include a free-action hub before the s
 assert.deepEqual(
   day1ActionChoice.choices,
   [
-    '현겸과 현관에서 조금 더 걷는다.',
+    '현겸이 우산 손잡이를 놓지 않는 걸 보고, 현관에 남는다.',
     '도서관에 들러 욱현이 남긴 접힌 노트를 펼친다.',
     '방송실 호출에 답해 재성이 마이크를 끈 이유를 묻는다.'
   ],
@@ -3002,7 +3082,13 @@ for (const target of routeConfigData.affectionTargets) {
   assert.equal(typeof profile.tension, 'string', `${target.id} dating-sim profile should define a romantic tension.`);
   assert.equal(typeof profile.latestMemoryLabel, 'string', `${target.id} dating-sim profile should define a latest-memory label.`);
   assert.ok(Array.isArray(profile.noGo) && profile.noGo.length > 0, `${target.id} dating-sim profile should define no-go voice rules.`);
+  assert.ok(Array.isArray(profile.voiceRules) && profile.voiceRules.length >= 3, `${target.id} should define concrete voice rewrite rules.`);
+  assert.ok(Array.isArray(profile.tensionMarkers) && profile.tensionMarkers.length >= 3, `${target.id} should define concrete tension markers.`);
+  assert.ok(Array.isArray(profile.tabooPhrases) && profile.tabooPhrases.length >= 3, `${target.id} should define taboo phrases for story-lint review.`);
+  assert.equal(typeof profile.sampleLine, 'string', `${target.id} should define a sample voice line.`);
+  assert.ok(profile.sampleLine.length >= 20, `${target.id} sample voice line should be specific enough for writers.`);
 }
+assert.match(datingSimProfiles.yunho.sampleLine, /선배/, 'Yunho voice sample should preserve the 선배 address contract.');
 
 for (const route of routeDateBatch3Routes) {
   const routeId = route.routeId || route.id;
