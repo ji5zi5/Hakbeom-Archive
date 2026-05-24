@@ -1895,10 +1895,18 @@ function resolveStatusDateLog(flags = [], targets = [], profiles = {}) {
 function resolvePlannerEntries(gameState = {}) {
   const choices = Array.isArray(gameState?.choices) ? gameState.choices : [];
   return choices
-    .filter((choice) => typeof choice?.id === 'string' && (choice.id.includes('map-after-school') || choice.id.includes('map-sunset-after')))
-    .slice(-6)
-    .reverse()
     .map((choice) => {
+      const planVisit = choice?.reward?.planVisit;
+      if (planVisit?.kind === 'mapVisit') {
+        return {
+          id: `${choice.id}:${choice.choiceIndex}`,
+          day: `Day ${planVisit.day}`,
+          slot: planVisit.slot === 'first' ? '방과 후' : '해질녘',
+          place: safeText(planVisit.label || choice.text || '장소 미정')
+        };
+      }
+
+      if (typeof choice?.id !== 'string' || (!choice.id.includes('map-after-school') && !choice.id.includes('map-sunset-after'))) return null;
       const dayMatch = choice.id.match(/^day(\d+)-/);
       const slot = choice.id.includes('map-after-school') ? '방과 후' : '해질녘';
       return {
@@ -1907,7 +1915,10 @@ function resolvePlannerEntries(gameState = {}) {
         slot,
         place: safeText(choice.text || '장소 미정')
       };
-    });
+    })
+    .filter(Boolean)
+    .slice(-6)
+    .reverse();
 }
 
 function resolvePlannerSuggestions(gameState = {}, targets = routeConfig.affectionTargets) {

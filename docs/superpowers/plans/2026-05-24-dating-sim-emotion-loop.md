@@ -4,7 +4,7 @@
 
 **Goal:** Add reply-driven date memory and a compact planner modal so Day 1-3 feels more like a real dating sim.
 
-**Architecture:** Extend `mapOpeningFactory` to generate phone replies/rewards and next-day text variants without new persisted state. Add a read-only `PlanModal` in `BAVisualNovel.jsx` that derives schedule entries from existing `gameState.choices` and route interest from existing affection values.
+**Architecture:** Extend `mapOpeningFactory` to generate phone replies/rewards and next-day text variants without new persisted state. Add a read-only `PlanModal` in `BAVisualNovel.jsx` that derives schedule entries from explicit `planVisit` metadata stored in existing `gameState.choices` reward history and route interest from existing affection values.
 
 **Tech Stack:** Vite, React function components/hooks, existing scenario data factory, Node `assert` contract tests, Playwright VN QA script.
 

@@ -12,3 +12,10 @@ export const mapLocations = [
 
 export const mapChoiceLabels = mapLocations.map((location) => location.label);
 export const mapChoiceLocationIds = mapLocations.map((location) => location.id);
+
+
+export const phoneReplyTones = ['direct', 'gentle', 'tease'];
+
+export function buildPhoneReplyFlag(routeId, day, tone) {
+  return `${routeId}_phone_day${day}_${tone}_reply`;
+}

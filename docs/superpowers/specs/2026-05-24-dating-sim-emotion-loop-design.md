@@ -15,7 +15,7 @@ Implement a small, reversible layer on top of the existing Day 1-3 mapChoice sys
 2. **B: Date planner UI**
    - Add a compact `PLAN` button next to SAVE/LOAD/CG/STATUS.
    - The planner modal shows current chapter, recent map visits parsed from existing choice history, and a lightweight route-interest suggestion list.
-   - It is read-only and uses existing `gameState`; no save schema migration.
+   - It is read-only and uses existing `gameState`; map rewards may carry `planVisit` metadata inside existing choice history, but no top-level save schema migration is required.
 
 ## Boundaries
 - No new dependencies.

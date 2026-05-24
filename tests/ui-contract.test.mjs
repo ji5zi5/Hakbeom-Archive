@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { datingSimProfiles, routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
-import { mapChoiceLabels, mapChoiceLocationIds, mapLocations } from '../src/data/scenario/mapChoiceConfig.js';
+import { buildPhoneReplyFlag, mapChoiceLabels, mapChoiceLocationIds, mapLocations, phoneReplyTones } from '../src/data/scenario/mapChoiceConfig.js';
 import {
   ROUTE_DEPTH_BATCH_ID,
   routeDepthRoutes,
@@ -938,8 +938,8 @@ assert.match(
 );
 assert.match(
   component,
-  /function resolvePlannerEntries\([\s\S]*?gameState[\s\S]*?choices[\s\S]*?map-after-school[\s\S]*?map-sunset-after/,
-  'Planner entries should derive recent date places from existing map choice history.'
+  /function resolvePlannerEntries\([\s\S]*?gameState[\s\S]*?choices[\s\S]*?planVisit[\s\S]*?mapVisit/,
+  'Planner entries should prefer explicit map-visit metadata from existing choice history.'
 );
 assert.match(
   component,
@@ -1165,6 +1165,17 @@ assert.deepEqual(
   mapChoiceLocationIds,
   canonicalMapLocations.map((location) => location.id),
   'mapChoice location ids should stay ordered and unique.'
+);
+assert.deepEqual(phoneReplyTones, ['direct', 'gentle', 'tease'], 'Phone reply tones should be centralized and ordered for memory variants.');
+assert.equal(
+  buildPhoneReplyFlag('yunho', 2, 'gentle'),
+  'yunho_phone_day2_gentle_reply',
+  'Phone reply memory flags should be built through one canonical helper.'
+);
+assert.match(
+  readSource('src/data/scenario/mapOpeningFactory.js'),
+  /buildPhoneReplyFlag/,
+  'Map opening factory should use the canonical phone reply flag helper instead of hand-written string protocols.'
 );
 assert.equal(new Set(mapChoiceLocationIds).size, 9, 'mapChoice location ids should be unique.');
 const configuredAffectionTargets = new Set(routeConfigData.affectionTargets.map((target) => target.id));
@@ -2509,6 +2520,9 @@ for (const day of [1, 2, 3]) {
     assert.ok(!flags.some((flag) => String(flag).startsWith('route_lock_')), `Day ${day} map rewards should not write route locks.`);
     assert.ok(!flags.some((flag) => routeSeedFlagSet.has(flag)), `Day ${day} map rewards should not write configured routeSeedFlags.`);
     assert.ok(!flags.some((flag) => legacyRouteAliasPattern.test(String(flag))), `Day ${day} map rewards should not write legacy *_route aliases.`);
+    assert.equal(reward.planVisit?.kind, 'mapVisit', `Day ${day} map rewards should expose explicit planner metadata.`);
+    assert.equal(reward.planVisit?.day, day, `Day ${day} map reward planner metadata should include the day.`);
+    assert.ok(mapChoiceLocationIds.includes(reward.planVisit?.locationId), `Day ${day} map reward planner metadata should include a canonical location id.`);
   }
 }
 for (const [locationIndex, location] of mapLocations.entries()) {
@@ -2551,11 +2565,13 @@ for (const day of [1, 2, 3]) {
 for (const day of [2, 3]) {
   for (const location of mapLocations) {
     const firstScene = scenario.find((item) => item.id === `day${day}-first-${location.id}`);
-    const previousFlag = `${location.routeId}_phone_day${day - 1}_direct_reply`;
-    assert.ok(
-      (firstScene?.variants || []).some((variant) => (variant.requiredFlags || variant.flags || []).includes(previousFlag) && /어젯밤|답장/.test(variant.text || '')),
-      `${firstScene?.id || `day${day}-first-${location.id}`} should remember previous-day direct phone replies.`
-    );
+    for (const tone of phoneReplyTones) {
+      const previousFlag = buildPhoneReplyFlag(location.routeId, day - 1, tone);
+      assert.ok(
+        (firstScene?.variants || []).some((variant) => (variant.requiredFlags || variant.flags || []).includes(previousFlag) && /어젯밤|답장/.test(variant.text || '')),
+        `${firstScene?.id || `day${day}-first-${location.id}`} should remember previous-day ${tone} phone replies.`
+      );
+    }
   }
 }
 for (const [locationIndex, location] of mapLocations.entries()) {

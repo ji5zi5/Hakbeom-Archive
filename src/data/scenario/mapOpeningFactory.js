@@ -1,4 +1,4 @@
-import { mapChoiceLabels, mapLocations } from './mapChoiceConfig.js';
+import { buildPhoneReplyFlag, mapChoiceLabels, mapLocations, phoneReplyTones } from './mapChoiceConfig.js';
 
 const routeNames = {
   hyeongyeom: '현겸',
@@ -112,7 +112,14 @@ const firstVisitLines = {
 function mapReward(day, location, slot) {
   return {
     affection: { [location.routeId]: slot === 'first' ? 4 : 3 },
-    flags: [`day${day}_map_${slot}_${location.id}`]
+    flags: [`day${day}_map_${slot}_${location.id}`],
+    planVisit: {
+      kind: 'mapVisit',
+      day,
+      slot,
+      locationId: location.id,
+      label: location.label
+    }
   };
 }
 
@@ -131,12 +138,11 @@ function nightReplies(second) {
 }
 
 function nightReplyRewards(day, second) {
-  const routeId = second.routeId;
-  return [
-    { affection: { [routeId]: 3 }, flags: [`${routeId}_phone_day${day}_direct_reply`] },
-    { affection: { [routeId]: 2 }, flags: [`${routeId}_phone_day${day}_gentle_reply`] },
-    { affection: { [routeId]: 1 }, flags: [`${routeId}_phone_day${day}_tease_reply`] }
-  ];
+  const affectionByTone = { direct: 3, gentle: 2, tease: 1 };
+  return phoneReplyTones.map((tone) => ({
+    affection: { [second.routeId]: affectionByTone[tone] || 1 },
+    flags: [buildPhoneReplyFlag(second.routeId, day, tone)]
+  }));
 }
 
 function firstSceneMemoryVariants({ day, location, copy }) {
@@ -144,20 +150,15 @@ function firstSceneMemoryVariants({ day, location, copy }) {
   const previousDay = day - 1;
   const routeName = routeNames[location.routeId];
   const subject = subjectName(routeName);
-  return [
-    {
-      requiredFlags: [`${location.routeId}_phone_day${previousDay}_direct_reply`],
-      text: `${dayFlavor[day].first} ${copy.lead} 어젯밤 답장을 기억한 듯 ${subject} 학범을 보자마자 숨을 삼켰다. “그 말, 오늘 얼굴 보고 들으니까 더 위험한데.” ${copy.action}`
-    },
-    {
-      requiredFlags: [`${location.routeId}_phone_day${previousDay}_gentle_reply`],
-      text: `${dayFlavor[day].first} ${copy.lead} 어젯밤 답장처럼 서두르지 않으려는 듯 ${subject} 빈자리를 조용히 가리켰다. “천천히 얘기하자던 거, 나 아직 안 잊었어.” ${copy.action}`
-    },
-    {
-      requiredFlags: [`${location.routeId}_phone_day${previousDay}_tease_reply`],
-      text: `${dayFlavor[day].first} ${copy.lead} 어젯밤 장난스러운 답장을 떠올린 듯 ${subject} 눈을 피하면서도 웃음을 숨기지 못했다. “반칙이라고 해 놓고 또 온 건 너야.” ${copy.action}`
-    }
-  ];
+  const variantTextByTone = {
+    direct: `${dayFlavor[day].first} ${copy.lead} 어젯밤 답장을 기억한 듯 ${subject} 학범을 보자마자 숨을 삼켰다. “그 말, 오늘 얼굴 보고 들으니까 더 위험한데.” ${copy.action}`,
+    gentle: `${dayFlavor[day].first} ${copy.lead} 어젯밤 답장처럼 서두르지 않으려는 듯 ${subject} 빈자리를 조용히 가리켰다. “천천히 얘기하자던 거, 나 아직 안 잊었어.” ${copy.action}`,
+    tease: `${dayFlavor[day].first} ${copy.lead} 어젯밤 장난스러운 답장을 떠올린 듯 ${subject} 눈을 피하면서도 웃음을 숨기지 못했다. “반칙이라고 해 놓고 또 온 건 너야.” ${copy.action}`
+  };
+  return phoneReplyTones.map((tone) => ({
+    requiredFlags: [buildPhoneReplyFlag(location.routeId, previousDay, tone)],
+    text: variantTextByTone[tone]
+  }));
 }
 
 function firstScene({ day, chapter, location }) {
