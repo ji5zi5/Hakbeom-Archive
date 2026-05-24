@@ -201,7 +201,56 @@ export const day4Scenes = [
     chapter: 'day-4',
     name: '학범',
     role: '학생회 기록 담당',
-    text: '학범은 빈칸 옆에 장소 이름을 적다가 펜을 멈췄다. “말투까지 남기고 싶어. 누가 어떤 얼굴로 나를 기다렸는지, 그건 내가 직접 봤으니까.”'
+    text: '학범은 빈칸 옆에 장소 이름을 적다가 펜을 멈췄다. “말투까지 남기고 싶어. 누가 어떤 얼굴로 나를 기다렸는지, 그건 내가 직접 봤으니까.”',
+    nextId: 'choice-day4-core-focus'
+  },
+  {
+    id: 'choice-day4-core-focus',
+    type: 'choice',
+    choices: [
+      '현겸의 우산 손잡이를 다시 잡는다.',
+      '욱현의 책갈피 여백에 답을 남긴다.',
+      '재성의 꺼 둔 마이크 앞에 선다.'
+    ],
+    rewards: [
+      { affection: { hyeongyeom: 20 }, flags: ['hyeongyeom_route_seed', 'hyeongyeom_date_day4_umbrella_handle'] },
+      { affection: { ukhyun: 20 }, flags: ['ukhyun_route_seed', 'ukhyun_date_day4_library_margin'] },
+      { affection: { jaeseong: 20 }, flags: ['jaeseong_route_seed', 'jaeseong_date_day4_muted_mic'] }
+    ],
+    next: ['day4-hyeongyeom-focus', 'day4-ukhyun-focus', 'day4-jaeseong-focus']
+  },
+  {
+    id: 'day4-hyeongyeom-focus',
+    type: 'dialogue',
+    mood: 'confession',
+    chapter: 'day-4',
+    name: '현겸',
+    role: '동급생',
+    place: '중정 입구',
+    text: '“네가 먼저 잡으면, 나도 더는 우연이라고 안 할게. 손 놓고 싶으면 지금 말해. 아니면 나, 오늘 네 쪽으로 더 기울 거야.”',
+    nextId: 'day4-moe-jaeseong-mic-check'
+  },
+  {
+    id: 'day4-ukhyun-focus',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-4',
+    name: '욱현',
+    role: '도서관 전시 담당',
+    place: '도서관 창가',
+    text: '욱현은 책갈피 여백을 학범 쪽으로 밀었다. “답을 크게 쓰지 않아도 돼. 네 글씨라는 걸 알아볼 만큼만 남겨.” 학범이 한 줄을 적자, 그는 페이지를 접지 않고 오래 바라봤다.',
+    nextId: 'day4-moe-jaeseong-mic-check'
+  },
+  {
+    id: 'day4-jaeseong-focus',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-4',
+    name: '재성',
+    role: '방송부',
+    place: '방송실',
+    text: '재성은 마이크 전원을 끄고서야 웃었다. “켜져 있으면 네 목소리를 다 같이 듣잖아. 오늘 건 나만 들을래.” 작게 낮춘 목소리가 학범의 이름을 한 번 더 불렀다.',
+    nextId: 'day4-moe-jaeseong-mic-check'
   },
   {
     id: 'day4-moe-jaeseong-mic-check',
@@ -258,9 +307,9 @@ export const day4Scenes = [
       '준혁과 문화제 동선을 다시 그린다.'
     ],
     rewards: [
-      { affection: { sangwon: 20 }, flags: ['sangwon_route_seed', 'archive_record_checked'] },
-      { affection: { sanguk: 20 }, flags: ['sanguk_route_seed', 'gym_corridor_checked'] },
-      { affection: { junhyeok: 20 }, flags: ['junhyeok_route_seed', 'route_map_drawn'] }
+      { affection: { sangwon: 20 }, flags: ['sangwon_route_seed', 'archive_record_checked', 'sangwon_date_day4_record_margin'] },
+      { affection: { sanguk: 20 }, flags: ['sanguk_route_seed', 'gym_corridor_checked', 'sanguk_date_day4_finish_line'] },
+      { affection: { junhyeok: 20 }, flags: ['junhyeok_route_seed', 'route_map_drawn', 'junhyeok_date_day4_route_map'] }
     ],
     next: ['day4-sangwon-focus', 'day4-sanguk-focus', 'day4-junhyeok-focus']
   },
@@ -331,9 +380,9 @@ export const day4Scenes = [
       '윤호와 옥상 휴게 공간을 확인한다.'
     ],
     rewards: [
-      { affection: { dohun: 20 }, flags: ['dohun_route_seed', 'cctv_favor'] },
-      { affection: { haeum: 20 }, flags: ['haeum_route_seed', 'door_sound_memory'] },
-      { affection: { yunho: 20 }, flags: ['yunho_route_seed', 'wet_paper_kept'] }
+      { affection: { dohun: 20 }, flags: ['dohun_route_seed', 'cctv_favor', 'dohun_date_day4_counter_joke'] },
+      { affection: { haeum: 20 }, flags: ['haeum_route_seed', 'door_sound_memory', 'haeum_date_day4_slow_tempo'] },
+      { affection: { yunho: 20 }, flags: ['yunho_route_seed', 'wet_paper_kept', 'yunho_date_day4_rooftop_wind'] }
     ],
     next: ['day4-dohun-focus', 'day4-haeum-focus', 'day4-yunho-focus']
   },
@@ -351,7 +400,17 @@ export const day4Scenes = [
       { from: 'hakbeom', text: '내가 좋아하는 거 기억했어?' },
       { from: 'dohun', text: '기억력 좋으면 죄냐. 빨리 와, 녹는다.' }
     ],
-    nextId: 'day4-focus-b-merge'
+    replies: [
+      '그럼 네가 직접 건네줘.',
+      '기억해 준 건 고맙다고 할게.',
+      '착각 안 할 테니까 먼저 기다려.'
+    ],
+    rewards: [
+      { affection: { dohun: 6 }, flags: ['dohun_phone_day4_direct_reply'] },
+      { affection: { dohun: 6 }, flags: ['dohun_phone_day4_gentle_reply'] },
+      { affection: { dohun: 6 }, flags: ['dohun_phone_day4_tease_reply'] }
+    ],
+    next: ['day4-focus-b-merge', 'day4-focus-b-merge', 'day4-focus-b-merge']
   },
   {
     id: 'day4-haeum-focus',

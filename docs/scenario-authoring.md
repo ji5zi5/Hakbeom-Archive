@@ -224,6 +224,23 @@ STATUS의 date log는 저장 구조를 늘리지 않는 passive UI다. `gameStat
 }
 ```
 
+## Day4-14 미연시 루프 규칙
+
+Day4-14는 보고서형 요약이 아니라 “초대 → 학범의 말투/거리 선택 → 상대 반응 → 후반 기억”으로 이어지는 미연시 루프를 따른다. 새로 추가하거나 수정하는 Day4-14 라인과 payoff/ending variant만 story-lint 대상이다. 기존 전체 문장을 무작정 다시 쓰는 범위가 아니다.
+
+- Day4-5는 route별 선택 또는 답장형 `phone`으로 플레이어 agency를 만든다.
+- 답장형 `phone`은 `replies`/`rewards`/`next` 길이를 맞추고 `nextId`와 섞지 않는다.
+- Day4-9 보상은 `route_lock_<id>`를 쓰지 않는다. 명시적 route lock은 Day10 선택만 소유한다.
+- visible date memory는 `<routeId>_date_day<day>_<motif>`를 쓴다.
+- phone reply memory는 `buildPhoneReplyFlag(routeId, day, tone)` 형식인 `<routeId>_phone_day<day>_<direct|gentle|tease>_reply`를 쓴다.
+- 표시/분기 전용 payoff flag는 `memory_payoff_<routeId>_day<day>_<motif>`를 쓴다. route prefix로 시작하면 route tie-break에 들어가므로 금지한다.
+- 모든 tracked memory flag는 Day10-14 또는 terminal 장면의 `variants.requiredFlags`에서 다시 소비되어야 한다.
+- Day4-5 tracked memory는 Day10 lock reflection에서 1차 회수하고, route가 확정된 뒤 Day11-14 또는 terminal/ending payoff에서 `route_lock_<id>`와 함께 한 번 더 회수한다. Day4와 Day5를 모두 가진 플레이어에게는 두 기억을 묶은 짧은 변주를 우선 배치한다.
+- tracked flag matrix는 `docs/day4-14-flag-consumption-matrix.md`와 `tests/fixtures/day4-14-memory-flags.json`이 원본이다. `.omx/` 계획 파일은 CI 테스트 원본으로 쓰지 않는다.
+- Day10은 누적된 기억을 명시적 선택으로 확정하는 날이다. Day11-14 routeGate와 route별 terminal rule은 Day10의 `route_lock_<id>`를 요구해야 한다. 이 bounded 범위는 새로 추가/수정하는 Day4-14 장면과 touched payoff/ending variant에 한정한다.
+- route-date/payoff/ending을 확장할 때는 학범 독백으로 요약하지 말고 상대 캐릭터가 직접 말하는 대화 비중을 유지한다. 최종 검수는 `ROUTE_QUALITY_ENFORCE=1 npm run test:route-quality`로 전체 9루트 complete를 확인한다.
+- tone check는 `datingSimProfiles`의 `voiceRules`, `tensionMarkers`, `tabooPhrases`를 따른다. “조사/단서/수색” 같은 추리물 행동 동사는 선택지/답장에 쓰지 않는다.
+
 ## 엔딩 규칙
 
 `episodeInfo.endingRules`는 위에서부터 검사된다.

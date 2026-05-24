@@ -9,6 +9,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "node tests/ui-contract.test.mjs",
     "capture:vn": "node scripts/capture-vn-regression.mjs",
+    "test:build-size": "node scripts/check-build-size.mjs",
+    "test:route-quality": "node scripts/report-route-quality.mjs",
     "test:story-lines": "node scripts/check-scenario-line-count.mjs",
     "qa:vn": "node scripts/qa-vn-flow.mjs"
   },

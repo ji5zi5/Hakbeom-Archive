@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "scope": "Day4-14 dating-sim loop; new or modified Day4-9 date/phone/memory_payoff flags must be produced before Day10 and consumed in Day10-14 or terminal variants.",
+  "flags": [
+    {
+      "routeId": "hyeongyeom",
+      "day": 4,
+      "category": "date",
+      "flag": "hyeongyeom_date_day4_umbrella_handle",
+      "producerScene": "choice-day4-core-focus",
+      "lateConsumerScene": "day10-lock-hyeongyeom; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "ukhyun",
+      "day": 4,
+      "category": "date",
+      "flag": "ukhyun_date_day4_library_margin",
+      "producerScene": "choice-day4-core-focus",
+      "lateConsumerScene": "day10-lock-ukhyun; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "jaeseong",
+      "day": 4,
+      "category": "date",
+      "flag": "jaeseong_date_day4_muted_mic",
+      "producerScene": "choice-day4-core-focus",
+      "lateConsumerScene": "day10-lock-jaeseong; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "sangwon",
+      "day": 4,
+      "category": "date",
+      "flag": "sangwon_date_day4_record_margin",
+      "producerScene": "choice-day4-focus-a",
+      "lateConsumerScene": "day10-lock-sangwon; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "sanguk",
+      "day": 4,
+      "category": "date",
+      "flag": "sanguk_date_day4_finish_line",
+      "producerScene": "choice-day4-focus-a",
+      "lateConsumerScene": "day10-lock-sanguk; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "junhyeok",
+      "day": 4,
+      "category": "date",
+      "flag": "junhyeok_date_day4_route_map",
+      "producerScene": "choice-day4-focus-a",
+      "lateConsumerScene": "day10-lock-junhyeok; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "dohun",
+      "day": 4,
+      "category": "date",
+      "flag": "dohun_date_day4_counter_joke",
+      "producerScene": "choice-day4-focus-b",
+      "lateConsumerScene": "day10-lock-dohun; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "haeum",
+      "day": 4,
+      "category": "date",
+      "flag": "haeum_date_day4_slow_tempo",
+      "producerScene": "choice-day4-focus-b",
+      "lateConsumerScene": "day10-lock-haeum; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "yunho",
+      "day": 4,
+      "category": "date",
+      "flag": "yunho_date_day4_rooftop_wind",
+      "producerScene": "choice-day4-focus-b",
+      "lateConsumerScene": "day10-lock-yunho; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "hyeongyeom",
+      "day": 5,
+      "category": "date",
+      "flag": "hyeongyeom_date_day5_umbrella_distance",
+      "producerScene": "choice-day5-core-shift",
+      "lateConsumerScene": "day10-lock-hyeongyeom; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "ukhyun",
+      "day": 5,
+      "category": "date",
+      "flag": "ukhyun_date_day5_folded_note",
+      "producerScene": "choice-day5-core-shift",
+      "lateConsumerScene": "day10-lock-ukhyun; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "jaeseong",
+      "day": 5,
+      "category": "date",
+      "flag": "jaeseong_date_day5_broadcast_pause",
+      "producerScene": "choice-day5-core-shift",
+      "lateConsumerScene": "day10-lock-jaeseong; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "sangwon",
+      "day": 5,
+      "category": "date",
+      "flag": "sangwon_date_day5_rewritten_line",
+      "producerScene": "choice-day5-school-shift",
+      "lateConsumerScene": "day10-lock-sangwon; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "sanguk",
+      "day": 5,
+      "category": "date",
+      "flag": "sanguk_date_day5_stopped_finish",
+      "producerScene": "choice-day5-school-shift",
+      "lateConsumerScene": "day10-lock-sanguk; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "junhyeok",
+      "day": 5,
+      "category": "date",
+      "flag": "junhyeok_date_day5_drawn_route",
+      "producerScene": "choice-day5-school-shift",
+      "lateConsumerScene": "day10-lock-junhyeok; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "dohun",
+      "day": 5,
+      "category": "date",
+      "flag": "dohun_date_day5_hidden_sincerity",
+      "producerScene": "choice-day5-after-school-shift",
+      "lateConsumerScene": "day10-lock-dohun; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "haeum",
+      "day": 5,
+      "category": "date",
+      "flag": "haeum_date_day5_waited_beat",
+      "producerScene": "choice-day5-after-school-shift",
+      "lateConsumerScene": "day10-lock-haeum; day11-opening; ending-promise"
+    },
+    {
+      "routeId": "yunho",
+      "day": 5,
+      "category": "date",
+      "flag": "yunho_date_day5_after_rain_rooftop",
+      "producerScene": "choice-day5-after-school-shift",
+      "lateConsumerScene": "day10-lock-yunho; day11-opening; ending-promise"
+    }
+  ]
+}

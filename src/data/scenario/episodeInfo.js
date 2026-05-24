@@ -59,18 +59,6 @@ export const episodeInfo = {
       affection: { yunho: 85 }
     },
     {
-      id: 'ukhyun',
-      title: '욱현 엔딩: 접힌 노트의 답장',
-      affection: { ukhyun: 85 },
-      flags: ['ukhyun_route']
-    },
-    {
-      id: 'jaeseong',
-      title: '재성 엔딩: 방송실 너머의 목소리',
-      affection: { jaeseong: 85 },
-      flags: ['jaeseong_route']
-    },
-    {
       id: 'good',
       title: '굿 엔딩: 같은 우산의 약속',
       affection: { hyeongyeom: 85 },

@@ -19,15 +19,23 @@ npm run build
 npm audit --audit-level=moderate
 ```
 
+전 루트 미연시 확장 작업에서는 route scorecard도 함께 확인한다.
+
+```bash
+npm run test:route-quality
+ROUTE_QUALITY_ENFORCE=1 npm run test:route-quality  # final all-route gate
+```
+
 시각 레이아웃을 건드렸다면 dev server를 켠 뒤 `scripts/capture-*.mjs` 계열 스크립트로 스크린샷을 확인한다. Playwright는 devDependency로 설치되어 있으므로, 새 환경에서는 `npm install` 후 필요하면 `npx playwright install chromium`으로 브라우저 바이너리를 준비한다. Linux에서 브라우저 런타임 라이브러리가 없으면 `npx playwright install-deps chromium`을 실행해야 하며, 이 명령은 시스템 패키지 설치 권한이 필요할 수 있다.
 
 ## 프로젝트 구조
 
 ```txt
 src/main.jsx                     React entry
-src/App.jsx                      episodeInfo/scenario를 BAVisualNovel에 연결
+src/App.jsx                      lazy-loaded episodeInfo/scenario를 BAVisualNovel에 연결
 src/components/BAVisualNovel.jsx React UI, SVG scene, modal/controller glue
 src/data/scenario.js             실제 시나리오와 episodeInfo
+src/data/loadScenarioBundle.js   런타임용 시나리오 code-splitting loader
 src/data/scenario/mapChoiceConfig.js Day 1-3 9장소 지도 선택의 canonical mapLocations
 src/data/routeConfig.js          단일/다중 히로인 호감도, 챕터, 갤러리, 회상 설정
 src/data/characterProfiles.js    캐릭터별 expression asset fallback
@@ -54,6 +62,7 @@ public/assets/                   런타임 asset
 | --- | --- | --- |
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
 | Day 1-3 지도 선택/mapChoice 수정 | `src/data/scenario/mapChoiceConfig.js`, `src/data/scenario/day1.js`, `src/data/scenario/day2.js`, `src/data/scenario/day3.js`, `src/components/BAVisualNovel.jsx`, `src/engine/vnEngine.js`, `src/engine/scenarioValidator.js` | `MapChoiceScene`, replay, save/log summary, accessibility, visual capture |
+| Day 4-14 미연시 루프 강화 | `src/data/scenario/day4.js`–`day14.js`, `src/data/scenario/episodeInfo.js`, 필요 시 `src/utils/routeResolution.js`, `src/engine/vnEngine.js` | tracked flag matrix, routeGate/episodeInfo explicit lock, SAVE_VERSION/no save schema change, `tests/ui-contract.test.mjs` |
 | route date loop / phone follow-up 추가 | `src/data/scenario/batch3RouteDates/`, `src/data/scenario/routeDepthExpansionRegistry.js` | route-date ownership audit, memory consumer audit, deterministic replay tests |
 | route별 말투/미연시 기억 라벨 변경 | `src/data/routeConfig.js`의 `datingSimProfiles`, `src/data/scenario/batch3RouteDates/` | save summary latest memory tests, route-date dialogue ratio tests |
 | 보이스 리라이트/story-lint 변경 | `src/data/routeConfig.js`, `src/data/characterProfiles.js`, `tests/ui-contract.test.mjs` | `docs/scenario-authoring.md`의 story-lint surface, baseline/pilot report |
@@ -111,13 +120,25 @@ public/assets/                   런타임 asset
 갤러리/회상 ID를 scenario reward에 직접 새로 쓰기 전에 `routeConfig.js`에 먼저 등록한다. validator가 없는 ID를 에러로 잡아야 정상이다.
 호감도는 100점 만점이 기본 계약이다. `routeLockThreshold`는 의미 있는 루트 투자선(현재 70), 엔딩 조건은 normal 60+, good/캐릭터 85+를 기준으로 맞춘다. 플레이 중 보상 토스트를 띄우기보다 `variants`와 STATUS 모달/save summary가 관계 변화를 보여줘야 한다. 0~10 스케일을 쓰던 저장 데이터는 `SAVE_VERSION = 2`에서 100점 스케일로 마이그레이션한다.
 
+### Day4-14 미연시 루프 변경 경계
+
+Day4-14를 수정할 때는 먼저 tracked memory flag matrix를 갱신한다. CI에서 `.omx/` 파일을 직접 읽지 않도록 `docs/day4-14-flag-consumption-matrix.md`, `tests/fixtures/day4-14-memory-flags.json`, 또는 `tests/ui-contract.test.mjs`의 명시적 allowlist를 원본으로 둔다.
+
+- Day4-5는 route 선택/답장 agency와 `<routeId>_date_day<day>_<motif>` memory를 만든다.
+- 답장형 phone은 `buildPhoneReplyFlag(routeId, day, tone)` 형식의 `<routeId>_phone_day<day>_<direct|gentle|tease>_reply`를 쓴다.
+- display/payoff 전용 flag는 `memory_payoff_<routeId>_...`로 두고 route prefix tie-break에 섞지 않는다.
+- Day4-9는 `route_lock_<id>`를 쓰지 않는다. Day10 선택만 명시적 route lock을 쓴다.
+- Day11-14 `routeGate`와 `episodeInfo.endingRules`의 route별 terminal rule은 명시적 `route_lock_<id>`를 요구해야 한다.
+- 새 persisted calendar/date-log/reward-toast field를 만들지 않는다. `SAVE_VERSION` 변경이 필요해 보이면 구현을 멈추고 별도 migration PRD/test-spec을 만든다.
+- story-lint 범위는 새로 추가/수정한 Day4-14 line과 touched payoff/ending variants로 한정한다.
+
 ### 저장 데이터는 신뢰하지 않는다
 
 localStorage에서 온 save/settings는 항상 깨질 수 있다. 저장 구조를 바꾸면 `saveCodec.js`에서 정규화/마이그레이션을 먼저 추가하고, corrupt payload 테스트를 추가한다.
 
 ## 런타임 흐름 요약
 
-1. `App.jsx`가 `episodeInfo`와 `scenario`를 `BAVisualNovel`에 넘긴다.
+1. `App.jsx`가 `loadScenarioBundle()`로 day/ending 시나리오 chunk를 lazy load하고, `BAVisualNovel`도 별도 chunk로 불러온 뒤 `episodeInfo`와 `scenario`를 넘긴다. 테스트/검증용 동기 bundle은 `src/data/scenario.js`가 계속 원본이다.
 2. `BAVisualNovel`이 현재 index, gameState, directorState, settings, save slots를 가진다.
 3. 다음 진행은 `resolveNextIndex()` 또는 choice/phone 선택 처리로 이동한다.
 4. 장면 진입 시 `applyDirectorItem()`이 배경/캐릭터/효과음/오버레이 상태를 만든다.
@@ -203,12 +224,15 @@ Route date loop를 추가/수정할 때는 추가로 확인한다.
 3. 각 route가 route-prefixed `${routeId}_date_*`와 `${routeId}_phone_*` flag를 보상으로 남긴다.
 4. `profileId`, `dateMotif`, `memoryLabel`, `payoffConsumerSceneIds`가 모두 있고, date/phone flag가 뒤쪽 `variants.requiredFlags`나 route payoff에서 소비된다.
 5. Batch3.5 활성 route는 cohort 소유권을 명시한다. `coreRoutes.js`는 `hyeongyeom/ukhyun/jaeseong`, `clubRoutes.js`는 `sangwon/sanguk/junhyeok`, `afterSchoolRoutes.js`는 `dohun/haeum/yunho`만 담당한다. `index.js`에서 active route를 fallback factory로 만들지 않는다.
-6. 모든 route-date `memoryFlags`/`phoneFlags`는 Day 10–14 또는 terminal 장면의 `variants.requiredFlags`에서 다시 소비하고, route matrix의 `payoffConsumerSceneIds`에도 그 후반 scene id를 넣는다.
-7. phone reply scene은 `replies`/`rewards`/`next` 길이가 같고 reply branching과 `nextId`를 섞지 않는다.
-8. `PHONE_CONTACT_NAMES` 또는 message-level `name`이 `routeConfig.affectionTargets.name`과 맞아 sender fallback이 틀어지지 않는다.
-9. route-date branch는 상대 캐릭터의 직접 대사가 최소 2개 이상이고, 학범 독백/무명 서술이 그보다 많지 않다.
-10. deterministic committed replay가 route lock 70+, terminal eligibility 85+, affection cap 100을 증명한다.
-11. “조사/단서/수색” 같은 장르 이탈, 조사체 문장, 조사 오류 같은 주관적 prose 품질은 `scenarioValidator`에 넣지 말고 `tests/ui-contract.test.mjs`나 별도 story lint에서 계약으로 잡는다.
+6. 모든 active route-date scene은 integrated scenario에서 cohort 추적이 가능하도록 `batchModule: 'batch3RouteDates'`를 선언한다.
+7. 모든 route-date `memoryFlags`/`phoneFlags`는 Day 10–14 또는 terminal 장면의 `variants.requiredFlags`에서 다시 소비하고, route matrix의 `payoffConsumerSceneIds`에도 그 후반 scene id를 넣는다.
+8. phone reply scene은 `replies`/`rewards`/`next` 길이가 같고 reply branching과 `nextId`를 섞지 않는다.
+9. `PHONE_CONTACT_NAMES` 또는 message-level `name`이 `routeConfig.affectionTargets.name`과 맞아 sender fallback이 틀어지지 않는다.
+10. route-date branch는 상대 캐릭터의 직접 대사가 최소 2개 이상이고, 학범 독백/무명 서술이 그보다 많지 않다.
+11. deterministic committed replay가 route lock 70+, terminal eligibility 85+, affection cap 100을 증명한다.
+12. Day4-5 tracked memory는 Day10 reflection과 Day11-14/terminal payoff 양쪽에서 `route_lock_<id>`와 함께 소비한다.
+13. all-route expansion final gate는 `ROUTE_QUALITY_ENFORCE=1 npm run test:route-quality`, `npm test`, `npm run build`, `npm run test:build-size`, `npm run test:story-lines`, `npm audit --audit-level=moderate`, 그리고 대표 route browser capture를 통과해야 한다.
+14. “조사/단서/수색” 같은 장르 이탈, 조사체 문장, 조사 오류 같은 주관적 prose 품질은 `scenarioValidator`에 넣지 말고 `tests/ui-contract.test.mjs`나 별도 story lint에서 계약으로 잡는다.
 
 ## Git/커밋 규칙
 

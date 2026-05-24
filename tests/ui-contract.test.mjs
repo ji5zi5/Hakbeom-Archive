@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { datingSimProfiles, routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
+import { loadScenarioBundle } from '../src/data/loadScenarioBundle.js';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
 import { buildPhoneReplyFlag, mapChoiceLabels, mapChoiceLocationIds, mapLocations, phoneReplyTones } from '../src/data/scenario/mapChoiceConfig.js';
 import {
@@ -52,6 +53,7 @@ function asArray(value) {
 }
 
 const app = readSource('src/App.jsx');
+const scenarioLoader = readSource('src/data/loadScenarioBundle.js');
 const indexHtml = readSource('index.html');
 const styles = readSource('src/styles.css');
 const routeConfig = readSource('src/data/routeConfig.js');
@@ -99,6 +101,16 @@ assert.match(
   'Longform expansion should expose a scenario line-count contract script.'
 );
 assert.match(
+  packageJson,
+  /"test:build-size":\s*"node scripts\/check-build-size\.mjs"/,
+  'Build-size verification should expose a raw Vite chunk-size contract script.'
+);
+assert.match(
+  packageJson,
+  /"test:route-quality":\s*"node scripts\/report-route-quality\.mjs"/,
+  'All-route expansion should expose a route-quality scorecard script.'
+);
+assert.match(
   regressionCapture,
   /LOCAL_PLAYWRIGHT_LIB_DIR[\s\S]*LD_LIBRARY_PATH/,
   'VN capture should load repo-local Playwright browser libraries when system packages are unavailable.'
@@ -107,6 +119,16 @@ assert.match(
   readSource('scripts/check-scenario-line-count.mjs'),
   /MIN_SCENARIO_SOURCE_LINES \|\| 10_000[\s\S]*Scenario source line count/,
   'Scenario line-count script should enforce the 10,000-line longform target.'
+);
+assert.match(
+  readSource('scripts/check-build-size.mjs'),
+  /INITIAL_JS_LIMIT_BYTES = 180_000[\s\S]*ASYNC_ROUTE_SCENARIO_LIMIT_BYTES = 140_000[\s\S]*raw-uncompressed-kB[\s\S]*gzipPassMetric:\s*false/,
+  'Build-size script should enforce raw uncompressed initial and async route/scenario chunk ceilings without using gzip as the pass metric.'
+);
+assert.match(
+  readSource('scripts/report-route-quality.mjs'),
+  /ROUTE_QUALITY_ENFORCE[\s\S]*affectionTargets\.map\(\(target\) => target\.id\)[\s\S]*hyeongyeomBaselineDialogueRatio[\s\S]*incompleteRoutes/,
+  'Route-quality scorecard should derive route IDs from routeConfig targets, preserve a Hyeongyeom baseline gate, and support explicit final enforcement.'
 );
 
 function readPngSize(path) {
@@ -193,6 +215,34 @@ const directorMoodSource = topLevelFunctionSource(directorEngine, 'getMoodOverla
 const vnEngineGetItemChoicesSource = topLevelFunctionSource(vnEngine, 'getItemChoices');
 const replayCandidateSource = topLevelFunctionSource(vnEngine, 'getReplayCandidateSteps');
 const replayDirectorSource = topLevelFunctionSource(vnEngine, 'replayDirectorState');
+const loadedScenarioBundle = await loadScenarioBundle();
+
+assert.equal(
+  loadedScenarioBundle.scenario.length,
+  scenario.length,
+  'Lazy scenario loader should produce the same integrated scenario length as the synchronous test bundle.'
+);
+assert.equal(
+  loadedScenarioBundle.scenario.at(-1)?.id,
+  scenario.at(-1)?.id,
+  'Lazy scenario loader should preserve integrated scenario ordering.'
+);
+assert.deepEqual(
+  loadedScenarioBundle.episodeInfo.endingRules,
+  episodeInfo.endingRules,
+  'Lazy scenario loader should preserve episode ending rules.'
+);
+
+assert.doesNotMatch(
+  app,
+  /from ['"]\.\/data\/scenario\.js['"]/,
+  'App should not statically import the full scenario bundle into the initial chunk.'
+);
+assert.match(
+  scenarioLoader,
+  /import\('\.\/scenario\/day1\.js'\)[\s\S]*import\('\.\/scenario\/endings\.js'\)[\s\S]*integrateRouteDepthExpansions\(sceneGroups\.flat\(\)\)/,
+  'Scenario loader should code-split day/ending modules and integrate route-depth expansions after loading.'
+);
 
 function readScenarioSourceTree() {
   const parts = [readSource('src/data/scenario.js')];
@@ -1158,6 +1208,33 @@ const routeSeedFlagSet = new Set(
   Object.values(routeConfigData.routeSeedFlags || {}).flatMap((flags) => flags || [])
 );
 const legacyRouteAliasPattern = /^(hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho)_route$/;
+const day4To14MemoryFlagMatrix = JSON.parse(readSource('tests/fixtures/day4-14-memory-flags.json'));
+const datingRouteIds = routeConfigData.affectionTargets.map((target) => target.id);
+const datingRouteIdSet = new Set(datingRouteIds);
+const day4To14MatrixFlags = day4To14MemoryFlagMatrix.flags || [];
+
+assert.ok(
+  existsSync('docs/day4-14-flag-consumption-matrix.md'),
+  'Day4-14 memory flag matrix should have a tracked docs artifact; CI must not depend on .omx/.'
+);
+assert.equal(day4To14MemoryFlagMatrix.version, 1, 'Day4-14 memory flag fixture should be versioned.');
+assert.equal(day4To14MatrixFlags.length, 18, 'Day4-14 baseline should track one Day4 and one Day5 date memory for each route.');
+assert.equal(new Set(day4To14MatrixFlags.map((entry) => entry.flag)).size, day4To14MatrixFlags.length, 'Day4-14 matrix flags should be unique.');
+for (const entry of day4To14MatrixFlags) {
+  assert.ok(datingRouteIdSet.has(entry.routeId), `${entry.flag} should belong to a configured route.`);
+  assert.ok([4, 5].includes(entry.day), `${entry.flag} should be scoped to the Day4-5 repair bridge.`);
+  assert.ok(['date', 'phone', 'memory_payoff'].includes(entry.category), `${entry.flag} should use an approved memory flag category.`);
+  assert.ok(!entry.flag.startsWith('route_lock_'), `${entry.flag} should not be an explicit route lock.`);
+  if (entry.category === 'date') {
+    assert.match(entry.flag, new RegExp(`^${entry.routeId}_date_day${entry.day}_[a-z0-9_]+$`), `${entry.flag} should follow the visible date memory naming contract.`);
+  }
+  if (entry.category === 'phone') {
+    assert.match(entry.flag, new RegExp(`^${entry.routeId}_phone_day${entry.day}_(direct|gentle|tease)_reply$`), `${entry.flag} should follow the phone reply naming contract.`);
+  }
+  if (entry.category === 'memory_payoff') {
+    assert.match(entry.flag, new RegExp(`^memory_payoff_${entry.routeId}_day${entry.day}_[a-z0-9_]+$`), `${entry.flag} should avoid route-prefix tie-break contamination.`);
+  }
+}
 
 assert.deepEqual(mapLocations, canonicalMapLocations, 'mapChoice canonical locations should match the approved Day1-3 map contract exactly.');
 assert.deepEqual(mapChoiceLabels, canonicalMapLabels, 'mapChoice choices should derive from canonical place labels only.');
@@ -1392,6 +1469,11 @@ assert.match(
 );
 assert.match(
   readSource('docs/scenario-authoring.md'),
+  /(?:Day\s*4[–-]14|Day4[–-]14)[\s\S]*route_lock_<id>[\s\S]*memory_payoff_[\s\S]*Day10[\s\S]*(?:bounded|범위|새로 추가|수정)/,
+  'Scenario authoring guide should document the bounded Day4-14 dating-sim memory loop, explicit route locks, and payoff-only flag naming.'
+);
+assert.match(
+  readSource('docs/scenario-authoring.md'),
   /mapChoice[\s\S]*9개[\s\S]*mapLocations[\s\S]*교문[\s\S]*옥상[\s\S]*10개[\s\S]*81/,
   'Scenario authoring guide should document mapChoice schema, canonical 9-location map, 10 static records/day, and 81 ordered pair entries.'
 );
@@ -1419,6 +1501,11 @@ assert.match(
   readSource('docs/development-guide.md'),
   /mapChoice[\s\S]*MapChoiceScene[\s\S]*scenarioValidator[\s\S]*replay[\s\S]*save\/log[\s\S]*accessibility/,
   'Development guide should list mapChoice engine/UI/validator/replay/save-log/accessibility touchpoints.'
+);
+assert.match(
+  readSource('docs/development-guide.md'),
+  /(?:Day\s*4[–-]14|Day4[–-]14)[\s\S]*(?:flag matrix|memory flag|메모리)[\s\S]*(?:episodeInfo|routeGate)[\s\S]*SAVE_VERSION/,
+  'Development guide should document Day4-14 implementation touchpoints, tracked flag matrix, routeGate/episodeInfo guard, and save-schema boundary.'
 );
 
 assert.match(
@@ -2334,6 +2421,56 @@ assert.match(
   /id:\s*['"]day5-season-hook['"][\s\S]*?nextId:\s*['"]day6-chapter-card['"]/,
   'Day 5 should continue into Day 6 after the common-route expansion.'
 );
+for (const day of [4, 5]) {
+  const replyPhones = scenario.filter((item) => item.id?.startsWith(`day${day}`) && item.type === 'phone' && (item.replies || []).length > 0);
+  assert.ok(replyPhones.length > 0, `Day ${day} should include at least one reply-enabled phone scene before scenario prose expansion is considered complete.`);
+  for (const phoneScene of replyPhones) {
+    assert.ok(phoneScene.replies.length <= 3, `${phoneScene.id} should keep replies within the 3-option phone contract.`);
+    assert.equal(phoneScene.rewards?.length, phoneScene.replies.length, `${phoneScene.id} should reward each reply.`);
+    assert.equal(phoneScene.next?.length, phoneScene.replies.length, `${phoneScene.id} should route each reply.`);
+    assert.equal(phoneScene.nextId, undefined, `${phoneScene.id} should not mix reply branching with nextId.`);
+    for (const reward of phoneScene.rewards || []) {
+      const flags = reward.flags || [];
+      assert.ok(!flags.some((flag) => String(flag).startsWith('route_lock_')), `${phoneScene.id} replies should not write route locks.`);
+      assert.ok(flags.some((flag) => /^\w+_phone_day[45]_(direct|gentle|tease)_reply$/.test(String(flag))), `${phoneScene.id} replies should write canonical Day${day} phone reply memory flags.`);
+    }
+  }
+}
+
+function collectRewardFlagProducers(items) {
+  const producers = new Map();
+  for (const item of items) {
+    for (const reward of item.rewards || []) {
+      for (const flag of reward.flags || []) {
+        if (!producers.has(flag)) producers.set(flag, []);
+        producers.get(flag).push(item.id);
+      }
+    }
+  }
+  return producers;
+}
+
+function collectVariantFlagConsumers(items) {
+  const consumers = new Map();
+  for (const item of items) {
+    for (const variant of item.variants || []) {
+      for (const flag of variant.requiredFlags || variant.flags || []) {
+        if (!consumers.has(flag)) consumers.set(flag, []);
+        consumers.get(flag).push(item.id);
+      }
+    }
+  }
+  return consumers;
+}
+
+const day4To9ProducerScenes = scenario.filter((item) => /(^|-)day[4-9]/.test(item.id || '') || /^day-[4-9]$/.test(item.chapter || ''));
+const day10To14OrTerminalScenes = scenario.filter((item) => /^day1[0-4]/.test(item.id || '') || /^day-1[0-4]$/.test(item.chapter || '') || item.terminal);
+const day4To9ProducedFlags = collectRewardFlagProducers(day4To9ProducerScenes);
+const day10To14ConsumedFlags = collectVariantFlagConsumers(day10To14OrTerminalScenes);
+for (const entry of day4To14MatrixFlags) {
+  assert.ok(day4To9ProducedFlags.has(entry.flag), `${entry.flag} should have a reachable Day4-9 reward producer listed in the tracked memory matrix.`);
+  assert.ok(day10To14ConsumedFlags.has(entry.flag), `${entry.flag} should be consumed by a Day10-14 or terminal payoff variant.`);
+}
 for (const day of [6, 7, 8]) {
   assert.ok(
     scenario.some((item) => item.id === `day${day}-chapter-card` && item.chapter === `day-${day}`),
@@ -3422,6 +3559,40 @@ assert.equal(
   'day11-ukhyun-morning',
   'Route gates should still follow explicit route-lock payoff branches without granting terminal endings early.'
 );
+const seededNoExplicitLockRouteGateTarget = resolveNextIndex({
+  scenario,
+  index: day11RouteGateIndex,
+  currentItem: scenario[day11RouteGateIndex],
+  ending: null,
+  gameState: {
+    affection: { ukhyun: 85 },
+    flags: ['ukhyun_route_seed']
+  },
+  endingRules: episodeInfo.endingRules || [],
+  routeConfig: routeConfigData
+});
+assert.notEqual(
+  scenario[seededNoExplicitLockRouteGateTarget]?.id,
+  'day11-ukhyun-morning',
+  'Day11-14 routeGate branches should require an explicit Day10 route_lock flag, not only pre-lock seed/threshold status.'
+);
+for (const routeId of datingRouteIds) {
+  const routeRules = (episodeInfo.endingRules || []).filter((rule) => rule.id === routeId && !rule.default);
+  assert.ok(routeRules.length > 0, `${routeId} should have a route-specific terminal ending rule.`);
+  for (const rule of routeRules) {
+    assert.ok((rule.flags || []).includes(`route_lock_${routeId}`), `${routeId} terminal rule should require explicit route_lock_${routeId}.`);
+    assert.ok(Number(rule.affection?.[routeId] || 0) >= 85, `${routeId} terminal rule should preserve the 85+ affection requirement.`);
+  }
+}
+const ukhyunLegacyRouteOnlyEnding = resolveEndingRoute(
+  { affection: { ukhyun: 85 }, flags: ['ukhyun_route'] },
+  episodeInfo.endingRules || []
+);
+assert.notEqual(
+  ukhyunLegacyRouteOnlyEnding.id,
+  'ukhyun',
+  'Legacy ukhyun_route alone should not bypass the Day10 explicit route lock terminal gate.'
+);
 
 assert.equal(CORE_ROUTE_DATE_BATCH_ID, 'route-date-2026-05-batch3-core');
 const coreRouteDateIds = ['hyeongyeom', 'ukhyun', 'jaeseong'];
@@ -3606,6 +3777,211 @@ for (const routeId of coreRouteDateIds) {
   assert.ok(state.affection[routeId] <= 100, `${routeId} post-lock affection should stay capped at 100.`);
   assert.equal(resolveRouteLock(state, routeConfigData).id, routeId, `${routeId} should resolve as the committed route lock.`);
   assert.equal(resolveEndingRoute(state, episodeInfo.endingRules || []).id, routeId, `${routeId} should be eligible for its terminal route ending.`);
+}
+
+const hyeongyeomSliceSceneIds = [
+  'day4-hyeongyeom-focus',
+  'day5-hyeongyeom-core-reply',
+  'day9-free-hyeongyeom-entry',
+  'day9-free-hyeongyeom-answer',
+  'day9-free-hyeongyeom-reaction',
+  'day9-free-hyeongyeom-close',
+  'date-day9-hyeongyeom-invite',
+  'date-day9-hyeongyeom-reaction',
+  'phone-day9-hyeongyeom-after-date',
+  'date-day9-hyeongyeom-return',
+  'day10-lock-hyeongyeom',
+  'day10-hyeongyeom-prelock-reflection',
+  'day11-opening',
+  'day14-route-gate',
+  'day14-hyeongyeom-festival',
+  'ending-promise',
+  'ending-hyeongyeom'
+];
+const hyeongyeomSliceVariantFlags = [
+  'route_lock_hyeongyeom',
+  'hyeongyeom_date_day4_umbrella_handle',
+  'hyeongyeom_date_day5_umbrella_distance',
+  'hyeongyeom_date_day9_private_signal',
+  'hyeongyeom_phone_day9_after_date'
+];
+
+function stripDisplayCharacters(value) {
+  return String(value || '').replace(/[\s\p{P}\p{S}]/gu, '');
+}
+
+function quotedSpeech(value) {
+  return [...String(value || '').matchAll(/[“"‘']([^”"’']+)[”"’']/g)]
+    .map((match) => match[1])
+    .join('');
+}
+
+function selectedHyeongyeomVariant(variant = {}) {
+  const flags = variant.requiredFlags || variant.flags || [];
+  return flags.some((flag) => hyeongyeomSliceVariantFlags.includes(flag));
+}
+
+function collectHyeongyeomSliceDisplayTexts() {
+  return hyeongyeomSliceSceneIds.flatMap((sceneId) => {
+    const item = scenarioScenesById.get(sceneId);
+    assert.ok(item, `Hyeongyeom slice scene should exist: ${sceneId}`);
+    const displayTexts = [];
+    if (item.text) displayTexts.push({ sceneId, source: 'text', text: item.text, direct: false });
+    for (const variant of item.variants || []) {
+      if (selectedHyeongyeomVariant(variant)) {
+        displayTexts.push({ sceneId, source: 'variant', text: variant.text, direct: false });
+      }
+    }
+    for (const message of item.messages || []) {
+      if (message.text) displayTexts.push({ sceneId, source: 'message', text: message.text, direct: true });
+    }
+    for (const reply of item.replies || []) {
+      displayTexts.push({ sceneId, source: 'reply', text: reply, direct: true });
+    }
+    return displayTexts;
+  });
+}
+
+function directDialogueRatio(displayTexts) {
+  return displayTexts.reduce((result, entry) => {
+    const denominator = stripDisplayCharacters(entry.text).length;
+    const numerator = stripDisplayCharacters(entry.direct ? entry.text : quotedSpeech(entry.text)).length;
+    return {
+      numerator: result.numerator + numerator,
+      denominator: result.denominator + denominator
+    };
+  }, { numerator: 0, denominator: 0 });
+}
+
+function unquotedSummaryBeatCount(item) {
+  const entries = [];
+  if (item?.text) entries.push(item.text);
+  for (const variant of item?.variants || []) {
+    if (selectedHyeongyeomVariant(variant)) entries.push(variant.text);
+  }
+  return entries.filter((text) => stripDisplayCharacters(String(text).replace(/[“"‘'][^”"’']+[”"’']/g, '')).length > 0).length;
+}
+
+function applyExpectedChoice(state, sceneId, choiceIndex, { targetId, flags = [], affection = {} } = {}) {
+  const item = scenarioScenesById.get(sceneId);
+  assert.equal(item?.type, 'choice', `${sceneId} should be a choice scene.`);
+  assert.equal(item.next?.[choiceIndex], targetId, `${sceneId} choice ${choiceIndex} should target ${targetId}.`);
+  const reward = item.rewards?.[choiceIndex] || {};
+  for (const flag of flags) {
+    assert.ok((reward.flags || []).includes(flag), `${sceneId} choice ${choiceIndex} should reward ${flag}.`);
+  }
+  for (const [routeId, value] of Object.entries(affection)) {
+    assert.equal(reward.affection?.[routeId], value, `${sceneId} choice ${choiceIndex} should reward ${value} ${routeId} affection.`);
+  }
+  return applyRouteRewards(state, item, choiceIndex, routeConfigData);
+}
+
+function applyExpectedReply(state, sceneId, replyIndex, { targetId, flags = [], affection = {} } = {}) {
+  const item = scenarioScenesById.get(sceneId);
+  assert.equal(item?.type, 'phone', `${sceneId} should be a phone scene.`);
+  assert.equal(item.next?.[replyIndex], targetId, `${sceneId} reply ${replyIndex} should target ${targetId}.`);
+  const reward = item.rewards?.[replyIndex] || {};
+  for (const flag of flags) {
+    assert.ok((reward.flags || []).includes(flag), `${sceneId} reply ${replyIndex} should reward ${flag}.`);
+  }
+  for (const [routeId, value] of Object.entries(affection)) {
+    assert.equal(reward.affection?.[routeId], value, `${sceneId} reply ${replyIndex} should reward ${value} ${routeId} affection.`);
+  }
+  return applyRouteRewards(state, item, replyIndex, routeConfigData);
+}
+
+function assertSceneConsumesFlag(sceneId, flag) {
+  const item = scenarioScenesById.get(sceneId);
+  assert.ok(
+    (item?.variants || []).some((variant) => (variant.requiredFlags || []).includes(flag)),
+    `${sceneId} should consume ${flag} in a Hyeongyeom payoff variant.`
+  );
+}
+
+let hyeongyeomSliceState = createInitialGameState();
+hyeongyeomSliceState = applyExpectedChoice(hyeongyeomSliceState, 'choice-day4-core-focus', 0, {
+  targetId: 'day4-hyeongyeom-focus',
+  flags: ['hyeongyeom_route_seed', 'hyeongyeom_date_day4_umbrella_handle'],
+  affection: { hyeongyeom: 20 }
+});
+hyeongyeomSliceState = applyExpectedChoice(hyeongyeomSliceState, 'choice-day5-core-shift', 0, {
+  targetId: 'day5-hyeongyeom-core-reply',
+  flags: ['hyeongyeom_route_seed', 'hyeongyeom_date_day5_umbrella_distance'],
+  affection: { hyeongyeom: 20 }
+});
+hyeongyeomSliceState = applyExpectedChoice(hyeongyeomSliceState, 'day9-free-hub-a', 0, {
+  targetId: 'day9-free-hyeongyeom-entry',
+  flags: ['day9_hyeongyeom_free_time', 'hyeongyeom_route_seed'],
+  affection: { hyeongyeom: 8 }
+});
+assert.equal(scenarioScenesById.get('day9-free-hyeongyeom-entry')?.nextId, 'day9-free-hyeongyeom-answer');
+assert.equal(scenarioScenesById.get('day9-free-hyeongyeom-answer')?.nextId, 'day9-free-hyeongyeom-reaction');
+assert.equal(scenarioScenesById.get('day9-free-hyeongyeom-reaction')?.nextId, 'day9-free-hyeongyeom-close');
+assert.equal(
+  scenarioScenesById.get('day9-free-hyeongyeom-close')?.nextId,
+  'date-day9-hyeongyeom-invite',
+  'Integrated Day9 Hyeongyeom free-time close should enter the route-date invite.'
+);
+assert.equal(scenarioScenesById.get('date-day9-hyeongyeom-invite')?.nextId, 'date-day9-hyeongyeom-choice');
+hyeongyeomSliceState = applyExpectedChoice(hyeongyeomSliceState, 'date-day9-hyeongyeom-choice', 0, {
+  targetId: 'date-day9-hyeongyeom-reaction',
+  flags: ['hyeongyeom_date_day9_private_signal', 'hyeongyeom_date_day9_tone_1'],
+  affection: { hyeongyeom: 12 }
+});
+hyeongyeomSliceState = applyExpectedReply(hyeongyeomSliceState, 'phone-day9-hyeongyeom-after-date', 0, {
+  targetId: 'date-day9-hyeongyeom-return',
+  flags: ['hyeongyeom_phone_day9_after_date', 'hyeongyeom_phone_day9_reply_1'],
+  affection: { hyeongyeom: 6 }
+});
+hyeongyeomSliceState = applyExpectedChoice(hyeongyeomSliceState, 'day10-choice-lock-group', 0, {
+  targetId: 'day10-choice-lock-rain-record',
+  flags: ['day10_group_rain_record']
+});
+hyeongyeomSliceState = applyExpectedChoice(hyeongyeomSliceState, 'day10-choice-lock-rain-record', 0, {
+  targetId: 'day10-lock-hyeongyeom',
+  flags: ['hyeongyeom_route_seed', 'route_lock_hyeongyeom', 'day10_locked_hyeongyeom'],
+  affection: { hyeongyeom: 30 }
+});
+for (const flag of [
+  'hyeongyeom_date_day4_umbrella_handle',
+  'hyeongyeom_date_day5_umbrella_distance',
+  'hyeongyeom_date_day9_private_signal',
+  'hyeongyeom_phone_day9_after_date',
+  'route_lock_hyeongyeom',
+  'day10_locked_hyeongyeom'
+]) {
+  assert.ok(hyeongyeomSliceState.flags.includes(flag), `Hyeongyeom slice replay should include ${flag}.`);
+}
+assert.ok(hyeongyeomSliceState.affection.hyeongyeom >= 85, 'Hyeongyeom slice replay should reach high-affection terminal eligibility.');
+assert.equal(resolveRouteLock(hyeongyeomSliceState, routeConfigData).id, 'hyeongyeom');
+assert.equal(resolveEndingRoute(hyeongyeomSliceState, episodeInfo.endingRules || []).id, 'hyeongyeom');
+for (const [sceneId, flag] of [
+  ['day10-lock-hyeongyeom', 'hyeongyeom_date_day4_umbrella_handle'],
+  ['day10-lock-hyeongyeom', 'hyeongyeom_date_day5_umbrella_distance'],
+  ['day10-lock-hyeongyeom', 'hyeongyeom_date_day9_private_signal'],
+  ['day10-hyeongyeom-prelock-reflection', 'hyeongyeom_phone_day9_after_date'],
+  ['day11-opening', 'hyeongyeom_date_day4_umbrella_handle'],
+  ['day11-opening', 'hyeongyeom_date_day5_umbrella_distance'],
+  ['day11-opening', 'hyeongyeom_date_day9_private_signal'],
+  ['day11-opening', 'hyeongyeom_phone_day9_after_date'],
+  ['day14-route-gate', 'hyeongyeom_phone_day9_after_date'],
+  ['ending-promise', 'hyeongyeom_date_day4_umbrella_handle'],
+  ['ending-promise', 'hyeongyeom_date_day5_umbrella_distance']
+]) {
+  assertSceneConsumesFlag(sceneId, flag);
+}
+
+const hyeongyeomDialogueStats = directDialogueRatio(collectHyeongyeomSliceDisplayTexts());
+assert.ok(hyeongyeomDialogueStats.denominator > 0, 'Hyeongyeom slice direct-dialogue denominator should be measured.');
+assert.ok(
+  hyeongyeomDialogueStats.numerator / hyeongyeomDialogueStats.denominator >= 0.65,
+  `Hyeongyeom slice should be at least 65% direct dialogue; got ${hyeongyeomDialogueStats.numerator}/${hyeongyeomDialogueStats.denominator}.`
+);
+for (const sceneId of hyeongyeomSliceSceneIds) {
+  assert.ok(
+    unquotedSummaryBeatCount(scenarioScenesById.get(sceneId)) <= 1,
+    `${sceneId} should not resolve Hyeongyeom emotional payoff through repeated narrator summary.`
+  );
 }
 
 const normalizedByItem = normalizeSavePayload(
@@ -4163,6 +4539,11 @@ assert.deepEqual(
 
 assert.equal(SAVE_VERSION, 2, 'Save version should advance when migrating legacy 0-10 affection saves.');
 assert.match(saveCodec, /export const SAVE_VERSION = 2/);
+assert.doesNotMatch(
+  saveCodec,
+  /calendarState|dateLogState|rewardToastState/,
+  'Day4-14 dating-sim loop should not add new persisted calendar/date-log/reward-toast save fields.'
+);
 assert.match(scenarioValidator, /export function validateScenario/);
 assert.match(scenarioValidator, /messages[\s\S]*phone message text is required/);
 assert.match(component, /function playAudio\(src, volume = 0\.65\)/);

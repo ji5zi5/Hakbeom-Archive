@@ -1,3 +1,78 @@
+const earlyDateEndingVariants = [
+  {
+    "requiredFlags": [
+      "route_lock_hyeongyeom",
+      "hyeongyeom_date_day4_umbrella_handle",
+      "hyeongyeom_date_day5_umbrella_distance"
+    ],
+    "text": "“현겸아, 우산 손잡이도 복도에서 맞춘 거리도 이제 핑계로 안 둘게. 내일은 내가 먼저 네 옆으로 갈게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_ukhyun",
+      "ukhyun_date_day4_library_margin",
+      "ukhyun_date_day5_folded_note"
+    ],
+    "text": "“욱현아, 여백에 남긴 답도 접힌 노트도 이제 숨기지 않을게. 네가 기다린 창가로 내가 계속 갈게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_jaeseong",
+      "jaeseong_date_day4_muted_mic",
+      "jaeseong_date_day5_broadcast_pause"
+    ],
+    "text": "“재성아, 마이크가 꺼진 곳에서만 들려준 목소리라서 더 좋았어. 다음 비공개 멘트는 내가 먼저 할게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sangwon",
+      "sangwon_date_day4_record_margin",
+      "sangwon_date_day5_rewritten_line"
+    ],
+    "text": "“상원아, 빈칸을 남겨 줘서 고마워. 마지막 줄은 네가 혼자 적지 말고, 나랑 같이 정하자.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sanguk",
+      "sanguk_date_day4_finish_line",
+      "sanguk_date_day5_stopped_finish"
+    ],
+    "text": "“상욱아, 달려오고 싶을 때마다 멈춰 줘서 고마워. 내일은 내가 먼저 손 흔들 테니까, 같이 출발하자.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_junhyeok",
+      "junhyeok_date_day4_route_map",
+      "junhyeok_date_day5_drawn_route"
+    ],
+    "text": "“준혁아, 네가 접어 둔 지도 끝마다 내가 돌아갈 자리가 있었어. 다음 길은 효율 말고 네 옆자리로 그려 줘.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_dohun",
+      "dohun_date_day4_counter_joke",
+      "dohun_date_day5_hidden_sincerity"
+    ],
+    "text": "“도훈아, 복숭아 음료도 접힌 영수증도 전부 장난 아닌 거 알아. 내일은 네가 숨기기 전에 내가 먼저 웃을게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_haeum",
+      "haeum_date_day4_slow_tempo",
+      "haeum_date_day5_waited_beat"
+    ],
+    "text": "“하음아, 느린 박자를 기다려 줘서 고마워. 내일도 급하지 않게, 네가 세어 주는 숨으로 같이 걷자.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_yunho",
+      "yunho_date_day4_rooftop_wind",
+      "yunho_date_day5_after_rain_rooftop"
+    ],
+    "text": "“윤호야, 옥상에 남겨 둔 자리로 내가 먼저 갈게. 선배라는 말 뒤에 숨지 않아도 되게, 이름부터 불러 줘.”"
+  }
+];
+
 export const endingScenes = [
   {
     "id": "ending-promise",
@@ -22,65 +97,66 @@ export const endingScenes = [
       "normal": "ending-normal",
       "quiet": "ending-quiet"
     },
-    "text": "축제가 끝난 교문에서 학범은 우산을 조금 낮췄다. 마지막 페이지는 젖지 않았고, 손잡이 가까이에 남은 온기만 또렷했다. “내일도 내가 먼저 갈게. 그러니까 오늘처럼, 조금만 더 같이 있어 줘.”",
+    "text": "“내일도 내가 먼저 갈게. 그러니까 오늘처럼, 조금만 더 같이 있어 줘. 우산 핑계 없어도 현겸이랑 나란히 걷고 싶어.”",
     "variants": [
+      ...earlyDateEndingVariants,
       {
         "requiredFlags": [
           "route_lock_hyeongyeom"
         ],
-        "text": "현겸아, 내일은 비가 안 와도 같은 우산을 펴자. 손잡이는 반씩 잡고, 핑계는 내가 만들게."
+        "text": "“현겸아, 내일은 비가 안 와도 같은 우산을 펴자. 손잡이는 반씩 잡고, 핑계는 내가 만들게.”"
       },
       {
         "requiredFlags": [
           "route_lock_ukhyun"
         ],
-        "text": "욱현아, 내일은 접힌 여백 없이 말할게. 그래도 네가 책갈피를 꽂아 주면 오래 기억할 수 있을 것 같아."
+        "text": "“욱현아, 내일은 접힌 여백 없이 말할게. 그래도 네가 책갈피를 꽂아 주면 오래 기억할 수 있을 것 같아.”"
       },
       {
         "requiredFlags": [
           "route_lock_jaeseong"
         ],
-        "text": "재성아, 내일도 마이크 꺼진 곳에서 불러줘. 네 장난이 멈추는 순간까지 내가 듣고 있을게."
+        "text": "“재성아, 내일도 마이크 꺼진 곳에서 불러줘. 네 장난이 멈추는 순간까지 내가 듣고 있을게.”"
       },
       {
         "requiredFlags": [
           "route_lock_sangwon"
         ],
-        "text": "상원아, 내일의 한 줄은 공개하지 않아도 돼. 대신 네가 제일 먼저 읽어 주면 좋겠어."
+        "text": "“상원아, 내일의 한 줄은 공개하지 않아도 돼. 대신 네가 제일 먼저 읽어 주면 좋겠어.”"
       },
       {
         "requiredFlags": [
           "route_lock_sanguk"
         ],
-        "text": "상욱아, 내일은 결승선 앞에서 같이 멈췄다가 같이 뛰자. 네가 기다려 준 만큼 내가 먼저 손 흔들게."
+        "text": "“상욱아, 내일은 결승선 앞에서 같이 멈췄다가 같이 뛰자. 네가 기다려 준 만큼 내가 먼저 손 흔들게.”"
       },
       {
         "requiredFlags": [
           "route_lock_junhyeok"
         ],
-        "text": "준혁아, 내일도 지도에 없는 길을 하나 남겨 두자. 네가 계산하지 못한 표정을 내가 보여줄게."
+        "text": "“준혁아, 내일도 지도에 없는 길을 하나 남겨 두자. 네가 계산하지 못한 표정을 내가 보여줄게.”"
       },
       {
         "requiredFlags": [
           "route_lock_dohun"
         ],
-        "text": "도훈아, 내일은 영수증 말고 네 얼굴 보고 대답할게. 그러니까 장난 뒤에 숨지 말고 기다려."
+        "text": "“도훈아, 내일은 영수증 말고 네 얼굴 보고 대답할게. 그러니까 장난 뒤에 숨지 말고 기다려.”"
       },
       {
         "requiredFlags": [
           "route_lock_haeum"
         ],
-        "text": "하음아, 내일은 악보 없이도 같은 박자로 걷자. 틀리면 웃고, 다시 맞추면 되니까."
+        "text": "“하음아, 내일은 악보 없이도 같은 박자로 걷자. 틀리면 웃고, 다시 맞추면 되니까.”"
       },
       {
         "requiredFlags": [
           "route_lock_yunho"
         ],
-        "text": "윤호야, 내일은 선배보다 먼저 이름으로 불러줘. 네가 부르면 내가 바로 돌아볼게."
+        "text": "“윤호야, 내일은 선배보다 먼저 이름으로 불러줘. 네가 부르면 내가 바로 돌아볼게.”"
       },
       {
         "default": true,
-        "text": "축제가 끝난 교문에서 학범은 우산을 조금 낮췄다. 마지막 페이지는 젖지 않았고, 손잡이 가까이에 남은 온기만 또렷했다. “내일도 내가 먼저 갈게. 그러니까 오늘처럼, 조금만 더 같이 있어 줘.”"
+        "text": "“내일도 내가 먼저 갈게. 그러니까 오늘처럼, 조금만 더 같이 있어 줘. 우산 핑계 없어도 현겸이랑 나란히 걷고 싶어.”"
       }
     ],
     "effect": {
@@ -115,7 +191,7 @@ export const endingScenes = [
     "name": "현겸",
     "role": "현겸 엔딩",
     "place": "같은 우산의 고백",
-    "text": "현겸은 비가 약해진 뒤에도 우산을 접지 않았다. 학범이 “이제 괜찮지?”라고 묻자 그는 손잡이를 더 가까이 잡고 웃었다. “비 안 와도 이 길로 가자. 핑계 없어도, 나는 너랑 나란히 걷고 싶어.” 교문 밖 신호가 두 번이나 바뀌었지만 둘은 서두르지 않았다. 젖은 어깨를 서로 쓸어 주는 시간이, 학범에게는 엔딩보다 긴 첫 약속처럼 남았다.",
+    "text": "“이제 괜찮지?” “비 안 와도 이 길로 가자. 핑계 없어도, 나는 너랑 나란히 걷고 싶어.” “그럼 내일도 내가 먼저 올게.” “응. 대신 손잡이는 반씩 잡자.” 교문 밖 신호가 두 번이나 바뀌었지만 둘은 서두르지 않았다. 젖은 어깨를 서로 쓸어 주는 시간이, 학범에게는 엔딩보다 긴 첫 약속처럼 남았다.",
     "effect": {
       "target": "hyeongyeom",
       "type": "heart"

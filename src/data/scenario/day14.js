@@ -202,63 +202,63 @@ export const day14Scenes = [
           "route_lock_hyeongyeom",
           "hyeongyeom_phone_day9_after_date"
         ],
-        "text": "휴대폰에는 아직 “내일은 네가 먼저 잡아”라는 현겸의 답장이 남아 있었다. 학범은 관객이 많은 쪽이 아니라, 우산 손잡이를 먼저 잡을 수 있는 교문 쪽으로 걸었다."
+        "text": "“내일은 네가 먼저 잡아.” “오늘이 그 내일이야. 현겸아, 관객 많은 쪽 말고 네가 기다리는 교문으로 갈게.”"
       },
       {
         "requiredFlags": [
           "route_lock_ukhyun",
           "ukhyun_phone_day9_after_date"
         ],
-        "text": "욱현이 비워 둔 창가 자리 사진이 아침 알림에 남아 있었다. 학범은 오늘도 접어 두지 않겠다고 마음먹고, 도서관 마지막 장 쪽으로 걸었다."
+        "text": "“욱현아, 오늘도 창가 비워 뒀지? 나도 오늘은 접어 두지 않을게. 마지막 장은 네 옆에서 읽을게.”"
       },
       {
         "requiredFlags": [
           "route_lock_jaeseong",
           "jaeseong_phone_day9_after_date"
         ],
-        "text": "방송실 예약 알림에는 재성의 장난 표시가 없었다. 학범은 공개 멘트가 아니라 비공개 대답을 들려주기 위해 꺼진 마이크가 있는 쪽으로 걸었다."
+        "text": "“재성아, 예약 확인했어. 공개 멘트 말고 비공개 대답 들려주러 갈게. 마이크는 계속 꺼 둬.”"
       },
       {
         "requiredFlags": [
           "route_lock_sangwon",
           "sangwon_phone_day8_warm_reply"
         ],
-        "text": "상원이 보낸 빈 카드 사진은 아직 답을 재촉하지 않았다. 학범은 오늘 그 빈칸을 혼자 채우지 않고, 같이 열 열쇠를 들고 기록실 쪽으로 걸었다."
+        "text": "“상원아, 빈칸 혼자 채우지 않을게. 오늘은 같이 열 열쇠 들고 갈게. 네가 물으면 내가 직접 대답할게.”"
       },
       {
         "requiredFlags": [
           "route_lock_sanguk",
           "sanguk_phone_day8_warm_reply"
         ],
-        "text": "상욱이 보낸 운동화 사진 아래에는 “오늘도 네 옆에서 걸어도 돼?”가 남아 있었다. 학범은 뛰기보다 같이 멈출 수 있는 체육관 쪽으로 걸었다."
+        "text": "“상욱아, 오늘도 내 옆에서 걸어도 돼. 뛰기보다 같이 멈출 수 있는 체육관으로 내가 먼저 갈게.”"
       },
       {
         "requiredFlags": [
           "route_lock_junhyeok",
           "junhyeok_phone_day8_warm_reply"
         ],
-        "text": "준혁의 지도 사진에는 별표 옆에 ‘일부러 남김’이라는 작은 글씨가 있었다. 학범은 빠른 길 대신, 다시 멈춰도 되는 좌표 쪽으로 걸었다."
+        "text": "“준혁아, 빠른 길 말고 네가 일부러 남긴 좌표로 갈게. 다시 멈춰도 되는 길이면, 나도 안 지울래.”"
       },
       {
         "requiredFlags": [
           "route_lock_dohun",
           "dohun_phone_day7_warm_reply"
         ],
-        "text": "도훈의 답장에는 농담보다 따뜻한 캔 사진이 먼저 와 있었다. 학범은 장난 뒤에 숨지 않을 대답을 들고, 밤에도 불이 남는 매점 쪽으로 걸었다."
+        "text": "“도훈아, 농담 뒤에 숨지 않을 대답 들고 갈게. 따뜻한 캔 사진 말고, 네 얼굴 보고 말할래.”"
       },
       {
         "requiredFlags": [
           "route_lock_haeum",
           "haeum_phone_day7_warm_reply"
         ],
-        "text": "하음이 보낸 느린 박자표를 보며 학범은 숨을 맞췄다. 오늘 고백은 빠르게 끝내는 문장이 아니라, 같이 늦어도 되는 음악실 쪽으로 이어졌다."
+        "text": "“하음아, 오늘 고백은 빠르게 끝내지 않을게. 같이 늦어도 되는 음악실로, 네 박자에 맞춰 갈게.”"
       },
       {
         "requiredFlags": [
           "route_lock_yunho",
           "yunho_phone_day7_warm_reply"
         ],
-        "text": "윤호가 잠그지 않고 기다린 옥상 문이 떠올랐다. 학범은 선배라는 호칭 뒤가 아니라, 윤호가 바로 옆으로 올 수 있는 계단 쪽으로 걸었다."
+        "text": "“윤호야, 옥상 문 잠그지 말고 기다려 줘. 선배라는 말 뒤가 아니라, 네 바로 옆으로 갈게.”"
       }
     ]
   },
@@ -270,7 +270,7 @@ export const day14Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "같은 우산",
-    "text": "현겸은 교문 우산꽂이 옆에서 접힌 우산 두 개를 들고 있었다. 곧 비가 쏟아질 것처럼 하늘이 낮았고, 오늘은 돌려준 뒤 각자 돌아가자는 말을 누구도 꺼내지 않았다.",
+    "text": "“우산 두 개 가져왔어. 하나는 빌려주는 거고, 하나는 핑계야. 학범아, 오늘은 돌려주고 바로 가지 말고 내 옆에 있어.”",
     "nextId": "day14-hyeongyeom-origin",
     "directives": [
       {
@@ -437,7 +437,7 @@ export const day14Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "접힌 노트",
-    "text": "욱현은 도서관 부스의 빈 방명록을 펼쳐 두고 있었다. 접힌 쪽지는 책갈피처럼 사이에 꽂혀 있었고, 오래 꺼지지 않던 도서관 불빛이 마지막으로 깜박였다.",
+    "text": "“방명록 첫 줄, 비워 뒀어. 네가 쓰기 전엔 나도 안 넘길게. 오늘은 접힌 쪽지도 전부 펼쳐 둘 거야.”",
     "nextId": "day14-ukhyun-origin",
     "directives": [
       {
@@ -604,7 +604,7 @@ export const day14Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실 너머",
-    "text": "재성은 방송실 문 앞에서 송출 스위치를 꺼 둔 채 기다렸다. 축제 안내 멘트는 다른 사람에게 맡겼고, 오늘 쓸 목소리는 닫힌 문 안에만 남겨 두었다.",
+    "text": "“송출 스위치 꺼 놨어. 축제 멘트는 남한테 맡겼고, 오늘 내 목소리는 너한테만 쓸 거야.”",
     "nextId": "day14-jaeseong-origin",
     "directives": [
       {

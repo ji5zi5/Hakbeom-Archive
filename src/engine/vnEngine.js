@@ -47,7 +47,7 @@ export function resolveEndingRoute(gameState, endingRules = []) {
 
 function resolveRouteGateRoute(gameState, routeConfig = {}) {
   const locked = resolveRouteLock(gameState, routeConfig, { threshold: 0 });
-  return locked?.id && locked.id !== 'common' ? locked : null;
+  return locked?.id && locked.id !== 'common' && locked.reason === 'explicit-lock' ? locked : null;
 }
 
 export function findScenarioIndexById(scenario, id) {

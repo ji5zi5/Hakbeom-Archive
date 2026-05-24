@@ -12,15 +12,15 @@ const routeSpecs = {
     backgroundId: 'day9-hyeongyeom-rumor',
     effect: 'heart',
     expression: 'blush',
-    invitation: '현겸은 접힌 우산 손잡이를 학범 손가락 가까이에 밀어 놓았다. “말이 돈 뒤에 바로 가면, 네가 나를 피한 것처럼 보이잖아. 오늘은 내가 기다렸다고 해도 돼?”',
-    reaction: '현겸은 대답을 듣고서야 우산 끝을 낮췄다. 손잡이 위에 겹친 손을 빼지 않은 채, 기다리는 마음을 들킨 사람처럼 조용히 웃었다.',
+    invitation: '“말이 돈 뒤에 바로 가면, 네가 나를 피한 것처럼 보이잖아. 오늘은 내가 기다렸다고 해도 돼? 네 손이 오면, 나도 안 피할게.”',
+    reaction: '“네 대답 들었으니까 이제 나도 말할게. 손잡이 위에 네 손이 남아 있으면, 나 기다린 거 티 나도 괜찮아.”',
     phoneLead: '오늘 네가 먼저 와 줘서 좋았어. 손잡이 놓기 싫었던 거, 티 났어?',
-    reply: '학범은 “티 났어. 그래서 나도 안 놓은 거야”라고 적고, 전송 버튼 위에서 한 번 더 숨을 골랐다.',
-    returnText: '현겸은 긴 답장 대신 “그럼 내일은 네가 먼저 잡아”라고 보냈다. 학범은 화면을 끄지 못한 채, 우산 손잡이에 남은 체온을 떠올렸다.',
+    reply: '티 났어. 그래서 나도 안 놓은 거야. 내일은 내가 먼저 잡을게.',
+    returnText: '“그럼 내일은 네가 먼저 잡아.” “응. 비가 안 와도 네 쪽으로 갈게.”',
     choiceReactions: [
-      '현겸은 “그럼 내일은 네가 먼저야?”라고 묻고는, 대답을 기다리기 전에 귀끝부터 붉어졌다.',
-      '현겸은 손잡이를 조금 더 내밀었다. 닿을 듯 말 듯하던 거리가, 이번엔 둘 다 피하지 않는 길이가 됐다.',
-      '현겸은 고개를 숙였다가 작게 끄덕였다. “믿어 준다는 말, 생각보다 세다. 나, 욕심내도 되는 줄 알잖아.”'
+      '“그럼 내일은 네가 먼저야? 나, 기다려도 된다는 뜻으로 들을게.”',
+      '“조금만 더 걸을래? 이 거리, 이번엔 둘 다 피하지 말자.”',
+      '“믿어 준다는 말, 생각보다 세다. 나, 욕심내도 되는 줄 알잖아. 그래도 멈추라고 하면 멈출게.”'
     ],
     choices: [
       '내일은 내가 먼저 기다리겠다고 낮게 말한다.',
@@ -40,15 +40,15 @@ const routeSpecs = {
     backgroundId: 'day9-ukhyun-rumor',
     effect: 'ellipsis',
     expression: 'quiet',
-    invitation: '욱현은 책갈피 대신 접지 않은 메모를 내밀었다. “오늘은 숨겨 두지 않을게. 네가 읽고 싶으면, 옆에서 기다릴 수 있어.”',
-    reaction: '욱현은 시선을 노트에 둔 채 고개만 끄덕였다. 짧은 대답이었지만, 접힌 선이 없는 종이는 이미 충분히 솔직했다.',
+    invitation: '“오늘은 접지 않을게. 네가 읽고 싶으면 창가 옆에 있을게. 싫으면 그대로 돌려줘도 돼. 그래도… 네가 와 주면 좋겠어.”',
+    reaction: '“크게 답하지 않아도 돼. 네 글씨면 알아봐. 그리고 네가 여기 앉아 준 건, 내가 안 접어 둘게.”',
     phoneLead: '창가 자리, 내일도 비워 둘게. 강요는 아니야.',
-    reply: '학범은 화면에 뜬 짧은 문장을 몇 번이나 다시 읽었다. 욱현의 기다림은 말수가 적어서 더 분명했다.',
-    returnText: '욱현은 “오면 좋고”라고 보낸 뒤 곧바로 “안 와도 기다릴 거야”를 덧붙였다. 학범은 그 두 번째 문장이 진짜 답이라는 걸 알았다.',
+    reply: '내일 창가 자리로 갈게. 접지 않은 말, 나도 그대로 들을게.',
+    returnText: '“오면 좋고.” “아니, 정정할게. 안 와도 기다릴 거야. 그래도 네가 오면 더 좋아.”',
     choiceReactions: [
-      '욱현은 메모를 접지 않은 채 밀어 줬다. “천천히 읽어. 도망갈 생각 없어.”',
-      '욱현은 창가 의자를 말없이 빼 두었다. 비어 있던 자리가 대답보다 먼저 가까워졌다.',
-      '욱현은 시선을 피했지만 메모 모서리는 학범 쪽으로 남겨 두었다. “그 말은… 저장해 둘게.”'
+      '“천천히 읽어. 나 도망갈 생각 없어. 네가 다 읽을 때까지 옆에 있을게.”',
+      '“여기 앉아. 가까워도 괜찮으면 더 가까이 와도 돼. 나는 오늘 안 숨을래.”',
+      '“고맙다는 말, 그렇게 작게 하지 마. 나 혼자 여러 번 다시 듣게 되잖아.”'
     ],
     choices: [
       '접지 않은 메모를 그대로 읽겠다고 말한다.',
@@ -68,15 +68,15 @@ const routeSpecs = {
     backgroundId: 'day9-jaeseong-rumor',
     effect: 'question',
     expression: 'confident',
-    invitation: '재성은 꺼진 마이크를 학범 손에 쥐여 주고 웃었다. “오늘은 방송 말고 비공개 멘트. 네가 원하면 다시 녹음할게.”',
-    reaction: '재성은 장난스럽게 웃다가도 학범의 답을 들은 순간 목소리를 낮췄다. 마이크가 꺼져 있어서 다행이라는 듯 진심이 더 선명했다.',
+    invitation: '“오늘은 방송 말고 비공개 멘트. 마이크 꺼졌고, 네 목소리는 나만 들을게. 다시 말해 달라면 몇 번이든 할게.”',
+    reaction: '“장난으로 넘기면 편한데, 지금은 그러기 싫다. 네가 방금 말한 거, 나만 다시 듣고 싶어.”',
     phoneLead: '비공개 멘트 다시 듣고 싶으면 방송실 예약해 둘게.',
-    reply: '학범은 재성의 메시지 끝에 붙은 웃는 표시가 농담인지 고백인지 오래 구분하지 못했다.',
-    returnText: '재성은 “다음 멘트는 네가 정해”라고 보냈다. 장난처럼 보낸 문장인데도, 학범에게는 초대장처럼 도착했다.',
+    reply: '방송실 예약, 나도 확인할게. 오늘 비공개 멘트 계속 생각났어.',
+    returnText: '“다음 멘트는 네가 정해.” “그럼 첫 문장은 이걸로 할게. 내일도 너한테만 말할게.”',
     choiceReactions: [
-      '재성은 마이크를 내려놓고 웃었다. “비공개 요청 접수. 근데 나 긴장한 거 티 나?”',
-      '재성은 손가락으로 꺼진 표시등을 톡 쳤다. “그럼 다음 말은 너한테만 들려줄게.”',
-      '재성은 잠깐 말문이 막혔다가 웃었다. “오, 선공 들어오네. 이건 내가 졌다.”'
+      '“비공개 요청 접수. 근데 나 지금 긴장한 거 티 나? 티 나면… 네 책임이다.”',
+      '“그럼 다음 말은 너한테만 들려줄게. 표시등 꺼질 때까지 기다려.”',
+      '“오, 선공 들어오네. 이건 내가 졌다. 대신 다음 대사는 내가 가져갈게.”'
     ],
     choices: [
       '네 목소리는 비공개로 더 듣고 싶다고 답한다.',
@@ -166,6 +166,7 @@ function buildCoreRouteDateScenes(routeId) {
       mood: 'confession',
       routeId,
       expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
+      batchModule: 'batch3RouteDates',
       arcId: matrix.arcId,
       name: spec.name,
       role: spec.role,
@@ -186,9 +187,10 @@ function buildCoreRouteDateScenes(routeId) {
       mood: 'confession',
       routeId,
       expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
+      batchModule: 'batch3RouteDates',
       arcId: matrix.arcId,
       place: spec.place,
-      text: `${spec.name}과의 사적인 시간을 어떻게 기억할까?`,
+      text: `“${spec.name}, 이 시간은 네게 어떻게 남길까?”`,
       choices: spec.choices,
       rewards: spec.choices.map((_, index) => ({
         affection: { [routeId]: 12 },
@@ -203,6 +205,7 @@ function buildCoreRouteDateScenes(routeId) {
       mood: 'warm',
       routeId,
       expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
+      batchModule: 'batch3RouteDates',
       arcId: matrix.arcId,
       name: spec.name,
       role: spec.role,
@@ -226,6 +229,7 @@ function buildCoreRouteDateScenes(routeId) {
       mood: 'warm',
       routeId,
       expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
+      batchModule: 'batch3RouteDates',
       arcId: matrix.arcId,
       name: spec.name,
       role: '메시지',
@@ -254,6 +258,7 @@ function buildCoreRouteDateScenes(routeId) {
       mood: 'warm',
       routeId,
       expansionBatch: CORE_ROUTE_DATE_BATCH_ID,
+      batchModule: 'batch3RouteDates',
       arcId: matrix.arcId,
       name: '학범',
       role: '독백',
@@ -263,11 +268,11 @@ function buildCoreRouteDateScenes(routeId) {
         {
           requiredFlags: [commonDateFlag, commonPhoneFlag],
           affection: { [routeId]: { min: 70 } },
-          text: `${spec.returnText} 다음날 한 사람을 골라야 한다면, 학범의 발걸음은 자연스럽게 ${spec.name} 쪽으로 기울 것 같았다.`
+          text: `${spec.returnText} “내일 한 사람을 골라야 한다면, 나 ${spec.name}한테 갈게. 발걸음이 이미 그쪽으로 가고 있어.”`
         },
         {
           requiredFlags: [commonDateFlag, commonPhoneFlag],
-          text: `${spec.returnText} 낮의 약속과 밤의 답장이 겹치자, 다음 선택은 생각보다 조용히 정리됐다.`
+          text: `${spec.returnText} “낮에 한 약속이랑 밤에 보낸 답장, 둘 다 접어 두지 않을게.”`
         },
         {
           default: true,

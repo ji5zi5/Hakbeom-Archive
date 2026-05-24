@@ -243,13 +243,25 @@ export const day10Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "같은 우산",
-    "text": "학범이 우산 아래로 한 걸음 들어오자 현겸의 시선이 젖은 어깨에 오래 머물렀다. 현겸은 손잡이를 학범 쪽으로 기울이며 낮게 말했다. “혼자 돌아가지 마. 오늘은 내가 먼저 기다렸으니까.”",
+    "text": "“혼자 돌아가지 마. 오늘은 내가 먼저 기다렸으니까. 네가 괜찮다고 해도, 젖은 어깨까지 혼자 두고 싶진 않아.”",
     "variants": [
       {
         "requiredFlags": [
           "hyeongyeom_date_day9_private_signal"
         ],
-        "text": "학범이 우산 아래로 들어오자 현겸은 전날 같이 잡았던 손잡이를 다시 내밀었다. “어제 네가 안 놓았잖아. 그래서 나도 오늘은 숨길 생각 없어.”"
+        "text": "“어제 네가 안 놓았잖아. 그래서 나도 오늘은 숨길 생각 없어. 학범아, 이번엔 내가 먼저 잡아도 돼?”"
+      },
+      {
+        "requiredFlags": [
+          "hyeongyeom_date_day4_umbrella_handle"
+        ],
+        "text": "“이번엔 네가 먼저 와. 그때처럼 손잡이는 비워 둘게. 네가 잡으면, 나도 바로 잡을 거야.”"
+      },
+      {
+        "requiredFlags": [
+          "hyeongyeom_date_day5_umbrella_distance"
+        ],
+        "text": "“그때 네가 정한 거리, 오늘도 내가 지킬게. 가까워져도 괜찮으면, 한 걸음만 더 와.”"
       }
     ],
     "nextId": "day10-hyeongyeom-lock-reply",
@@ -426,6 +438,20 @@ export const day10Scenes = [
         "effect": "heart",
         "motion": "nod"
       }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "sangwon_date_day4_record_margin"
+        ],
+        "text": "“오늘 네가 고른 이름은 공식 기록보다 먼저 내가 기억할게. 증거로 남기기 전에, 네 목소리로 허락받고 싶어.”"
+      },
+      {
+        "requiredFlags": [
+          "sangwon_date_day5_rewritten_line"
+        ],
+        "text": "“네 마음은 남이 대신 쓰면 안 된다고 했지. 그래서 지금은 네 목소리로 듣고 싶어. 기록은 그다음이야.”"
+      }
     ]
   },
   {
@@ -530,6 +556,20 @@ export const day10Scenes = [
         "effect": "heart",
         "motion": "nod"
       }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "haeum_date_day4_slow_tempo"
+        ],
+        "text": "“오늘도 네 박자부터 맞출게. 음악실 문 앞에서 숨 고르는 시간까지, 내 연주에 넣어 둘게.”"
+      },
+      {
+        "requiredFlags": [
+          "haeum_date_day5_waited_beat"
+        ],
+        "text": "“네가 말할 때까지 기다리는 것도, 오늘 내 연주에 넣어 둘게. 급하게 끝내지 않아도 돼.”"
+      }
     ]
   },
   {
@@ -609,7 +649,7 @@ export const day10Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "접힌 노트",
-    "text": "학범이 돌려주려던 접힌 노트를 내밀자 욱현은 받아 가지 않았다. 그는 아직 읽지 않은 문장이 거기 있다는 듯 노트 가장자리를 손끝으로 눌렀다. 도서관 불빛 아래, 돌려주지 않은 침묵이 학범을 붙잡았다.",
+    "text": "“돌려주러 온 거면 아직 받기 싫어. 네 답이 접힌 채로 남아 있으면, 읽지 않은 문장처럼 내가 오늘도 기다릴 핑계가 생겨.”",
     "nextId": "day10-ukhyun-lock-reply",
     "directives": [
       {
@@ -680,6 +720,20 @@ export const day10Scenes = [
         "effect": "heart",
         "motion": "nod"
       }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "ukhyun_date_day4_library_margin"
+        ],
+        "text": "“네 글씨가 있는 쪽은 아직 못 접겠어. 여백에 남긴 답, 오늘은 말로도 들어도 돼?”"
+      },
+      {
+        "requiredFlags": [
+          "ukhyun_date_day5_folded_note"
+        ],
+        "text": "“답이 온 날부터 이미 조금 들켰어. 그래서 오늘은 내가 먼저 안 접을게. 네가 읽어 줘.”"
+      }
     ]
   },
   {
@@ -713,7 +767,7 @@ export const day10Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송 신호",
-    "text": "학범이 마이크를 꺼 버리자 재성의 장난도 함께 멈췄다. 그는 웃음을 방송실 밖에 두고, 비공개 호출처럼 낮은 목소리로 학범의 이름을 불렀다. 스피커에 남지 않을 떨림만 유리창 안쪽에 고였다.",
+    "text": "“마이크 꺼졌어. 그러니까 지금 부르는 이름은 방송용 아니야. 학범아, 장난으로 넘기기 싫어서 불렀어.”",
     "nextId": "day10-jaeseong-lock-reply",
     "directives": [
       {
@@ -783,6 +837,20 @@ export const day10Scenes = [
         "target": "jaeseong",
         "effect": "heart",
         "motion": "nod"
+      }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "jaeseong_date_day4_muted_mic"
+        ],
+        "text": "“그때 마이크 꺼 둔 거 기억하지? 오늘도 공개 안 할게. 대신 네 대답은 나한테만 줘.”"
+      },
+      {
+        "requiredFlags": [
+          "jaeseong_date_day5_broadcast_pause"
+        ],
+        "text": "“문 닫아 달라고 했던 거, 나 아직 저장 중이야. 이번 멘트도 비공개로 받을게.”"
       }
     ]
   },
@@ -887,6 +955,20 @@ export const day10Scenes = [
         "target": "junhyeok",
         "effect": "heart",
         "motion": "nod"
+      }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "junhyeok_date_day4_route_map"
+        ],
+        "text": "“돌아가도 괜찮은 길은 여기야. 계산 밖이어도 네 이름이 있으면, 그 좌표가 목적지가 돼.”"
+      },
+      {
+        "requiredFlags": [
+          "junhyeok_date_day5_drawn_route"
+        ],
+        "text": "“계산 밖이어도 괜찮아. 네가 고른 길이면 내가 다시 그리면 돼. 이번엔 효율 말고 네 옆자리로.”"
       }
     ]
   },
@@ -1038,6 +1120,20 @@ export const day10Scenes = [
         "effect": "heart",
         "motion": "nod"
       }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "sanguk_date_day4_finish_line"
+        ],
+        "text": "“이번 결승선은 네 옆이야. 뛰어오고 싶었는데 멈췄어. 잘했으면, 같이 출발한다고 말해 줘.”"
+      },
+      {
+        "requiredFlags": [
+          "sanguk_date_day5_stopped_finish"
+        ],
+        "text": "“이번에도 네가 오라고 할 때까지 참을게. 손 잡고 싶어도 먼저 물어볼게. 학범아, 지금 가도 돼?”"
+      }
     ]
   },
   {
@@ -1141,6 +1237,20 @@ export const day10Scenes = [
         "target": "dohun",
         "effect": "heart",
         "motion": "nod"
+      }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "dohun_date_day4_counter_joke"
+        ],
+        "text": "“이번엔 착각해도 돼. 내가 일부러 남긴 거니까. 농담으로 숨기기 전에 네가 먼저 알아봐 줘.”"
+      },
+      {
+        "requiredFlags": [
+          "dohun_date_day5_hidden_sincerity"
+        ],
+        "text": "“오늘은 안 숨길게. 나, 네가 오길 기다렸어. 영수증 뒤에 적은 것도 장난 아님.”"
       }
     ]
   },
@@ -1246,6 +1356,20 @@ export const day10Scenes = [
         "effect": "heart",
         "motion": "nod"
       }
+    ],
+    "variants": [
+      {
+        "requiredFlags": [
+          "yunho_date_day4_rooftop_wind"
+        ],
+        "text": "“선배, 오늘 풍경도 같이 봐 주세요. 옥상에서 기다릴 수 있는 자리는, 제 옆이면 좋겠어요.”"
+      },
+      {
+        "requiredFlags": [
+          "yunho_date_day5_after_rain_rooftop"
+        ],
+        "text": "“선배가 편한 자리는 오늘도 비워뒀어요. 이번엔 제 옆이면 좋겠어요. 제가 기다릴게요.”"
+      }
     ]
   },
   {
@@ -1279,20 +1403,20 @@ export const day10Scenes = [
     "name": "현겸",
     "role": "동급생",
     "place": "같은 우산",
-    "text": "학범은 우산 손잡이에 손을 겹쳤다. “내일은 내가 먼저 갈게. 비 핑계 없어도.” 현겸은 대답 대신 손가락을 조금 더 말아 쥐었고, 그 조용한 욕심이 오늘의 선택을 확정했다.",
+    "text": "“내일은 내가 먼저 갈게. 비 핑계 없어도.” “그럼 나도 기다릴게. 핑계 없이, 네 자리 비워 두고.”",
     "variants": [
       {
         "requiredFlags": [
           "hyeongyeom_date_day9_private_signal",
           "hyeongyeom_phone_day9_after_date"
         ],
-        "text": "학범은 전날 밤 현겸이 보낸 “내일은 네가 먼저 잡아”를 떠올렸다. 그래서 이번엔 말보다 먼저 손잡이를 잡았다. 현겸은 웃음을 참지 못하고 “진짜 먼저 왔네”라고 속삭였다."
+        "text": "“내일은 네가 먼저 잡아.” “그래서 왔어. 이번엔 내가 먼저 잡을게.” 현겸은 웃음을 참지 못하고 “진짜 먼저 왔네”라고 속삭였다."
       },
       {
         "requiredFlags": [
           "hyeongyeom_phone_day9_after_date"
         ],
-        "text": "휴대폰 화면에 남은 현겸의 답장이 아직 따뜻했다. 학범은 늦게 답하지 않겠다고 마음먹고, 바로 옆의 손잡이를 먼저 잡았다."
+        "text": "“늦게 답 안 할게. 지금 바로 잡을게.” “응. 오늘은 나도 안 기다리는 척 안 할래.”"
       }
     ],
     "nextId": "day10-locked-merge",

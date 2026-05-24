@@ -17,14 +17,14 @@ const afterSchoolRouteDateSpecs = {
     memoryFlag: 'dohun_date_day7_shared_rain',
     phoneFlag: 'dohun_phone_day7_warm_reply',
     payoffOnlyFlag: 'memory_payoff_dohun_day7_rain_seen',
-    invitation: '도훈은 따뜻한 캔을 학범 손에 밀어 넣고 딴청을 피웠다. “정보값 아님. 그냥 네가 추워 보여서 산 거니까 오해하지 마라.”',
-    reaction: '도훈은 괜히 영수증을 접었다 폈다. 놀리는 말은 여전했지만, 학범이 고른 답 앞에서는 숨겨 둔 다정함이 먼저 들켰다.',
+    invitation: '“정보값 아님. 그냥 네가 추워 보여서 산 거니까 오해하지 마라. 그래도… 네가 들고 있으면 나쁘진 않네.”',
+    reaction: '“영수증 접은 건 습관이야. 네 대답 숨기려는 거 아니고. 아, 웃지 마. 지금 나 진짜로 말하고 있잖아.”',
     phoneLead: '캔 식기 전에 마셨냐. 답 안 하면 다음엔 더 단 거 사 간다.',
-    close: '학범은 도훈의 협박 같은 걱정을 읽고 캔을 굴렸다. 정보값이라고 부르기엔 너무 따뜻한 시간이 손에 남아 있었다.',
+    close: '“협박 같은 걱정이어도 따뜻했어. 도훈아, 정보값이라고 부르지 않을게. 네가 준 시간으로 기억할게.”',
     choiceReactions: [
-      '도훈은 “시간은 비싼데” 하고 투덜거리면서도, 학범 손에 쥔 캔이 식었는지 먼저 확인했다.',
-      '도훈은 대답을 못 하고 영수증만 구겼다. “그렇게 말하면… 취소 못 하잖아.”',
-      '도훈은 “시끄러워”라고 했지만 입꼬리는 이미 졌다. 다음엔 더 따뜻한 걸 사 오겠다는 말만 작게 남겼다.'
+      '“시간은 비싼데.” “근데 너한테 쓰는 시간은 환불 안 받을 거야. 캔 식기 전에 마셔.”',
+      '“그렇게 말하면… 취소 못 하잖아. 데이트 신청으로 받은 거면, 나도 다음엔 제대로 할게.”',
+      '“시끄러워.” “근데 들킨 김에 말한다. 다음엔 더 따뜻한 거 사 올 거니까 또 놀려 봐.”'
     ],
     choices: [
       '정보값 말고 네 시간을 달라고 한다.',
@@ -52,14 +52,14 @@ const afterSchoolRouteDateSpecs = {
     memoryFlag: 'haeum_date_day7_shared_rain',
     phoneFlag: 'haeum_phone_day7_warm_reply',
     payoffOnlyFlag: 'memory_payoff_haeum_day7_rain_seen',
-    invitation: '하음은 메트로놈을 일부러 느리게 맞췄다. “오늘은 네가 맞춰야 하는 박자 말고, 우리가 같이 늦어도 되는 박자로 걸어 볼래?”',
-    reaction: '하음은 학범의 대답에 맞춰 메트로놈을 멈췄다. 정확한 박자보다 둘의 숨이 맞는 순간을 더 믿겠다는 듯 부드럽게 웃었다.',
+    invitation: '“오늘은 네가 맞춰야 하는 박자 말고, 우리가 같이 늦어도 되는 박자로 걸어 볼래? 틀려도 내가 기다릴게.”',
+    reaction: '“메트로놈 멈출게. 정확한 박자보다 네 숨이 맞는 순간이 더 좋아. 흔들리면 나도 같이 흔들릴게.”',
     phoneLead: '오늘 박자 좋았어. 조금 느렸는데, 그래서 더 같이 걷는 느낌이었어.',
-    close: '학범은 하음의 메시지를 읽으며 자기 숨을 세었다. 느린 박자는 뒤처짐이 아니라, 함께 흔들리기 위해 남겨 둔 여유였다.',
+    close: '“느린 박자가 뒤처짐이 아니라면, 하음아, 내일도 같이 늦어도 돼. 네 숨에 맞춰 걸어갈게.”',
     choiceReactions: [
-      '하음은 메트로놈을 한 칸 더 늦췄다. “그럼 오늘은 네 속도부터 들을게.”',
-      '하음은 손끝으로 박자를 세다 학범을 봤다. “흔들리면 나도 같이 흔들리면 되지.”',
-      '하음은 웃느라 첫 음을 놓쳤다. “그 말, 다시 한 번만. 박자 맞춰서 듣고 싶어.”'
+      '“그럼 오늘은 네 속도부터 들을게. 내가 먼저 맞출 테니까, 급하게 오지 않아도 돼.”',
+      '“흔들리면 나도 같이 흔들리면 되지. 틀린 박자도 둘이면 음악처럼 들려.”',
+      '“그 말, 다시 한 번만. 박자 맞춰서 듣고 싶어. 아니, 사실은 그냥 한 번 더 듣고 싶어.”'
     ],
     choices: [
       '네 박자에 맞춰 가겠다고 말한다.',
@@ -87,14 +87,14 @@ const afterSchoolRouteDateSpecs = {
     memoryFlag: 'yunho_date_day7_shared_rain',
     phoneFlag: 'yunho_phone_day7_warm_reply',
     payoffOnlyFlag: 'memory_payoff_yunho_day7_rain_seen',
-    invitation: '윤호는 옥상 열쇠고리를 손바닥 안에 숨겼다. “선배, 오늘은 좋은 후배 말고… 같이 있고 싶은 사람으로 기다려도 돼요?”',
-    reaction: '윤호는 선배라는 호칭 뒤에 숨지 못하고 웃었다. 허락을 기다리던 거리보다 반 걸음 가까워진 곳에, 처음으로 자기 욕심을 세워 두었다.',
+    invitation: '“선배, 오늘은 좋은 후배 말고… 같이 있고 싶은 사람으로 기다려도 돼요? 제가 너무 가까우면 바로 말해 주세요.”',
+    reaction: '“선배라는 말 뒤에 숨고 싶었는데, 오늘은 못 숨겠어요. 허락해 주시면 반 걸음만 더 가까이 갈게요.”',
     phoneLead: '오늘 옥상 문, 일부러 바로 안 잠갔어요. 선배가 더 계실까 봐요.',
-    close: '학범은 윤호의 조심스러운 메시지를 읽고 옥상 문 손잡이를 떠올렸다. 기다림은 이제 후배의 예의가 아니라, 둘 사이의 약속으로 바뀌고 있었다.',
+    close: '“윤호야, 기다림을 후배의 예의로만 남기지 않을게. 다음엔 내가 먼저 옥상 문을 열고 네 이름을 부를게.”',
     choiceReactions: [
-      '윤호는 난간을 잡은 손에 힘을 줬다가 풀었다. “그럼… 한 걸음만 더 가도 돼요?”',
-      '윤호는 “선배”를 삼키고 학범 이름을 작게 불렀다. 부르고 나서야 얼굴이 빨개졌다.',
-      '윤호는 열쇠고리를 손바닥 위에 올려 보였다. “그러면 다음엔 제가 먼저 기다릴게요.”'
+      '“그럼… 한 걸음만 더 가도 돼요? 선배가 멈추라고 하면 바로 멈출게요.”',
+      '“학범… 선배.” “아, 이름 먼저 부르려다 실패했어요. 그래도 다음엔 다시 해볼게요.”',
+      '“그러면 다음엔 제가 먼저 기다릴게요. 좋은 후배 말고, 윤호로요.”'
     ],
     choices: [
       '허락한 거리보다 조금 더 가까워도 된다고 말한다.',
@@ -215,7 +215,7 @@ function buildAfterSchoolRouteDateScenes(spec) {
       name: spec.name,
       role: spec.role,
       place: spec.place,
-      text: `${spec.name}${subjectParticle(spec.name)} 건넨 시간을 학범은 어떤 온도로 받아들일까?`,
+      text: `“${spec.name}, 네가 건넨 시간은 내가 어떤 온도로 받아도 될까?”`,
       choices: spec.choices,
       rewards: spec.choices.map((_, index) => ({
         affection: { [spec.routeId]: 12 },
@@ -294,7 +294,7 @@ function buildAfterSchoolRouteDateScenes(spec) {
       variants: [
         {
           requiredFlags: [spec.memoryFlag, spec.phoneFlag],
-          text: `${spec.close} 학범은 이 기억을 단순한 우연이 아니라, 나중에 다시 꺼낼 수 있는 둘만의 약속으로 저장했다.`
+          text: `${spec.close} “이 기억은 우연이 아니라, 나중에 다시 꺼낼 수 있는 둘만의 약속으로 저장할게.”`
         },
         {
           default: true,

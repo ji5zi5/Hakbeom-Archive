@@ -57,6 +57,9 @@ export const day5Scenes = [
     place: '교실 앞 복도',
     text: '현겸은 “누구랑 고백한다더라”는 말에 웃지 못했다. “네가 불편한 건 싫어. 그런데 상대가 누굴까 생각한 건… 나도 조금 치사하지?”',
     effect: { target: 'hyeongyeom', type: 'blush' },
+    variants: [
+      { requiredFlags: ['hyeongyeom_date_day4_umbrella_handle'], text: '“그때 네 손이 먼저 안 피했잖아. 그래서 오늘은 내가 좀 치사해져도 되나 싶었어. 학범아, 한 걸음만 더 가까이 와.”' }
+    ],
     directives: [
       { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 4, src: '/assets/character/hyungyeom.png', expression: 'quiet', transition: 'enter-right' },
       { type: 'E', target: 'hyeongyeom', effect: 'blush', motion: 'nod' }
@@ -72,6 +75,9 @@ export const day5Scenes = [
     place: '도서관 앞 복도',
     text: '욱현은 소문을 묻는 학생들 사이에 조용히 서서 학범의 시선을 가려 주었다. “읽기 싫은 문장은 넘겨도 돼. 오늘은 내가 책갈피 해줄게.”',
     effect: { target: 'ukhyun', type: 'ellipsis' },
+    variants: [
+      { requiredFlags: ['ukhyun_date_day4_library_margin'], text: '욱현은 어제 책갈피 여백에 남긴 답을 기억하는 얼굴이었다. “읽기 싫은 문장은 넘겨도 돼. 네가 남긴 문장은 내가 아직 접어두고 있어.”' }
+    ],
     directives: [
       { type: 'SCG', id: 'ukhyun', name: '욱현', action: 'enter', pos: 2, expression: 'quiet', transition: 'fade-in' },
       { type: 'E', target: 'ukhyun', effect: 'ellipsis', motion: 'nod' }
@@ -87,10 +93,60 @@ export const day5Scenes = [
     place: '방송실 앞',
     text: '재성은 장난스럽게 손가락을 입술에 댔다. “이 소문, 방송 금지. 학범이가 고백할 목소리는 공개 채널 말고, 듣고 싶은 사람한테만 가야지.”',
     effect: { target: 'jaeseong', type: 'chatter' },
+    variants: [
+      { requiredFlags: ['jaeseong_date_day4_muted_mic'], text: '재성은 어제 꺼둔 마이크를 한 번 더 확인했다. “이 소문, 방송 금지. 네가 내 앞에서만 말했던 그 톤은 아직 공개 못 해.”' }
+    ],
     directives: [
       { type: 'SCG', id: 'jaeseong', name: '재성', action: 'enter', pos: 5, expression: 'confident', transition: 'enter-right' },
       { type: 'E', target: 'jaeseong', effect: 'chatter', motion: 'bounce' }
-    ]
+    ],
+    nextId: 'choice-day5-core-shift'
+  },
+
+  {
+    id: 'choice-day5-core-shift',
+    type: 'choice',
+    choices: [
+      '현겸에게 우산 거리만큼 가까이 선다.',
+      '욱현에게 접힌 노트의 답을 직접 건넨다.',
+      '재성에게 방송실 문을 닫아 달라고 한다.'
+    ],
+    rewards: [
+      { affection: { hyeongyeom: 20 }, flags: ['hyeongyeom_route_seed', 'hyeongyeom_date_day5_umbrella_distance'] },
+      { affection: { ukhyun: 20 }, flags: ['ukhyun_route_seed', 'ukhyun_date_day5_folded_note'] },
+      { affection: { jaeseong: 20 }, flags: ['jaeseong_route_seed', 'jaeseong_date_day5_broadcast_pause'] }
+    ],
+    next: ['day5-hyeongyeom-core-reply', 'day5-ukhyun-core-reply', 'day5-jaeseong-core-reply']
+  },
+  {
+    id: 'day5-hyeongyeom-core-reply',
+    type: 'dialogue',
+    mood: 'confession',
+    chapter: 'day-5',
+    name: '현겸',
+    role: '동급생',
+    text: '“이 정도 거리는 네가 정한 거지. 그럼 나도 안 물러날게. 네가 옆에 오면, 나도 괜찮은 척 안 할래.”',
+    nextId: 'choice-day5-school-shift'
+  },
+  {
+    id: 'day5-ukhyun-core-reply',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-5',
+    name: '욱현',
+    role: '도서위원',
+    text: '욱현은 접힌 노트를 받자마자 펼치지 않았다. “바로 읽으면 표정이 들킬 것 같아서. 그래도 답이 왔다는 건 지금 알아.” 손끝만 조용히 떨렸다.',
+    nextId: 'choice-day5-school-shift'
+  },
+  {
+    id: 'day5-jaeseong-core-reply',
+    type: 'dialogue',
+    mood: 'warm',
+    chapter: 'day-5',
+    name: '재성',
+    role: '방송부',
+    text: '재성은 방송실 문을 닫고 나서야 웃었다. “둘만 들을 수 있으면 됐지? 그럼 네가 다음에 할 말, 나 먼저 들을 자격 생긴 거다.”',
+    nextId: 'choice-day5-school-shift'
   },
 
   {
@@ -102,9 +158,9 @@ export const day5Scenes = [
       '준혁과 도서관에서 문화제 동선을 확인한다.'
     ],
     rewards: [
-      { affection: { sangwon: 20 }, flags: ['sangwon_route_seed', 'day5_records_copy'] },
-      { affection: { sanguk: 20 }, flags: ['sanguk_route_seed', 'day5_gym_trace'] },
-      { affection: { junhyeok: 20 }, flags: ['junhyeok_route_seed', 'day5_library_map'] }
+      { affection: { sangwon: 20 }, flags: ['sangwon_route_seed', 'day5_records_copy', 'sangwon_date_day5_rewritten_line'] },
+      { affection: { sanguk: 20 }, flags: ['sanguk_route_seed', 'day5_gym_trace', 'sanguk_date_day5_stopped_finish'] },
+      { affection: { junhyeok: 20 }, flags: ['junhyeok_route_seed', 'day5_library_map', 'junhyeok_date_day5_drawn_route'] }
     ],
     next: ['day5-sangwon-archive-desk', 'day5-sanguk-gym-start', 'day5-junhyeok-library-corner']
   },
@@ -118,6 +174,9 @@ export const day5Scenes = [
     place: '학생회실',
     text: '상원은 안내문 초안에 “확인되지 않은 말은 옮기지 않는다”라고 적었다가 학범 쪽을 보았다. “이 문장, 네 마음에도 적용돼. 아직 모르면 모른다고 적어. 대신 남이 대신 쓰게 두지는 마.”',
     effect: { target: 'sangwon', type: 'ellipsis' },
+    variants: [
+      { requiredFlags: ['sangwon_date_day4_record_margin'], text: '상원은 어제 기록집 여백에 남겨 둔 빈칸을 다시 펼쳤다. “확인되지 않은 말은 옮기지 않는다. 네 마음도 마찬가지야. 네가 말할 때까지 비워둘게.”' }
+    ],
     directives: [
       { type: 'BCG', src: '/assets/bg/archive-club-room-evening.png', transition: 'fade-in' },
       { type: 'SCG', id: 'sangwon', action: 'move', pos: 3, motion: 'straight' },
@@ -158,6 +217,9 @@ export const day5Scenes = [
     place: '체육관 복도',
     text: '상욱은 포스터 더미를 한 팔에 끼고도 학범이 든 한 장을 뺏지 않았다. “내가 다 해주면 빠르긴 한데, 네가 어디 붙이고 싶은지 모르잖아. 같이 하자.”',
     effect: { target: 'sanguk', type: 'chatter' },
+    variants: [
+      { requiredFlags: ['sanguk_date_day4_finish_line'], text: '상욱은 어제 사진을 찍을 때처럼 학범 앞에서 멈춰 섰다. “내가 다 해주면 빠르긴 한데, 이번에도 네 옆에서 멈춰야 맞는 거잖아.”' }
+    ],
     directives: [
       { type: 'BCG', src: '/assets/bg/gym-corridor-evening.png', transition: 'fade-in' },
       { type: 'SCG', id: 'sangwon', action: 'delete', transition: 'fade-out' },
@@ -194,6 +256,9 @@ export const day5Scenes = [
     place: '도서관 구석자리',
     text: '준혁은 도서관 전시 동선표를 펼치고 소문이 도는 경로를 지우개로 밀어냈다. “확산 경로보다 네가 피곤해지는 지점이 더 중요해. 여기서 쉬어.”',
     effect: { target: 'junhyeok', type: 'ellipsis' },
+    variants: [
+      { requiredFlags: ['junhyeok_date_day4_route_map'], text: '준혁은 어제 함께 접은 동선표의 접힌 자국을 손끝으로 눌렀다. “최단 경로보다 네가 다시 오고 싶은 길이 더 중요해. 오늘도 여기서 쉬어.”' }
+    ],
     directives: [
       { type: 'BCG', src: '/assets/bg/library-window.png', transition: 'fade-in' },
       { type: 'SCG', id: 'sangwon', action: 'delete', transition: 'fade-out' },
@@ -259,7 +324,17 @@ export const day5Scenes = [
       { from: 'yunho', text: '옥상 배치도 확인 부탁드려요. 선배가 오면 보여드릴게요.' },
       { from: 'hakbeom', text: '이번엔 내가 가고 싶은 곳부터 갈게.' }
     ],
-    nextId: 'choice-day5-after-school-shift',
+    replies: [
+      '도훈에게 먼저 답장한다.',
+      '하음에게 천천히 맞춰 달라고 한다.',
+      '윤호에게 옥상에서 기다려 달라고 한다.'
+    ],
+    rewards: [
+      { affection: { dohun: 6 }, flags: ['dohun_phone_day5_direct_reply'] },
+      { affection: { haeum: 6 }, flags: ['haeum_phone_day5_gentle_reply'] },
+      { affection: { yunho: 6 }, flags: ['yunho_phone_day5_tease_reply'] }
+    ],
+    next: ['choice-day5-after-school-shift', 'choice-day5-after-school-shift', 'choice-day5-after-school-shift'],
     directives: [
       { type: 'SE', cue: 'message' }
     ]
@@ -273,9 +348,9 @@ export const day5Scenes = [
       '윤호와 옥상 휴게 공간을 점검한다.'
     ],
     rewards: [
-      { affection: { dohun: 20 }, flags: ['dohun_route_seed', 'day5_cctv_check'] },
-      { affection: { haeum: 20 }, flags: ['haeum_route_seed', 'day5_music_room_echo'] },
-      { affection: { yunho: 20 }, flags: ['yunho_route_seed', 'day5_rooftop_paper'] }
+      { affection: { dohun: 20 }, flags: ['dohun_route_seed', 'day5_cctv_check', 'dohun_date_day5_hidden_sincerity'] },
+      { affection: { haeum: 20 }, flags: ['haeum_route_seed', 'day5_music_room_echo', 'haeum_date_day5_waited_beat'] },
+      { affection: { yunho: 20 }, flags: ['yunho_route_seed', 'day5_rooftop_paper', 'yunho_date_day5_after_rain_rooftop'] }
     ],
     next: ['day5-dohun-store-arrival', 'day5-haeum-music-room', 'day5-yunho-rooftop']
   },
@@ -289,6 +364,9 @@ export const day5Scenes = [
     place: '매점 앞',
     text: '도훈은 복숭아 음료를 이미 계산해두고도 영수증을 학범 앞에서 흔들었다. “정보값 선불. 네가 좋아하는 맛인 건 우연이라고 해둘게.”',
     effect: { target: 'dohun', type: 'chatter' },
+    variants: [
+      { requiredFlags: ['dohun_date_day4_counter_joke'], text: '도훈은 어제 장난처럼 남겨 둔 복숭아 음료를 오늘도 먼저 꺼냈다. “정보값 선불. 두 번이면 우연 말고 습관이라고 해도 되냐?”' }
+    ],
     directives: [
       { type: 'BCG', src: '/assets/bg/convenience-store-night.png', transition: 'fade-in' },
       { type: 'SCG', id: 'dohun', name: '도훈', action: 'enter', pos: 3, expression: 'tease', transition: 'enter-right' },
@@ -328,6 +406,9 @@ export const day5Scenes = [
     place: '해질녘 음악실',
     text: '해질녘 음악실에서 하음은 공연표 마지막 칸을 비워 두었다. “네가 정해. 늘 남의 박자에 맞춰주니까, 오늘은 네 박자도 악보에 넣자.”',
     effect: { target: 'haeum', type: 'ellipsis' },
+    variants: [
+      { requiredFlags: ['haeum_date_day4_slow_tempo'], text: '하음은 어제 맞춰 준 느린 박자를 기억하듯 건반 위 손을 멈췄다. “오늘도 네가 정해. 급해진 숨까지 악보에 넣으면, 내가 맞출게.”' }
+    ],
     directives: [
       { type: 'BCG', src: '/assets/bg/music-room-late-afternoon.png', transition: 'fade-in' },
       { type: 'SCG', id: 'haeum', name: '하음', action: 'enter', pos: 3, expression: 'gentle', transition: 'fade-in' },
@@ -367,6 +448,9 @@ export const day5Scenes = [
     place: '비 갠 옥상',
     text: '윤호는 옥상 문 앞에서 배치도를 들고 기다리고 있었다. “선배가 올 줄 알았어요. 아니, 오셨으면 좋겠다고 생각해서 먼저 와 있었어요.”',
     effect: { target: 'yunho', type: 'ellipsis' },
+    variants: [
+      { requiredFlags: ['yunho_date_day4_rooftop_wind'], text: '윤호는 어제 함께 본 옥상 바람을 다시 보여 주려는 듯 문을 열어 두고 있었다. “선배가 올 줄 알았어요. 오늘 풍경도, 같이 봐야 기록되니까요.”' }
+    ],
     directives: [
       { type: 'BCG', src: '/assets/bg/rooftop-after-rain.png', transition: 'fade-in' },
       { type: 'SCG', id: 'yunho', name: '윤호', action: 'enter', pos: 3, expression: 'quiet', transition: 'fade-in' },

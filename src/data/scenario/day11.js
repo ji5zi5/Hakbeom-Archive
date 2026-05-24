@@ -4,63 +4,63 @@ const routeDateMemoryPayoffVariants = [
       "route_lock_hyeongyeom",
       "hyeongyeom_date_day9_private_signal"
     ],
-    "text": "학범은 교문 우산꽂이 앞에서 현겸의 파란 리본을 먼저 알아봤다. 먼저 기다리겠다고 말해 놓고도 늦을까 봐, 손은 벌써 우산 손잡이 위에 가 있었다."
+    "text": "“나 먼저 왔어. 네 파란 리본 보자마자 손잡이부터 찾았어. 어제 네가 기다렸으니까, 오늘은 내가 기다릴 차례야.”"
   },
   {
     "requiredFlags": [
       "route_lock_ukhyun",
       "ukhyun_date_day9_private_signal"
     ],
-    "text": "학범의 책상에는 접히지 않은 메모가 놓여 있었다. 창가에서 서로 숨기지 않기로 한 뒤라, 빈칸은 도망칠 자리가 아니라 같이 앉으라는 초대가 됐다."
+    "text": "“창가 자리 비워 뒀어. 도망치라는 빈칸 아니야. 네가 앉으면, 나도 오늘은 숨지 않을게.”"
   },
   {
     "requiredFlags": [
       "route_lock_jaeseong",
       "jaeseong_date_day9_private_signal"
     ],
-    "text": "방송실 표시등은 꺼져 있었지만 재성의 쪽지는 스피커 아래 붙어 있었다. ‘오늘 첫 목소리는 네가 정해.’ 학범은 괜히 목을 한 번 가다듬었다."
+    "text": "“오늘 첫 목소리는 네가 정해. 표시등은 꺼 뒀어. 그러니까 네가 웃어도, 대답해도, 나만 들을게.”"
   },
   {
     "requiredFlags": [
       "route_lock_sangwon",
       "sangwon_date_day8_shared_archive_card"
     ],
-    "text": "상원은 준비 명단을 들고도 학범의 이름 옆에 아무 표시를 하지 않았다. 전시 카드에 비워 둔 칸처럼, 오늘도 먼저 물어봐 주려는 얼굴이었다."
+    "text": "“네 이름 옆은 비워 뒀어. 표시부터 남기면 또 앞서가는 거니까. 오늘도 먼저 물어봐도 돼?”"
   },
   {
     "requiredFlags": [
       "route_lock_sanguk",
       "sanguk_date_day8_same_speed_steps"
     ],
-    "text": "체육관 쪽에서 급한 발소리가 오다가 학범 앞 세 걸음에서 멈췄다. 상욱은 숨을 고르고 나서야 웃었다. “오늘은 같이 출발하려고.”"
+    "text": "“오늘은 같이 출발하려고.” “세 걸음 앞에서 멈췄어. 나 잘 참았지? 이제 네 옆에서 걸어도 돼?”"
   },
   {
     "requiredFlags": [
       "route_lock_junhyeok",
       "junhyeok_date_day8_saved_route_marker"
     ],
-    "text": "준혁은 최단 경로가 그려진 지도를 접어 가방에 넣었다. 대신 어제 별표를 남겨 둔 복도 쪽으로 펜끝이 슬쩍 돌아가 있었다."
+    "text": "“최단 경로는 접었어. 어제 별표 남긴 복도, 오늘도 열어 둘게. 네가 늦어도 좌표는 안 지워.”"
   },
   {
     "requiredFlags": [
       "route_lock_dohun",
       "dohun_date_day7_shared_rain"
     ],
-    "text": "편의점 봉투가 학생회실 손잡이에 걸려 있었다. 영수증 뒤에는 ‘밥 안 먹으면 압수’라고 적혀 있었고, 학범은 캔의 온도를 먼저 떠올렸다."
+    "text": "“밥 안 먹으면 압수.” “아니, 걱정한 거 맞아. 캔은 따뜻할 때 마셔. 고맙다는 말은 작게 해.”"
   },
   {
     "requiredFlags": [
       "route_lock_haeum",
       "haeum_date_day7_shared_rain"
     ],
-    "text": "음악실 문은 반쯤 열려 있었고 낮은 건반 하나가 천천히 울렸다. 하음은 학범의 발소리가 가까워질 때까지 다음 음을 누르지 않았다."
+    "text": "“네 발소리 들리면 다음 음 누를게. 음악실 문은 열어 뒀어. 오늘 첫 박자는 네 거야.”"
   },
   {
     "requiredFlags": [
       "route_lock_yunho",
       "yunho_date_day7_shared_rain"
     ],
-    "text": "옥상 계단 중간에서 윤호가 내려오고 있었다. 그는 뒤로 물러서는 대신 옆자리를 비워 두고, 조금 떨리는 손으로 난간을 잡았다."
+    "text": "“선배, 오늘은 뒤로 안 물러설게요. 옆자리 비워 뒀어요. 제가 조금 떨려도 괜찮으면요.”"
   }
 ];
 
@@ -70,84 +70,159 @@ const routeDatePhonePayoffVariants = [
       "route_lock_hyeongyeom",
       "hyeongyeom_phone_day9_after_date"
     ],
-    "text": "현겸에게서 “점심 같이 먹을래?”라는 메시지가 왔다. 바로 이어 “이번엔 너무 늦게 답 안 해도 돼”가 와서, 학범은 웃으며 화면을 켰다."
+    "text": "“점심 같이 먹을래?” “이번엔 너무 늦게 답 안 해도 돼.” “늦게 안 할게. 지금 갈게, 현겸아.”"
   },
   {
     "requiredFlags": [
       "route_lock_ukhyun",
       "ukhyun_phone_day9_after_date"
     ],
-    "text": "욱현은 “도서관 창가 비워 뒀어”라고만 보냈다. 짧은 문장인데도 학범은 그 뒤에 붙지 않은 말까지 들었다. 안 와도 기다리겠다는 말."
+    "text": "“도서관 창가 비워 뒀어.” “안 와도 비워 둘 거야.” “그래도 오면… 나 오늘은 바로 볼게.”"
   },
   {
     "requiredFlags": [
       "route_lock_jaeseong",
       "jaeseong_phone_day9_after_date"
     ],
-    "text": "재성은 “오늘 방송실 예약 완료”라고 보낸 뒤, “예약자는 학범이 웃는 얼굴 한 명”이라고 덧붙였다. 학범은 대답을 쓰기도 전에 입꼬리부터 들켰다."
+    "text": "“오늘 방송실 예약 완료.” “예약자는 학범이 웃는 얼굴 한 명.” “답장 늦어도 돼. 대신 오면 바로 들려줘.”"
   },
   {
     "requiredFlags": [
       "route_lock_sangwon",
       "sangwon_phone_day8_warm_reply"
     ],
-    "text": "상원은 전시 카드 사진 대신 빈칸을 다시 보냈다. 곧이어 ‘열쇠는 둘이 갖는 거 맞지?’라는 문장이 조심스럽게 도착했다."
+    "text": "“열쇠는 둘이 갖는 거 맞지?” “혼자 보관하면 또 기록이 앞서갈까 봐. 네 답을 먼저 들을게.”"
   },
   {
     "requiredFlags": [
       "route_lock_sangwon",
       "sangwon_phone_day8_steady_reply"
     ],
-    "text": "상원은 전시 카드 아래에 물음표 하나를 찍어 보냈다. 학범은 그 표시가 답을 재촉하는 게 아니라, 다시 물어봐 주겠다는 약속이라는 걸 알았다."
+    "text": "“전시 카드 아래 물음표 하나만 남겼어. 답 재촉 아니야. 다시 물어봐 주겠다는 약속이야.”"
   },
   {
     "requiredFlags": [
       "route_lock_sanguk",
       "sanguk_phone_day8_warm_reply"
     ],
-    "text": "상욱은 운동화 사진과 함께 “오늘도 네 옆에서 걸어도 돼?”라고 보냈다. 달려온 티가 나는 숨표가 문장 끝에 붙어 있었다."
+    "text": "“오늘도 네 옆에서 걸어도 돼?” “숨표 붙은 건 들키겠지만, 그래도 이번엔 기다릴게.”"
   },
   {
     "requiredFlags": [
       "route_lock_sanguk",
       "sanguk_phone_day8_steady_reply"
     ],
-    "text": "상욱은 “학범아”라는 세 글자 뒤에 한참 입력 중을 띄웠다. 결국 도착한 말은 짧았다. “이름 먼저 부르는 거, 연습 중.”"
+    "text": "“학범아.” “이름 먼저 부르는 거, 연습 중.” “달려가기 전에 네가 돌아볼 시간을 주고 싶어.”"
   },
   {
     "requiredFlags": [
       "route_lock_junhyeok",
       "junhyeok_phone_day8_warm_reply"
     ],
-    "text": "준혁은 지도 사진에 별표를 하나 더 붙여 보냈다. 학범이 확대하자 별표 옆에 작은 글씨가 보였다. ‘일부러 남김.’"
+    "text": "“별표 하나 더 붙였어.” “일부러 남김.” “보고 싶다는 말을 지도에 쓰면 덜 들킬 줄 알았어.”"
   },
   {
     "requiredFlags": [
       "route_lock_junhyeok",
       "junhyeok_phone_day8_steady_reply"
     ],
-    "text": "준혁은 돌아가는 길을 더 굵게 표시한 사진을 보냈다. 빠른 길은 그대로였지만, 굵은 선은 이상하게 학범 쪽으로 오래 머물렀다."
+    "text": "“돌아가는 길을 더 굵게 표시했어. 빠른 길은 알아. 그래도 너랑 걷는 길이 더 오래 남아.”"
   },
   {
     "requiredFlags": [
       "route_lock_dohun",
       "dohun_phone_day7_warm_reply"
     ],
-    "text": "도훈은 “점심 안 먹으면 진짜 화낸다”라고 보냈다. 이어서 “단 거 말고 따뜻한 거 사 둠”이 와서, 학범은 괜히 봉투 손잡이를 만졌다."
+    "text": "“점심 안 먹으면 진짜 화낸다.” “단 거 말고 따뜻한 거 사 둠.” “놀리면 압수야. 그래도 와.”"
   },
   {
     "requiredFlags": [
       "route_lock_haeum",
       "haeum_phone_day7_warm_reply"
     ],
-    "text": "하음은 “오늘 박자도 천천히 가자”라고 보냈다. 학범은 답장을 쓰기 전에 숨을 한 번 세고, 그 속도에 맞춰 손가락을 움직였다."
+    "text": "“오늘 박자도 천천히 가자.” “답장도 급하게 안 해도 돼. 네 숨이 맞을 때 보내 줘.”"
   },
   {
     "requiredFlags": [
       "route_lock_yunho",
       "yunho_phone_day7_warm_reply"
     ],
-    "text": "윤호는 “선배, 오늘 옥상 문 조금 늦게 잠가도 돼요?”라고 보냈다. 학범은 ‘내가 먼저 갈게’까지 적고 잠깐 멈췄다가, 그대로 보냈다."
+    "text": "“선배, 오늘 옥상 문 조금 늦게 잠가도 돼요?” “내가 먼저 갈게.” “정말요? 그럼 저 기다릴게요.”"
+  }
+];
+
+const earlyDatePayoffVariants = [
+  {
+    "requiredFlags": [
+      "route_lock_hyeongyeom",
+      "hyeongyeom_date_day4_umbrella_handle",
+      "hyeongyeom_date_day5_umbrella_distance"
+    ],
+    "text": "“현겸아, 손 비워 뒀어. 처음 같이 잡았던 손잡이도, 어제 안 물러난 거리도 내가 기억해. 오늘은 내가 먼저 잡을게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_ukhyun",
+      "ukhyun_date_day4_library_margin",
+      "ukhyun_date_day5_folded_note"
+    ],
+    "text": "“욱현아, 여백에 남긴 답 아직 안 지웠지? 오늘은 내가 먼저 읽을게. 네 옆에 앉아도 돼?”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_jaeseong",
+      "jaeseong_date_day4_muted_mic",
+      "jaeseong_date_day5_broadcast_pause"
+    ],
+    "text": "“재성아, 오늘도 마이크 꺼졌지? 그럼 나 먼저 말할게. 네 장난 말고, 네 진짜 목소리 듣고 싶어.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sangwon",
+      "sangwon_date_day4_record_margin",
+      "sangwon_date_day5_rewritten_line"
+    ],
+    "text": "“상원아, 오늘의 한 줄은 둘이 같이 정하자. 네가 펜 들기 전에 내가 먼저 말할게. 기록은 나중에 남겨도 돼.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_sanguk",
+      "sanguk_date_day4_finish_line",
+      "sanguk_date_day5_stopped_finish"
+    ],
+    "text": "“상욱아, 오늘은 내가 먼저 걸어갈게. 뛰어오지 않고 기다린 거 봤어. 이제 같이 출발하자.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_junhyeok",
+      "junhyeok_date_day4_route_map",
+      "junhyeok_date_day5_drawn_route"
+    ],
+    "text": "“준혁아, 효율표 접어도 돼. 돌아가는 복도라도 네가 기다리는 길이면, 나한텐 데이트 경로야.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_dohun",
+      "dohun_date_day4_counter_joke",
+      "dohun_date_day5_hidden_sincerity"
+    ],
+    "text": "“도훈아, 복숭아 음료도 접힌 영수증도 장난보다 먼저 남았어. 이번엔 숨겨 둔 진심 모르는 척 안 할게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_haeum",
+      "haeum_date_day4_slow_tempo",
+      "haeum_date_day5_waited_beat"
+    ],
+    "text": "“하음아, 느린 박자 그대로 가자. 네가 재촉하지 않으면, 나도 숨 고르는 법을 잊지 않을게.”"
+  },
+  {
+    "requiredFlags": [
+      "route_lock_yunho",
+      "yunho_date_day4_rooftop_wind",
+      "yunho_date_day5_after_rain_rooftop"
+    ],
+    "text": "“윤호야, 선배라는 거리 뒤에 숨지 않을게. 오늘은 내가 먼저 이름부터 부르고 옥상으로 갈게.”"
   }
 ];
 
@@ -179,64 +254,72 @@ export const day11Scenes = [
     "place": "아침 복도",
     "text": "학범은 빈 출석부 맨 아래에 어제 쓴 이름을 다시 보았다. 복도는 아직 덜 깬 색이었고, 오늘은 그 이름을 숨길 곳이 없었다.",
     "variants": [
+      ...earlyDatePayoffVariants,
       ...routeDateMemoryPayoffVariants,
+      {
+        "requiredFlags": [
+          "route_lock_hyeongyeom",
+          "hyeongyeom_phone_day9_after_date"
+        ],
+        "text": "“어제 답장 늦지 않겠다고 했잖아.” “그래서 오늘은 내가 먼저 왔어. 네가 바로 볼 수 있게.”"
+      },
       {
         "requiredFlags": [
           "route_lock_hyeongyeom"
         ],
-        "text": "학범은 교문 우산꽂이 앞에서 현겸의 파란 리본을 먼저 알아봤다. 기다림을 확인하러 온 줄 알았는데, 오늘은 자신이 먼저 손잡이를 잡고 있었다."
+        "text": "“현겸아, 나 먼저 왔어. 오늘은 기다림 확인하러 온 게 아니라, 네 손잡이 먼저 잡으러 온 거야.”"
       },
       {
         "requiredFlags": [
           "route_lock_ukhyun"
         ],
-        "text": "학범의 책상에는 접히지 않은 메모가 한 장 놓여 있었다. 욱현은 답을 숨기지 않겠다는 듯 빈칸을 넓게 남겨 두었다."
+        "text": "“여기 빈칸 남겨 뒀어. 답을 숨기라는 뜻 아니야. 네가 쓰면, 나도 바로 읽을게.”"
       },
       {
         "requiredFlags": [
           "route_lock_jaeseong"
         ],
-        "text": "방송실 표시등은 꺼져 있었지만 재성의 쪽지는 스피커 아래 붙어 있었다. “오늘 첫 목소리는 네가 정해.” 학범은 그 문장을 오래 들여다봤다."
+        "text": "“오늘 첫 목소리는 네가 정해. 방송실 문은 내가 닫아 둘게. 학범아, 오늘은 나도 장난 안 할래.”"
       },
       {
         "requiredFlags": [
           "route_lock_sangwon"
         ],
-        "text": "상원은 준비 명단을 들고도 학범의 이름 옆에 아무 표시를 하지 않았다. 빈칸을 남기는 일이 그에게는 처음 보는 배려처럼 보였다."
+        "text": "“빈칸 남겨 뒀어. 내가 할 수 있는 배려가 아직 서툴면, 네가 직접 고쳐 줘.”"
       },
       {
         "requiredFlags": [
           "route_lock_sanguk"
         ],
-        "text": "체육관 쪽에서 급한 발소리가 오다가 학범 앞 세 걸음에서 멈췄다. 상욱은 숨을 고르고서야 “같이 갈래?”라고 물었다."
+        "text": "“같이 갈래?” “뛰어오려다 멈췄어. 네가 대답할 시간은 내가 지켜야 하니까.”"
       },
       {
         "requiredFlags": [
           "route_lock_junhyeok"
         ],
-        "text": "준혁은 지도의 최단 경로를 접어 가방에 넣었다. 대신 일부러 돌아가는 복도에 동그라미를 치고 학범이 따라올 시간을 남겨 두었다."
+        "text": "“최단 경로 접어 둘게. 일부러 돌아가는 복도에 동그라미 쳤어. 네가 따라올 시간까지 계산했어.”"
       },
       {
         "requiredFlags": [
           "route_lock_dohun"
         ],
-        "text": "편의점 봉투가 학생회실 손잡이에 걸려 있었다. 영수증 뒤에는 도훈의 글씨로 “오늘은 대가 안 받음. 대신 밥 먹어.”라고 적혀 있었다."
+        "text": "“오늘은 대가 안 받음. 대신 밥 먹어.” “네가 웃으면 됐어. 이건 정보값 아니고 그냥 내 시간.”"
       },
       {
         "requiredFlags": [
           "route_lock_haeum"
         ],
-        "text": "음악실 문은 반쯤 열려 있었고 낮은 건반 하나가 천천히 울렸다. 하음은 학범의 걸음이 맞춰질 때까지 다음 음을 누르지 않았다."
+        "text": "“네 걸음이 맞춰질 때까지 다음 음은 안 누를게. 늦어도 괜찮아. 나는 그 박자 좋아해.”"
       },
       {
         "requiredFlags": [
           "route_lock_yunho"
         ],
-        "text": "옥상 계단 중간에서 윤호가 내려오고 있었다. 평소처럼 뒤에 서려다 멈춘 그는, 학범의 옆자리를 비워 둔 채 손을 흔들었다."
+        "text": "“선배, 오늘은 뒤가 아니라 옆에 서도 돼요? 제가 먼저 손 흔들었으니까, 대답은 천천히 해 주세요.”"
       },
       {
         "default": true,
-        "text": "학범은 교문 우산꽂이 앞에서 현겸의 파란 리본을 먼저 알아봤다. 기다림을 확인하러 온 줄 알았는데, 오늘은 자신이 먼저 손잡이를 잡고 있었다."
+        "text": "“현겸아, 나 먼저 왔어. 오늘은 기다림 확인하러 온 게 아니라, 네 손잡이 먼저 잡으러 온 거야.”"
       }
     ],
     "directives": [
@@ -405,49 +488,49 @@ export const day11Scenes = [
         "requiredFlags": [
           "route_lock_ukhyun"
         ],
-        "text": "욱현은 “도서관 창가 비워 뒀어”라고만 보냈다. 잠시 뒤 “네가 안 와도 비워 둘 거야”라는 문장이 조용히 도착했다."
+        "text": "“도서관 창가 비워 뒀어.” “네가 안 와도 비워 둘 거야.” “근데 오면, 나 바로 웃을지도 몰라.”"
       },
       {
         "requiredFlags": [
           "route_lock_jaeseong"
         ],
-        "text": "재성은 “오늘 방송실 예약 완료”라고 보낸 뒤, “예약자는 학범이 웃는 얼굴 한 명”이라고 덧붙였다가 바로 지우지 않았다."
+        "text": "“오늘 방송실 예약 완료.” “예약자는 학범이 웃는 얼굴 한 명.” “지우려다 말았어. 네가 봤으면 해서.”"
       },
       {
         "requiredFlags": [
           "route_lock_sangwon"
         ],
-        "text": "상원은 “오늘 일정 16:10부터 비워 둠”이라고 보냈다. 마지막 줄에는 “공식 사유: 너랑 있고 싶어서”가 적혀 있었다."
+        "text": "“오늘 일정 16:10부터 비워 둠.” “공식 사유는 못 쓰겠어. 비공식 사유는 너랑 있고 싶어서.”"
       },
       {
         "requiredFlags": [
           "route_lock_sanguk"
         ],
-        "text": "상욱은 “체육관 앞에서 기다림!”이라고 보냈다가 다시 “천천히 와. 뛰어오지 마. 이번엔 내가 기다릴 차례”라고 고쳐 보냈다."
+        "text": "“체육관 앞에서 기다림!” “아니, 천천히 와. 뛰어오지 마. 이번엔 내가 기다릴 차례야.”"
       },
       {
         "requiredFlags": [
           "route_lock_junhyeok"
         ],
-        "text": "준혁은 “네가 올 확률을 높이기 위해 의자를 하나 더 뒀어”라고 보냈다. 그 다음 메시지는 “보고 싶다는 뜻으로 해석해도 무방.”이었다."
+        "text": "“네가 올 확률을 높이기 위해 의자를 하나 더 뒀어.” “보고 싶다는 뜻으로 해석해도 무방.”"
       },
       {
         "requiredFlags": [
           "route_lock_dohun"
         ],
-        "text": "도훈은 “매점 신메뉴 별로임”이라고 보냈다. 곧이어 “근데 네가 먹으면 맛 평가 달라질 수도 있으니까 와라”가 따라왔다."
+        "text": "“매점 신메뉴 별로임.” “근데 네가 먹으면 맛 평가 달라질 수도 있으니까 와라.” “혼자 먹기 싫어서 그런 건 아님.”"
       },
       {
         "requiredFlags": [
           "route_lock_haeum"
         ],
-        "text": "하음은 “오늘 음악실은 조금 느린 곡”이라고 보냈다. 그리고 “네가 들어오면 그때부터 시작할게”라는 문장이 오래 화면에 남았다."
+        "text": "“오늘 음악실은 조금 느린 곡.” “네가 들어오면 그때부터 시작할게.” “첫 음은 네가 와야 눌러.”"
       },
       {
         "requiredFlags": [
           "route_lock_yunho"
         ],
-        "text": "윤호는 “선배, 옥상 바람 좋아요”라고 보냈다. 잠시 뒤 “혼자 보기 아까워서요. 아니, 같이 보고 싶어서요”라고 솔직하게 고쳤다."
+        "text": "“선배, 옥상 바람 좋아요.” “혼자 보기 아까워서요. 아니, 같이 보고 싶어서요.” “이번엔 안 지울게요.”"
       }
     ]
   },
@@ -606,7 +689,7 @@ export const day11Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "접힌 노트",
-    "text": "욱현은 학범이 학범 아카이브에서 다시 펼친 페이지 번호를 먼저 말했다. 너무 낮은 목소리라 책장 넘기는 소리에 묻힐 뻔했지만, 학범은 그가 밤새 어디를 보고 있었는지 알아차렸다.",
+    "text": "“그 페이지, 네가 다시 펼칠 줄 알았어. 밤새 기다린 건 아닌데… 아니, 조금은 기다렸어.”",
     "nextId": "day11-ukhyun-desk",
     "effect": {
       "target": "ukhyun",
@@ -691,7 +774,7 @@ export const day11Scenes = [
     "name": "학범",
     "role": "학생회",
     "place": "접힌 노트",
-    "text": "“그 페이지, 네가 세 번 읽었어.” 욱현은 탓하지 않았고, 그래서 더 가까웠다. 학범은 변명 대신 노트 가장자리를 눌러 접힌 자국을 폈다.",
+    "text": "“그 페이지, 네가 세 번 읽었어.” “탓하는 거 아니야. 나도 네 답을 세 번 넘게 봤으니까.”",
     "nextId": "day11-ukhyun-promise"
   },
   {
@@ -702,7 +785,7 @@ export const day11Scenes = [
     "name": "욱현",
     "role": "도서관 도우미",
     "place": "접힌 노트",
-    "text": "욱현은 책을 덮으며 “다른 줄로 넘어가도, 난 네가 돌아온 줄을 알아”라고 말했다. 학범은 그 조용한 확인이 고백보다 더 오래 붙잡는 방식임을 알았다.",
+    "text": "“다른 줄로 넘어가도, 난 네가 돌아온 줄을 알아.” “그러니까 오늘은 여기 있어. 내가 먼저 책 덮을 때까지.”",
     "nextId": "day11-merge",
     "effect": {
       "target": "ukhyun",
@@ -726,7 +809,7 @@ export const day11Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실 너머",
-    "text": "재성은 “어제 인기 많으셨네?” 하고 한 번 웃었다. 그러나 학범이 대답하기 전, 그는 마이크 스위치를 내리고 장난을 멈췄다.",
+    "text": "“어제 인기 많으셨네?” “아, 농담 취소. 지금은 나만 봐. 마이크 꺼졌고, 내 목소리도 낮출게.”",
     "nextId": "day11-jaeseong-desk",
     "effect": {
       "target": "jaeseong",
@@ -811,7 +894,7 @@ export const day11Scenes = [
     "name": "학범",
     "role": "학생회",
     "place": "방송실 너머",
-    "text": "“방송용으로 묻는 거 아니야.” 재성의 비공개 목소리가 유리창 안쪽에 낮게 남았다. 학범은 웃어 넘길 말을 찾지 못하고 꺼진 마이크만 바라봤다.",
+    "text": "“방송용으로 묻는 거 아니야.” “네가 고른 이름, 내가 장난으로 넘기면 싫을 것 같아서.”",
     "nextId": "day11-jaeseong-promise"
   },
   {
@@ -822,7 +905,7 @@ export const day11Scenes = [
     "name": "재성",
     "role": "방송부",
     "place": "방송실 너머",
-    "text": "재성은 녹음 버튼에서 손을 뗀 채 “네가 고른 이름, 남들이 듣게 안 해”라고 말했다. 학범은 농담이 비어 있던 자리에 남은 목소리가 더 위험하게 다정하다고 느꼈다.",
+    "text": "“네가 고른 이름, 남들이 듣게 안 해.” “대신 나한텐 한 번 더 말해 줘. 지금 떨리는 거 숨기기 싫어.”",
     "nextId": "day11-merge",
     "effect": {
       "target": "jaeseong",
