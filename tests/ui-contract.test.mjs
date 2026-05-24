@@ -926,6 +926,26 @@ assert.match(
   /<button type="button" onClick=\{\(\) => setSaveLoadMode\('save'\)\}>SAVE<\/button>[\s\S]*?<button type="button" onClick=\{\(\) => setSaveLoadMode\('load'\)\}>LOAD<\/button>[\s\S]*?<button type="button" onClick=\{openGallery\}>CG<\/button>/,
   'Game screen system buttons should keep explicit SAVE, LOAD, and adjacent CG actions.'
 );
+assert.match(
+  gameButtonsMatch[0],
+  /<button type="button" onClick=\{openPlan\}>PLAN<\/button>/,
+  'Game screen system buttons should expose a compact date planner beside the save/load/status cluster.'
+);
+assert.match(
+  visualNovelSource,
+  /const \[planOpen,\s*setPlanOpen\] = useState\(false\)[\s\S]*?<PlanModal[\s\S]*?open=\{planOpen\}[\s\S]*?gameState=\{gameState\}/,
+  'Visual novel should own planOpen state and render PlanModal from existing gameState.'
+);
+assert.match(
+  component,
+  /function resolvePlannerEntries\([\s\S]*?gameState[\s\S]*?choices[\s\S]*?map-after-school[\s\S]*?map-sunset-after/,
+  'Planner entries should derive recent date places from existing map choice history.'
+);
+assert.match(
+  component,
+  /function PlanModal\([\s\S]*?DATING PLAN[\s\S]*?최근 장소[\s\S]*?관심 신호/,
+  'PlanModal should show a date-plan overview with recent places and route-interest suggestions.'
+);
 assert.doesNotMatch(
   gameButtonsMatch[0],
   /Q\.SAVE|Q\.LOAD|CONFIG|QuickGalleryButton/,
@@ -2507,6 +2527,55 @@ for (const [locationIndex, location] of mapLocations.entries()) {
     resolveRouteLock(openingOnlyState, routeConfigData, { threshold: 0 }).id,
     'common',
     `${location.routeId} opening-only map state should not force a route lock because no seed/lock flags are written.`
+  );
+}
+for (const day of [1, 2, 3]) {
+  const prefix = `day${day}`;
+  const nightPhones = scenario.filter((item) => item.id?.startsWith(`${prefix}-night-`) && item.type === 'phone');
+  const finalNextId = day === 1 ? 'choice-day1-after-school-action' : day === 2 ? 'day3-chapter-card' : 'choice-day3-route-focus';
+  assert.equal(nightPhones.length, 81, `Day ${day} should keep 81 ordered night phone entries.`);
+  for (const phoneScene of nightPhones) {
+    assert.equal(phoneScene.replies?.length, 3, `${phoneScene.id} should offer three dating-sim reply tones.`);
+    assert.equal(phoneScene.rewards?.length, 3, `${phoneScene.id} should reward each reply tone.`);
+    assert.deepEqual(phoneScene.next, [finalNextId, finalNextId, finalNextId], `${phoneScene.id} replies should all return to the existing day flow.`);
+    for (const [replyIndex, reward] of phoneScene.rewards.entries()) {
+      const flags = reward.flags || [];
+      assert.equal(Object.keys(reward.affection || {}).length, 1, `${phoneScene.id} reply ${replyIndex + 1} should affect exactly one route.`);
+      assert.ok(flags.some((flag) => /^\w+_phone_day[123]_(direct|gentle|tease)_reply$/.test(String(flag))), `${phoneScene.id} reply ${replyIndex + 1} should write a date-memory phone reply flag.`);
+      assert.ok(!flags.some((flag) => String(flag).startsWith('route_lock_')), `${phoneScene.id} replies should not write route locks.`);
+      assert.ok(!flags.some((flag) => routeSeedFlagSet.has(flag)), `${phoneScene.id} replies should not write configured routeSeedFlags.`);
+      assert.ok(!flags.some((flag) => legacyRouteAliasPattern.test(String(flag))), `${phoneScene.id} replies should not write legacy *_route aliases.`);
+    }
+  }
+}
+for (const day of [2, 3]) {
+  for (const location of mapLocations) {
+    const firstScene = scenario.find((item) => item.id === `day${day}-first-${location.id}`);
+    const previousFlag = `${location.routeId}_phone_day${day - 1}_direct_reply`;
+    assert.ok(
+      (firstScene?.variants || []).some((variant) => (variant.requiredFlags || variant.flags || []).includes(previousFlag) && /어젯밤|답장/.test(variant.text || '')),
+      `${firstScene?.id || `day${day}-first-${location.id}`} should remember previous-day direct phone replies.`
+    );
+  }
+}
+for (const [locationIndex, location] of mapLocations.entries()) {
+  let openingDateState = createInitialGameState();
+  for (const day of [1, 2, 3]) {
+    const firstMap = scenario.find((item) => item.id === `day${day}-map-after-school`);
+    const sunsetMap = scenario.find((item) => item.id === `day${day}-map-sunset-after-${location.id}`);
+    const nightPhone = scenario.find((item) => item.id === `day${day}-night-${location.id}-${location.id}`);
+    openingDateState = applyRouteRewards(openingDateState, firstMap, locationIndex, routeConfigData);
+    openingDateState = applyRouteRewards(openingDateState, sunsetMap, locationIndex, routeConfigData);
+    openingDateState = applyRouteRewards(openingDateState, nightPhone, 0, routeConfigData);
+  }
+  assert.ok(
+    Number(openingDateState.affection?.[location.routeId] || 0) < routeConfigData.routeLockThreshold,
+    `${location.routeId} map plus direct reply affection should stay below route lock threshold.`
+  );
+  assert.equal(
+    resolveRouteLock(openingDateState, routeConfigData).id,
+    'common',
+    `${location.routeId} map plus phone reply state should not force a route lock without seed/lock flags.`
   );
 }
 

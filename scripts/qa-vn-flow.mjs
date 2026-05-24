@@ -369,6 +369,19 @@ async function main() {
     await page.locator('.config-row').first().waitFor();
   });
 
+  await check('date-planner', async () => {
+    await page.goto(buildUrl('?screen=game&id=day1-map-after-school'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.game');
+    await page.getByRole('button', { name: 'PLAN' }).click();
+    await waitForOpenPanel(page, '.plan-panel');
+    await page.locator('.plan-card').getByText(/DATING PLAN/).waitFor();
+    await page.locator('.plan-card').getByText(/현재 일정/).waitFor();
+    await page.locator('.plan-card').getByText(/최근 장소/).waitFor();
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator('.plan-panel').getAttribute('aria-hidden'), 'true', 'Escape should close PLAN');
+  });
+
   await check('status-modal', async () => {
     await page.goto(buildUrl('?screen=game&id=opening&auto=1'), { waitUntil: 'networkidle' });
     await page.waitForSelector('.game');

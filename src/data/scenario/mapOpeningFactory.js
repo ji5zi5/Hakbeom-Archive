@@ -122,6 +122,44 @@ function sceneDirectives(location, transition = 'fade-in') {
   ];
 }
 
+function nightReplies(second) {
+  return [
+    `내일도 ${second.label} 쪽으로 먼저 생각날 것 같아.`,
+    '오늘 말은 천천히 다시 듣고 싶어.',
+    '그 말, 얼굴 보고 다시 하면 반칙이야.'
+  ];
+}
+
+function nightReplyRewards(day, second) {
+  const routeId = second.routeId;
+  return [
+    { affection: { [routeId]: 3 }, flags: [`${routeId}_phone_day${day}_direct_reply`] },
+    { affection: { [routeId]: 2 }, flags: [`${routeId}_phone_day${day}_gentle_reply`] },
+    { affection: { [routeId]: 1 }, flags: [`${routeId}_phone_day${day}_tease_reply`] }
+  ];
+}
+
+function firstSceneMemoryVariants({ day, location, copy }) {
+  if (day <= 1) return undefined;
+  const previousDay = day - 1;
+  const routeName = routeNames[location.routeId];
+  const subject = subjectName(routeName);
+  return [
+    {
+      requiredFlags: [`${location.routeId}_phone_day${previousDay}_direct_reply`],
+      text: `${dayFlavor[day].first} ${copy.lead} 어젯밤 답장을 기억한 듯 ${subject} 학범을 보자마자 숨을 삼켰다. “그 말, 오늘 얼굴 보고 들으니까 더 위험한데.” ${copy.action}`
+    },
+    {
+      requiredFlags: [`${location.routeId}_phone_day${previousDay}_gentle_reply`],
+      text: `${dayFlavor[day].first} ${copy.lead} 어젯밤 답장처럼 서두르지 않으려는 듯 ${subject} 빈자리를 조용히 가리켰다. “천천히 얘기하자던 거, 나 아직 안 잊었어.” ${copy.action}`
+    },
+    {
+      requiredFlags: [`${location.routeId}_phone_day${previousDay}_tease_reply`],
+      text: `${dayFlavor[day].first} ${copy.lead} 어젯밤 장난스러운 답장을 떠올린 듯 ${subject} 눈을 피하면서도 웃음을 숨기지 못했다. “반칙이라고 해 놓고 또 온 건 너야.” ${copy.action}`
+    }
+  ];
+}
+
 function firstScene({ day, chapter, location }) {
   const routeName = routeNames[location.routeId];
   const copy = firstVisitLines[location.id];
@@ -134,6 +172,7 @@ function firstScene({ day, chapter, location }) {
     role: routeRoles[location.routeId],
     place: location.label,
     text: `${dayFlavor[day].first} ${copy.lead} ${copy.quote} ${copy.action}`,
+    variants: firstSceneMemoryVariants({ day, location, copy }),
     directives: sceneDirectives(location),
     nextId: `day${day}-map-sunset-after-${location.id}`
   };
@@ -186,10 +225,12 @@ function nightScene({ day, chapter, first, second, finalNextId }) {
       },
       { from: second.routeId, name: secondName, text: '그 말, 내일 얼굴 보고 다시 들어도 돼?', read: true }
     ],
+    replies: nightReplies(second),
+    rewards: nightReplyRewards(day, second),
+    next: [finalNextId, finalNextId, finalNextId],
     directives: [
       { type: 'SE', cue: 'message' }
-    ],
-    nextId: finalNextId
+    ]
   };
 }
 

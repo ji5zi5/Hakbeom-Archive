@@ -2026,3 +2026,93 @@ button {
   0%, 100% { opacity: .35; }
   50% { opacity: 1; }
 }
+
+.plan-card {
+  width: min(760px, calc(100vw - 48px));
+}
+
+.plan-summary {
+  display: grid;
+  gap: 16px;
+  max-height: min(68vh, 520px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.plan-section {
+  border: 1px solid rgba(120, 198, 238, .22);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(14, 40, 67, .72), rgba(22, 55, 84, .44));
+  padding: 16px 18px;
+  color: rgba(238, 249, 255, .92);
+}
+
+.plan-section > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #8fdcff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.plan-current strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 22px;
+  letter-spacing: -.04em;
+}
+
+.plan-section p {
+  margin: 0;
+  color: rgba(224, 239, 249, .78);
+  line-height: 1.55;
+}
+
+.plan-entry-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-entry-list li,
+.plan-suggestion {
+  display: grid;
+  grid-template-columns: 74px 86px 1fr;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  background: rgba(237, 250, 255, .1);
+  padding: 11px 13px;
+}
+
+.plan-entry-list b,
+.plan-entry-list em,
+.plan-suggestion span,
+.plan-suggestion em {
+  color: rgba(220, 238, 247, .72);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.plan-entry-list strong,
+.plan-suggestion strong {
+  color: #fff;
+  font-size: 15px;
+}
+
+.plan-suggestion-list {
+  display: grid;
+  gap: 10px;
+}
+
+.plan-suggestion {
+  grid-template-columns: 82px 1fr 70px;
+}
+
+.plan-empty {
+  color: rgba(220, 238, 247, .68);
+}

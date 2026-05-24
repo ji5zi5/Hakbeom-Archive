@@ -331,6 +331,7 @@ export function BAVisualNovel({
   const [saveLoadMode, setSaveLoadMode] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
+  const [planOpen, setPlanOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [settings, setSettings] = useState(() => readSettings());
   const [ending, setEnding] = useState(null);
@@ -410,6 +411,7 @@ export function BAVisualNovel({
     setSaveLoadMode(null);
     setSettingsOpen(false);
     setStatusOpen(false);
+    setPlanOpen(false);
     setGalleryOpen(false);
     setLog([]);
   }, [initialIndex, resetToIndex, settings.seVolume, sounds.click, sounds.confirm]);
@@ -423,6 +425,7 @@ export function BAVisualNovel({
     setSaveLoadMode(null);
     setSettingsOpen(false);
     setStatusOpen(false);
+    setPlanOpen(false);
     setGalleryOpen(false);
     setBacklogOpen(false);
     setSkipOpen(false);
@@ -460,6 +463,7 @@ export function BAVisualNovel({
     setSaveLoadMode(null);
     setSettingsOpen(false);
     setStatusOpen(false);
+    setPlanOpen(false);
     setGalleryOpen(false);
     return true;
   }, [directorDefaults, initialIndex, scenario, settings]);
@@ -503,7 +507,7 @@ export function BAVisualNovel({
   }, [ending, episodeInfo.endingRules, gameState, index, jumpToIndex, scenario]);
 
   const next = useCallback(() => {
-    if (screen !== 'game' || saveLoadMode || settingsOpen || statusOpen || galleryOpen || skipOpen || backlogOpen) return;
+    if (screen !== 'game' || saveLoadMode || settingsOpen || statusOpen || planOpen || galleryOpen || skipOpen || backlogOpen) return;
     if (uiHidden) {
       setUiHidden(false);
       return;
@@ -513,7 +517,7 @@ export function BAVisualNovel({
       return;
     }
     goNextRaw();
-  }, [backlogOpen, finishTyping, galleryOpen, goNextRaw, saveLoadMode, screen, settingsOpen, statusOpen, skipOpen, typing, uiHidden]);
+  }, [backlogOpen, finishTyping, galleryOpen, goNextRaw, planOpen, saveLoadMode, screen, settingsOpen, statusOpen, skipOpen, typing, uiHidden]);
 
   const setMode = useCallback((nextMode) => {
     setMenuOpen(false);
@@ -585,6 +589,7 @@ export function BAVisualNovel({
     setBacklogOpen(false);
     setSkipOpen(false);
     setStatusOpen(false);
+    setPlanOpen(false);
     setGalleryOpen(true);
   }, [settings.seVolume, sounds.click]);
 
@@ -595,13 +600,26 @@ export function BAVisualNovel({
     setBacklogOpen(false);
     setSkipOpen(false);
     setGalleryOpen(false);
+    setPlanOpen(false);
     setStatusOpen(true);
+  }, [settings.seVolume, sounds.click]);
+
+  const openPlan = useCallback((event) => {
+    event?.stopPropagation?.();
+    playAudio(sounds.click, settings.seVolume / 100);
+    setMenuOpen(false);
+    setBacklogOpen(false);
+    setSkipOpen(false);
+    setGalleryOpen(false);
+    setStatusOpen(false);
+    setPlanOpen(true);
   }, [settings.seVolume, sounds.click]);
 
   const closeModals = useCallback(() => {
     setBacklogOpen(false);
     setSkipOpen(false);
     setStatusOpen(false);
+    setPlanOpen(false);
     setGalleryOpen(false);
   }, []);
 
@@ -767,10 +785,10 @@ export function BAVisualNovel({
   useEffect(() => {
     window.clearTimeout(autoTimerRef.current);
     const replyPhoneScene = mode === 'phone' && getItemChoices(item).length > 0;
-    if (!auto || mode === 'choice' || replyPhoneScene || mode === 'mapChoice' || typing || skipOpen || backlogOpen || statusOpen || uiHidden) return undefined;
+    if (!auto || mode === 'choice' || replyPhoneScene || mode === 'mapChoice' || typing || skipOpen || backlogOpen || statusOpen || planOpen || uiHidden) return undefined;
     autoTimerRef.current = window.setTimeout(goNextRaw, settings.autoDelayMs || AUTO_DELAY_MS);
     return () => window.clearTimeout(autoTimerRef.current);
-  }, [auto, backlogOpen, goNextRaw, index, item, mode, settings.autoDelayMs, skipOpen, statusOpen, typing, uiHidden]);
+  }, [auto, backlogOpen, goNextRaw, index, item, mode, planOpen, settings.autoDelayMs, skipOpen, statusOpen, typing, uiHidden]);
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -782,13 +800,14 @@ export function BAVisualNovel({
         setSaveLoadMode(null);
         setSettingsOpen(false);
         setStatusOpen(false);
+        setPlanOpen(false);
         setUiHidden(false);
         return;
       }
 
       if (isInteractiveKeyTarget(event.target)) return;
 
-      const gameplayReady = screen === 'game' && !saveLoadMode && !settingsOpen && !statusOpen && !galleryOpen && !skipOpen && !backlogOpen;
+      const gameplayReady = screen === 'game' && !saveLoadMode && !settingsOpen && !statusOpen && !planOpen && !galleryOpen && !skipOpen && !backlogOpen;
       if (event.key === ' ' || event.key === 'Enter') {
         if (!gameplayReady) return;
         event.preventDefault();
@@ -804,6 +823,7 @@ export function BAVisualNovel({
       if (event.key === 'l' || event.key === 'L') openBacklog(event);
       if (event.key === 's' || event.key === 'S') openSkip(event);
       if (event.key === 'g' || event.key === 'G') openGallery(event);
+      if (event.key === 'p' || event.key === 'P') openPlan(event);
       if (event.key === 'F5') saveGame(QUICK_SAVE_SLOT);
       if (event.key === 'F9') loadGame(QUICK_SAVE_SLOT);
       if (event.key === '1') setMode('dialogue');
@@ -814,7 +834,7 @@ export function BAVisualNovel({
 
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [backlogOpen, galleryOpen, hideUi, loadGame, next, openBacklog, openGallery, openMenu, openSkip, saveGame, saveLoadMode, screen, setMode, settingsOpen, skipOpen, statusOpen, toggleAuto]);
+  }, [backlogOpen, galleryOpen, hideUi, loadGame, next, openBacklog, openGallery, openMenu, openPlan, openSkip, planOpen, saveGame, saveLoadMode, screen, setMode, settingsOpen, skipOpen, statusOpen, toggleAuto]);
 
   const handleSvgClick = useCallback((event) => {
     const target = event.target;
@@ -937,6 +957,7 @@ export function BAVisualNovel({
             <button type="button" onClick={() => setSaveLoadMode('load')}>LOAD</button>
             <button type="button" onClick={openGallery}>CG</button>
             <button type="button" onClick={openStatus}>STATUS</button>
+            <button type="button" onClick={openPlan}>PLAN</button>
           </div>
         )}
 
@@ -985,6 +1006,7 @@ export function BAVisualNovel({
         />
 
         <StatusModal open={statusOpen} gameState={gameState} onClose={closeModals} />
+        <PlanModal open={planOpen} gameState={gameState} chapterInfo={chapterInfo} onClose={closeModals} />
 
         <ChapterCard info={chapterInfo} />
         <EndingToast
@@ -1868,6 +1890,89 @@ function resolveStatusDateLog(flags = [], targets = [], profiles = {}) {
   }
 
   return entries;
+}
+
+function resolvePlannerEntries(gameState = {}) {
+  const choices = Array.isArray(gameState?.choices) ? gameState.choices : [];
+  return choices
+    .filter((choice) => typeof choice?.id === 'string' && (choice.id.includes('map-after-school') || choice.id.includes('map-sunset-after')))
+    .slice(-6)
+    .reverse()
+    .map((choice) => {
+      const dayMatch = choice.id.match(/^day(\d+)-/);
+      const slot = choice.id.includes('map-after-school') ? '방과 후' : '해질녘';
+      return {
+        id: `${choice.id}:${choice.choiceIndex}`,
+        day: dayMatch ? `Day ${dayMatch[1]}` : '오늘',
+        slot,
+        place: safeText(choice.text || '장소 미정')
+      };
+    });
+}
+
+function resolvePlannerSuggestions(gameState = {}, targets = routeConfig.affectionTargets) {
+  const affection = gameState?.affection || {};
+  return [...targets]
+    .map((target) => ({
+      id: target.id,
+      name: target.name,
+      value: Number(affection[target.id] || 0),
+      label: resolveAffectionLabel(Number(affection[target.id] || 0))
+    }))
+    .sort((left, right) => right.value - left.value)
+    .slice(0, 3);
+}
+
+function PlanModal({ open, gameState, chapterInfo, onClose }) {
+  const entries = resolvePlannerEntries(gameState);
+  const suggestions = resolvePlannerSuggestions(gameState);
+  const currentTitle = chapterInfo?.title || chapterInfo?.chapterTitle || chapterInfo?.sectionTitle || '현재 일정';
+
+  return (
+    <div className="ba-modal-layer plan-panel" aria-hidden={open ? 'false' : 'true'}>
+      <div className="ba-modal-card plan-card" role="dialog" aria-modal="true" aria-label="데이트 플랜">
+        <div className="ba-modal-head">
+          <span className="ba-modal-title">DATING PLAN</span>
+          <button className="ba-modal-close" type="button" onClick={onClose} aria-label="닫기">×</button>
+        </div>
+        <div className="plan-summary">
+          <section className="plan-section plan-current">
+            <span>현재 일정</span>
+            <strong>{currentTitle}</strong>
+            <p>장소를 고르고, 밤 답장으로 다음 만남의 온도를 정합니다.</p>
+          </section>
+          <section className="plan-section">
+            <span>최근 장소</span>
+            {entries.length === 0 ? (
+              <p className="plan-empty">아직 선택한 장소가 없습니다. 방과 후 지도에서 첫 일정을 정해 보세요.</p>
+            ) : (
+              <ol className="plan-entry-list">
+                {entries.map((entry) => (
+                  <li key={entry.id}>
+                    <b>{entry.day}</b>
+                    <em>{entry.slot}</em>
+                    <strong>{entry.place}</strong>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+          <section className="plan-section">
+            <span>관심 신호</span>
+            <div className="plan-suggestion-list">
+              {suggestions.map((target) => (
+                <div className="plan-suggestion" key={target.id}>
+                  <strong>{target.name}</strong>
+                  <span>{target.label}</span>
+                  <em>{target.value} / 100</em>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function StatusModal({ open, gameState, onClose }) {
