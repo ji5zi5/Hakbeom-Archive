@@ -1984,6 +1984,44 @@ button {
   animation: phoneTypingPulse 920ms ease-in-out infinite;
 }
 
+.map-choice-title {
+  fill: rgba(244, 252, 255, .92);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  paint-order: stroke;
+  stroke: rgba(4, 16, 27, .42);
+  stroke-width: 3px;
+}
+
+.map-choice-control {
+  cursor: pointer;
+  outline: none;
+}
+
+.map-choice-hitbox {
+  fill: rgba(237, 250, 255, .86);
+  stroke: rgba(74, 162, 205, .68);
+  stroke-width: 2px;
+  filter: drop-shadow(0 8px 14px rgba(4, 16, 27, .18));
+  transition: fill 160ms ease, stroke 160ms ease, filter 160ms ease;
+}
+
+.map-choice-control:hover .map-choice-hitbox,
+.map-choice-control:focus .map-choice-hitbox {
+  fill: rgba(255, 255, 255, .96);
+  stroke: rgba(95, 207, 238, .96);
+  filter: drop-shadow(0 0 15px rgba(115, 220, 255, .34));
+}
+
+.map-choice-label {
+  fill: #155174;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -.05em;
+  pointer-events: none;
+}
+
 @keyframes phoneTypingPulse {
   0%, 100% { opacity: .35; }
   50% { opacity: 1; }

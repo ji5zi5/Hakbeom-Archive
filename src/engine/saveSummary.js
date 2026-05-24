@@ -52,7 +52,13 @@ export function buildSaveSummary({ item, gameState, routeConfig, backgroundSrc =
   const affectionValue = Number(gameState?.affection?.[target.id] || 0);
   const chapterDisplay = getChapterDisplay(item, routeConfig);
   const routeDisplay = buildRouteDisplay(gameState, routeConfig, target, affectionValue);
-  const text = safeText(item?.text || item?.summary || item?.place || item?.name || '');
+  const latestMapChoice = item?.type === 'mapChoice'
+    ? [...(gameState?.choices || [])].reverse().find((choice) => choice?.id === item?.id)
+    : null;
+  const mapChoiceText = item?.type === 'mapChoice'
+    ? safeText(latestMapChoice?.text || item?.summary || item?.place || (item?.choices || []).join(' / ') || '지도 선택')
+    : '';
+  const text = safeText(mapChoiceText || item?.text || item?.summary || item?.place || item?.name || '');
   return {
     itemId: safeText(item?.id),
     chapter: chapterDisplay.chapter,

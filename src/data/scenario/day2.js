@@ -1,3 +1,5 @@
+import { createMapOpeningScenes } from './mapOpeningFactory.js';
+
 export const day2Scenes = [
   {
       id: 'day2-chapter-card',
@@ -496,6 +498,7 @@ export const day2Scenes = [
         { type: 'SCG', id: 'jaeseong', action: 'delete', transition: 'fade-out' },
         { type: 'SCG', id: 'hyeongyeom', name: '현겸', action: 'enter', pos: 3, src: '/assets/character/hyungyeom.png', expression: 'smile', transition: 'fade-in' }
       ],
-      nextId: 'day3-chapter-card'
-    }
+      nextId: 'day2-map-after-school'
+    },
+  ...createMapOpeningScenes({ day: 2, chapter: 'day-2', finalNextId: 'day3-chapter-card' })
 ];

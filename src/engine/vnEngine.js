@@ -8,6 +8,7 @@ function clamp(value, min, max) {
 
 function getItemChoices(item) {
   if (!item) return [];
+  if (item.type === 'mapChoice') return item.choices || [];
   return item.type === 'phone' ? (item.replies || []) : (item.choices || []);
 }
 
@@ -162,7 +163,7 @@ export function getReplayCandidateSteps(scenario, index, gameState, options = {}
     return targetIndex >= 0 ? [{ index: targetIndex, gameState }] : [];
   }
 
-  if (item.type === 'choice' || (item.type === 'phone' && getItemChoices(item).length > 0)) {
+  if (item.type === 'choice' || item.type === 'mapChoice' || (item.type === 'phone' && getItemChoices(item).length > 0)) {
     const targets = item.next || item.choiceNext || [];
     const targetRouteId = inferTargetRouteId(options.targetId, options.routeConfig);
     return getItemChoices(item).map((_, choiceIndex) => {

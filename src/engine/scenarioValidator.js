@@ -1,5 +1,8 @@
+import { mapLocations as canonicalMapLocations } from '../data/scenario/mapChoiceConfig.js';
+
 const DIRECTIVE_TYPES = new Set(['BG', 'BG_CG', 'BCG', 'SCG', 'SE', 'E', 'OVERLAY', 'MOOD', 'BGM', 'MUSIC', 'AMBIENT', 'AMBIENCE', 'STOP_BGM', 'STOP_AMBIENT']);
 const MAX_INTERACTIVE_OPTIONS = 3;
+const MAP_CHOICE_OPTIONS = 9;
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -27,7 +30,7 @@ function getNormalFlowTargets(items, index) {
   if (!item || item.terminal || item.previewOnly) return [];
 
   if (item.endingNext) return Object.values(item.endingNext).filter(Boolean);
-  if (item.type === 'choice') return asArray(item.next || item.choiceNext);
+  if (item.type === 'choice' || item.type === 'mapChoice') return asArray(item.next || item.choiceNext);
   if (item.type === 'phone') {
     const replyTargets = asArray(item.next || item.choiceNext);
     if (replyTargets.length > 0) return replyTargets;
@@ -145,6 +148,61 @@ export function validateScenario(scenario, routeConfig) {
     }
   };
 
+  const validateMapChoice = (item) => {
+    const choices = asArray(item.choices);
+    const locations = asArray(item.mapLocations);
+    const rewards = asArray(item.rewards);
+    const nextTargets = asArray(item.next || item.choiceNext);
+
+    if (item.options !== undefined) {
+      addError(errors, item, 'mapChoice options field is invalid');
+    }
+    if (choices.length !== MAP_CHOICE_OPTIONS) {
+      addError(errors, item, `mapChoice choices length ${choices.length} must equal ${MAP_CHOICE_OPTIONS}`);
+    }
+    if (!Array.isArray(item.mapLocations)) {
+      addError(errors, item, 'mapChoice mapLocations are required');
+    }
+    if (locations.length !== MAP_CHOICE_OPTIONS) {
+      addError(errors, item, `mapChoice mapLocations length ${locations.length} must equal ${MAP_CHOICE_OPTIONS}`);
+    }
+    if (rewards.length !== MAP_CHOICE_OPTIONS) {
+      addError(errors, item, `mapChoice rewards length ${rewards.length} must equal ${MAP_CHOICE_OPTIONS}`);
+    }
+    if (nextTargets.length !== MAP_CHOICE_OPTIONS) {
+      addError(errors, item, `mapChoice next length ${nextTargets.length} must equal ${MAP_CHOICE_OPTIONS}`);
+    }
+
+    const canonicalMatches = locations.length === canonicalMapLocations.length
+      && locations.every((location, index) => {
+        const canonical = canonicalMapLocations[index];
+        return location?.id === canonical.id
+          && location?.label === canonical.label
+          && location?.routeId === canonical.routeId
+          && location?.region?.x === canonical.region.x
+          && location?.region?.y === canonical.region.y
+          && location?.region?.w === canonical.region.w
+          && location?.region?.h === canonical.region.h;
+      });
+    if (!canonicalMatches) {
+      addError(errors, item, 'mapChoice mapLocations must match canonical location order');
+    }
+
+    if (!choices.every((choice, index) => choice === locations[index]?.label)) {
+      addError(errors, item, 'mapChoice choices must match mapLocations labels');
+    }
+
+    for (const location of locations) {
+      if (location?.routeId && affectionTargetIds.size > 0 && !affectionTargetIds.has(location.routeId)) {
+        addError(errors, item, `mapChoice unknown routeId: ${location.routeId}`);
+      }
+      const region = location?.region || {};
+      if (!['x', 'y', 'w', 'h'].every((key) => Number.isFinite(Number(region[key])))) {
+        addError(errors, item, 'mapChoice region must include finite x/y/w/h numbers');
+      }
+    }
+  };
+
   for (const item of items) {
     requireTarget(item, item.nextId, 'nextId');
     requireTarget(item, item.skipToId, 'skipToId');
@@ -167,6 +225,10 @@ export function validateScenario(scenario, routeConfig) {
       if (asArray(item.next || item.choiceNext).length && asArray(item.next || item.choiceNext).length !== choiceCount) {
         addError(errors, item, `next length ${asArray(item.next || item.choiceNext).length} does not match choices length ${choiceCount}`);
       }
+    }
+
+    if (item.type === 'mapChoice') {
+      validateMapChoice(item);
     }
 
     if (item.type === 'phone') {

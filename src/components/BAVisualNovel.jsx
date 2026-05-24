@@ -101,6 +101,7 @@ function isInteractiveKeyTarget(target) {
 
 function getItemChoices(item) {
   if (!item) return [];
+  if (item.type === 'mapChoice') return item.choices || [];
   return item.type === 'phone' ? (item.replies || []) : (item.choices || []);
 }
 
@@ -123,6 +124,7 @@ function buildLogLine(item, gameState) {
   if (item.type === 'banner') return `[연출] ${resolveItemText(item, gameState)}`;
   if (item.type === 'phone') return `[메시지] ${item.name || '???'}: ${resolveItemText(item, gameState)}`;
   if (item.type === 'choice') return `[선택지] ${getItemChoices(item).join(' / ')}`;
+  if (item.type === 'mapChoice') return `[지도] ${getItemChoices(item).join(' / ')}`;
   return '';
 }
 
@@ -482,7 +484,11 @@ export function BAVisualNovel({
   const goNextRaw = useCallback(() => {
     setMenuOpen(false);
     const currentItem = scenario[index];
-    if (currentItem?.type === 'choice' || (currentItem?.type === 'phone' && getItemChoices(currentItem).length > 0)) return;
+    if (
+      currentItem?.type === 'choice'
+      || currentItem?.type === 'mapChoice'
+      || (currentItem?.type === 'phone' && getItemChoices(currentItem).length > 0)
+    ) return;
     const targetIndex = resolveNextIndex({
       scenario,
       index,
@@ -519,12 +525,13 @@ export function BAVisualNovel({
 
   const choose = useCallback((choiceIndex) => {
     const current = scenario[index];
-    if (current?.type !== 'choice' && current?.type !== 'phone') return;
+    if (current?.type !== 'choice' && current?.type !== 'phone' && current?.type !== 'mapChoice') return;
     const options = getItemChoices(current);
     const value = options[choiceIndex];
     if (!value) return;
     playAudio(sounds.choice || sounds.click, settings.seVolume / 100);
-    pushLog(`${current.type === 'phone' ? '답장' : '선택'}: ${value}`);
+    const logLabel = current.type === 'phone' ? '답장' : current.type === 'mapChoice' ? '장소' : '선택';
+    pushLog(`${logLabel}: ${value}`);
     onChoice?.({ choiceIndex, value, item: current });
     setMenuOpen(false);
 
@@ -760,7 +767,7 @@ export function BAVisualNovel({
   useEffect(() => {
     window.clearTimeout(autoTimerRef.current);
     const replyPhoneScene = mode === 'phone' && getItemChoices(item).length > 0;
-    if (!auto || mode === 'choice' || replyPhoneScene || typing || skipOpen || backlogOpen || statusOpen || uiHidden) return undefined;
+    if (!auto || mode === 'choice' || replyPhoneScene || mode === 'mapChoice' || typing || skipOpen || backlogOpen || statusOpen || uiHidden) return undefined;
     autoTimerRef.current = window.setTimeout(goNextRaw, settings.autoDelayMs || AUTO_DELAY_MS);
     return () => window.clearTimeout(autoTimerRef.current);
   }, [auto, backlogOpen, goNextRaw, index, item, mode, settings.autoDelayMs, skipOpen, statusOpen, typing, uiHidden]);
@@ -811,7 +818,7 @@ export function BAVisualNovel({
 
   const handleSvgClick = useCallback((event) => {
     const target = event.target;
-    if (target?.closest?.('.nav-button, .quick-menu, .choice-row, .phone-reply, .space-key-svg')) return;
+    if (target?.closest?.('.nav-button, .quick-menu, .choice-row, .map-choice-control, .phone-reply, .space-key-svg')) return;
     next();
   }, [next]);
 
@@ -878,6 +885,18 @@ export function BAVisualNovel({
             characters={sceneCharacters}
             overlays={sceneOverlays}
             choices={item?.type === 'choice' ? getItemChoices(item) : []}
+            onChoose={choose}
+          />
+
+          <MapChoiceScene
+            visible={mode === 'mapChoice'}
+            uiHidden={uiHidden}
+            backgroundSrc={sceneBackgroundSrc}
+            backgroundTransition={sceneBackgroundTransition}
+            characters={sceneCharacters}
+            overlays={sceneOverlays}
+            mapLocations={item?.mapLocations || []}
+            choices={item?.type === 'mapChoice' ? getItemChoices(item) : []}
             onChoose={choose}
           />
 
@@ -1348,6 +1367,75 @@ function ChoiceScene({ visible, uiHidden, backgroundSrc, backgroundTransition, c
               );
             })}
           </g>
+        </g>
+      )}
+    </g>
+  );
+}
+
+function MapChoiceScene({ visible, uiHidden, backgroundSrc, backgroundTransition, characters = [], overlays = [], mapLocations = [], choices = [], onChoose }) {
+  const controls = mapLocations.map((location, index) => {
+    const label = choices[index] || location.label || '';
+    const region = location.region || {};
+    const x = STAGE.width * (Number(region.x || 0) / 100);
+    const y = STAGE.height * (Number(region.y || 0) / 100);
+    const width = STAGE.width * (Number(region.w || 0) / 100);
+    const height = STAGE.height * (Number(region.h || 0) / 100);
+    return {
+      index,
+      id: location.id || `map-location-${index}`,
+      label,
+      x,
+      y,
+      width,
+      height
+    };
+  });
+
+  return (
+    <g className="scene scene-map-choice" style={{ display: visible ? 'inline' : 'none' }}>
+      <SceneBackground backgroundSrc={backgroundSrc} transition={backgroundTransition} />
+      <DirectorOverlays overlays={overlays} />
+      <CharacterLayer characters={characters} />
+      {!uiHidden && (
+        <g className="map-choice-layer" aria-label="장소 선택 지도">
+          <rect width="1129" height="524" fill="#071423" opacity="0.18" />
+          <rect x="92" y="58" width="945" height="386" rx="26" fill="rgba(8, 28, 48, 0.62)" stroke="rgba(186, 226, 255, 0.42)" strokeWidth="2" />
+          <text className="map-choice-title" x="114" y="92">방과 후, 어디로 갈까?</text>
+          {controls.map((control) => (
+            <g
+              key={control.id}
+              className="map-choice-control"
+              data-location-id={control.id}
+              role="button"
+              tabIndex="0"
+              aria-label={control.label}
+              transform={`translate(${control.x} ${control.y})`}
+              onKeyDown={createKeyboardActivationHandler((event) => {
+                event.stopPropagation();
+                onChoose(control.index);
+              })}
+              onClick={(event) => {
+                event.stopPropagation();
+                onChoose(control.index);
+              }}
+            >
+              <rect
+                className="map-choice-hitbox"
+                width={control.width}
+                height={control.height}
+                rx="12"
+              />
+              <text
+                className="map-choice-label"
+                x={control.width / 2}
+                y={control.height / 2 + 5}
+                textAnchor="middle"
+              >
+                {control.label}
+              </text>
+            </g>
+          ))}
         </g>
       )}
     </g>

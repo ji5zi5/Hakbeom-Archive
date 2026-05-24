@@ -78,6 +78,44 @@
 }
 ```
 
+### `mapChoice`
+
+Day 1-3 지도 선택 전용 장면이다. `mapChoice`는 일반 `choice`의 예외가 아니라 별도 타입이다. 일반 `choice`와 답장형 `phone`은 계속 3개 이하만 허용하고, `mapChoice`만 9개 장소를 보여준다.
+
+- `choices`, `mapLocations`, `rewards`, `next`는 모두 길이 9여야 한다.
+- `choices[index] === mapLocations[index].label`이어야 한다.
+- `mapLocations`는 `src/data/scenario/mapChoiceConfig.js`의 canonical 순서를 그대로 쓴다: `교문`, `도서관`, `방송실`, `학생회실`, `체육관`, `동선 게시판`, `매점`, `음악실`, `옥상`.
+- 장소 라벨과 aria label에는 장소명만 쓴다. 캐릭터명, route ID, 소품 힌트, `+10`, `호감도`, `기억됨`, `기록됨`을 넣지 않는다.
+- `options` 필드는 쓰지 않는다.
+
+```js
+{
+  id: 'day1-map-after-school',
+  type: 'mapChoice',
+  choices: ['교문', '도서관', '방송실', '학생회실', '체육관', '동선 게시판', '매점', '음악실', '옥상'],
+  mapLocations,
+  rewards: [
+    { affection: { hyeongyeom: 6 }, flags: ['day1_map_school_gate'] },
+    // ... exactly 9 rewards
+  ],
+  next: [
+    'day1-first-school-gate',
+    // ... exactly 9 next targets
+  ]
+}
+```
+
+Day 1, Day 2, Day 3은 각각 플레이어가 보는 mapChoice slot이 2개다: 방과 후와 해질녘. 하지만 static scenario record는 하루 10개다. 방과 후 mapChoice 1개가 첫 장소 9개로 분기하고, 첫 장소별 해질녘 mapChoice 9개가 두 번째 장소를 고르게 한다. 해질녘 record 9개의 `next[secondIndex]`가 `(firstLocationId, secondLocationId)` ordered pair를 직접 가리키므로 dynamic pair resolver나 새 persisted first-location field를 만들지 않는다.
+
+각 day는 다음을 전부 직접 작성한다.
+
+1. 첫 장소 branch 9개.
+2. 같은 장소 재방문 9개.
+3. 다른 장소 ordered cross-reaction 72개.
+4. 밤 메시지 ordered pair 81개.
+
+fallback/default/generic prose로 81개를 대신하면 안 된다. paginated 3-option fallback과 dynamic pair resolver fallback도 금지다. 다시 고려하려면 PRD/test-spec을 수정하고 재승인받는다.
+
 ## 보상과 플래그
 
 `rewards`는 선택지/답장 결과를 기록한다.

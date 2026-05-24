@@ -70,6 +70,47 @@ async function assertChoiceLayoutFits(page, label) {
   }
 }
 
+async function assertMapChoiceLayoutFits(page, label) {
+  const metrics = await page.evaluate(() => {
+    const box = (node) => {
+      if (!node) return null;
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height
+      };
+    };
+
+    return {
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      controls: [...document.querySelectorAll('.scene-map-choice .map-choice-control')].map((control) => ({
+        box: box(control),
+        label: control.textContent.trim(),
+        aria: control.getAttribute('aria-label')
+      }))
+    };
+  });
+
+  const expectedLabels = ['교문', '도서관', '방송실', '학생회실', '체육관', '동선 게시판', '매점', '음악실', '옥상'];
+  const forbidden = ['현겸', '욱현', '재성', '상원', '상욱', '준혁', '도훈', '하음', '윤호', 'hyeongyeom', 'ukhyun', 'jaeseong', 'sangwon', 'sanguk', 'junhyeok', 'dohun', 'haeum', 'yunho', '+10', '호감도', '기억됨', '기록됨'];
+  assert.equal(metrics.controls.length, 9, `${label}: mapChoice should render 9 location controls`);
+  assert.deepEqual(metrics.controls.map((control) => control.label), expectedLabels, `${label}: map labels should be the canonical place labels`);
+  for (const control of metrics.controls) {
+    assert.equal(control.aria, control.label, `${label}: aria label should match the place label only`);
+    for (const text of forbidden) {
+      assert.ok(!control.label.includes(text) && !control.aria.includes(text), `${label}: map control should not leak ${text}`);
+    }
+    assert.ok(control.box.left >= -0.5, `${label}: ${control.label} should not clip left`);
+    assert.ok(control.box.top >= -0.5, `${label}: ${control.label} should not clip top`);
+    assert.ok(control.box.right <= metrics.viewport.width + 0.5, `${label}: ${control.label} should not clip right`);
+    assert.ok(control.box.bottom <= metrics.viewport.height + 0.5, `${label}: ${control.label} should not clip bottom`);
+  }
+}
+
 async function assertPhoneLayoutFits(page, label, { minReplies = 0 } = {}) {
   const metrics = await page.evaluate(() => {
     const box = (node) => {
@@ -224,6 +265,23 @@ async function main() {
     await page.waitForSelector('.choice-row');
     assert.equal(await visibleSvgScene(page, '.scene-choice'), true, 'long choice scene should be visible');
     await assertChoiceLayoutFits(page, 'choice-day1-after-school-action');
+  });
+
+  await check('map-choice', async () => {
+    await page.goto(buildUrl('?screen=game&id=day1-map-after-school'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.map-choice-control');
+    assert.equal(await visibleSvgScene(page, '.scene-map-choice'), true, 'mapChoice scene should be visible');
+    await assertMapChoiceLayoutFits(page, 'day1-map-after-school');
+    await page.locator('.map-choice-control').first().click();
+    await page.waitForTimeout(250);
+    assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'mapChoice should advance into first-location dialogue');
+
+    await page.goto(buildUrl('?screen=game&id=day1-map-sunset-after-school-gate'), { waitUntil: 'networkidle' });
+    await page.waitForSelector('.map-choice-control');
+    await assertMapChoiceLayoutFits(page, 'day1-map-sunset-after-school-gate');
+    await page.locator('.map-choice-control').first().click();
+    await page.waitForTimeout(250);
+    assert.equal(await visibleSvgScene(page, '.scene-dialogue'), true, 'same-location mapChoice should advance into revisit dialogue');
   });
 
   await check('phone-reply', async () => {

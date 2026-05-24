@@ -28,6 +28,7 @@ src/main.jsx                     React entry
 src/App.jsx                      episodeInfo/scenario를 BAVisualNovel에 연결
 src/components/BAVisualNovel.jsx React UI, SVG scene, modal/controller glue
 src/data/scenario.js             실제 시나리오와 episodeInfo
+src/data/scenario/mapChoiceConfig.js Day 1-3 9장소 지도 선택의 canonical mapLocations
 src/data/routeConfig.js          단일/다중 히로인 호감도, 챕터, 갤러리, 회상 설정
 src/data/characterProfiles.js    캐릭터별 expression asset fallback
 src/engine/vnEngine.js           진행, skip, ending, replay path 계산
@@ -52,6 +53,7 @@ public/assets/                   런타임 asset
 | 하고 싶은 일 | 주로 수정할 곳 | 같이 확인할 곳 |
 | --- | --- | --- |
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
+| Day 1-3 지도 선택/mapChoice 수정 | `src/data/scenario/mapChoiceConfig.js`, `src/data/scenario/day1.js`, `src/data/scenario/day2.js`, `src/data/scenario/day3.js`, `src/components/BAVisualNovel.jsx`, `src/engine/vnEngine.js`, `src/engine/scenarioValidator.js` | `MapChoiceScene`, replay, save/log summary, accessibility, visual capture |
 | route date loop / phone follow-up 추가 | `src/data/scenario/batch3RouteDates/`, `src/data/scenario/routeDepthExpansionRegistry.js` | route-date ownership audit, memory consumer audit, deterministic replay tests |
 | route별 말투/미연시 기억 라벨 변경 | `src/data/routeConfig.js`의 `datingSimProfiles`, `src/data/scenario/batch3RouteDates/` | save summary latest memory tests, route-date dialogue ratio tests |
 | 보이스 리라이트/story-lint 변경 | `src/data/routeConfig.js`, `src/data/characterProfiles.js`, `tests/ui-contract.test.mjs` | `docs/scenario-authoring.md`의 story-lint surface, baseline/pilot report |
@@ -93,6 +95,16 @@ public/assets/                   런타임 asset
 ### scenario는 데이터, validator는 계약이다
 
 시나리오를 추가할 때 validator를 우회하지 않는다. 정상 플레이에 들어가는 장면은 시작점에서 도달 가능해야 하고, 프리뷰/테스트용 장면만 `previewOnly: true`를 붙일 수 있다.
+
+### mapChoice는 Day 1-3 전용 9장소 지도 계약이다
+
+`mapChoice`는 일반 `choice`를 9개로 늘린 것이 아니다. 일반 `choice`/답장형 `phone`은 계속 3개 이하이고, `mapChoice`만 canonical 9장소를 선택한다.
+
+- canonical 위치 원본은 `src/data/scenario/mapChoiceConfig.js`의 `mapLocations`.
+- React 렌더링은 별도 `MapChoiceScene`으로 분리하고 `ChoiceScene`의 3줄 버튼 UI를 재사용하지 않는다.
+- 엔진/검증 touchpoint: `getItemChoices`, `choose`, `goNextRaw`, auto pause, `scenarioValidator`, `vnEngine` replay, save/log summary, keyboard/accessibility.
+- save/log에는 플레이어가 고른 장소 라벨만 남긴다. route ID, 캐릭터명, `+10`, `호감도`, `기억됨`, `기록됨` 같은 즉시 피드백 문구를 map flow에 노출하지 않는다.
+- save schema를 새로 늘리지 않는다. 새 persisted field가 필요해지면 먼저 PRD/test spec에 migration/defaulting 요구사항을 추가한다.
 
 ### routeConfig는 해금/호감도의 원본이다
 

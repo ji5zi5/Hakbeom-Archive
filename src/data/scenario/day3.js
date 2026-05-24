@@ -1,3 +1,5 @@
+import { createMapOpeningScenes } from './mapOpeningFactory.js';
+
 export const day3Scenes = [
   {
       id: 'day3-chapter-card',
@@ -248,8 +250,11 @@ export const day3Scenes = [
       directives: [
         { type: 'BCG', src: '/assets/bg/rooftop-after-rain.png', transition: 'fade-in' },
         { type: 'E', target: 'yunho', effect: 'blush', motion: 'nod' }
-      ]
+      ],
+      nextId: 'day3-map-after-school'
     },
+
+  ...createMapOpeningScenes({ day: 3, chapter: 'day-3', finalNextId: 'choice-day3-route-focus' }),
 
   {
       id: 'choice-day3-route-focus',

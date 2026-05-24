@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { datingSimProfiles, routeConfig as routeConfigData } from '../src/data/routeConfig.js';
 import { characterProfiles, resolveCharacterAsset } from '../src/data/characterProfiles.js';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
+import { mapChoiceLabels, mapChoiceLocationIds, mapLocations } from '../src/data/scenario/mapChoiceConfig.js';
 import {
   ROUTE_DEPTH_BATCH_ID,
   routeDepthRoutes,
@@ -84,8 +85,8 @@ assert.match(
 );
 assert.match(
   vnFlowQa,
-  /vn-flow-qa\.json[\s\S]*title-start[\s\S]*choice-approach[\s\S]*phone-reply[\s\S]*save-load[\s\S]*gallery[\s\S]*ending/,
-  'VN flow QA should cover title start, choice, phone reply, save/load, gallery, and ending smoke paths.'
+  /vn-flow-qa\.json[\s\S]*title-start[\s\S]*choice-approach[\s\S]*map-choice[\s\S]*phone-reply[\s\S]*save-load[\s\S]*gallery[\s\S]*ending/,
+  'VN flow QA should cover title start, choice, mapChoice, phone reply, save/load, gallery, and ending smoke paths.'
 );
 assert.match(
   vnFlowQa,
@@ -177,6 +178,7 @@ function topLevelFunctionSource(source, functionName) {
 
 const bannerSceneSource = topLevelFunctionSource(component, 'BannerScene');
 const visualNovelSource = topLevelFunctionSource(component, 'BAVisualNovel');
+const componentGetItemChoicesSource = topLevelFunctionSource(component, 'getItemChoices');
 const dialogueSceneSource = topLevelFunctionSource(component, 'DialogueScene');
 const characterLayerSource = topLevelFunctionSource(component, 'CharacterLayer');
 const characterSpriteSource = topLevelFunctionSource(component, 'CharacterSprite');
@@ -188,6 +190,7 @@ const effectGeometrySource = topLevelFunctionSource(component, 'getEffectBadgeGe
 const effectBadgeSource = topLevelFunctionSource(component, 'EffectBadge');
 const directorApplySource = topLevelFunctionSource(directorEngine, 'applyDirectorItem');
 const directorMoodSource = topLevelFunctionSource(directorEngine, 'getMoodOverlay');
+const vnEngineGetItemChoicesSource = topLevelFunctionSource(vnEngine, 'getItemChoices');
 const replayCandidateSource = topLevelFunctionSource(vnEngine, 'getReplayCandidateSteps');
 const replayDirectorSource = topLevelFunctionSource(vnEngine, 'replayDirectorState');
 
@@ -1041,6 +1044,46 @@ assert.match(
   /applyRouteRewards\(previous,\s*current,\s*choiceIndex,\s*routeConfig\)/,
   'Choice and phone handling should apply affection/flag rewards.'
 );
+assert.match(
+  componentGetItemChoicesSource,
+  /mapChoice[\s\S]*choices|choices[\s\S]*mapChoice/,
+  'Component getItemChoices should return item.choices for mapChoice scenes.'
+);
+assert.match(
+  vnEngineGetItemChoicesSource,
+  /mapChoice[\s\S]*choices|choices[\s\S]*mapChoice/,
+  'VN engine getItemChoices should return item.choices for mapChoice replay traversal.'
+);
+assert.match(
+  visualNovelSource,
+  /currentItem\?\.type === 'mapChoice'|currentItem\.type === 'mapChoice'/,
+  'goNextRaw should block progression on mapChoice until the player selects a location.'
+);
+assert.match(
+  visualNovelSource,
+  /current\?\.type === 'mapChoice'|current\.type === 'mapChoice'/,
+  'choose should accept mapChoice alongside choice and reply phone scenes.'
+);
+assert.match(
+  visualNovelSource,
+  /mode === 'mapChoice'[\s\S]*?return undefined|return undefined[\s\S]*?mode === 'mapChoice'/,
+  'AUTO mode should pause while a mapChoice scene is visible.'
+);
+assert.match(
+  component,
+  /function MapChoiceScene\([\s\S]*?mapLocations[\s\S]*?onChoose/,
+  'Component should define a dedicated MapChoiceScene rather than stretching ChoiceScene rows to 9 options.'
+);
+assert.match(
+  visualNovelSource,
+  /<MapChoiceScene[\s\S]*?visible=\{mode === 'mapChoice'\}[\s\S]*?mapLocations=\{item\?\.mapLocations/,
+  'Visual novel should render MapChoiceScene only for mapChoice scenes and pass mapLocations.'
+);
+assert.match(
+  replayCandidateSource,
+  /item\.type === 'mapChoice'/,
+  'Replay candidate traversal should branch and apply rewards for mapChoice scenes.'
+);
 
 assert.match(
   visualNovelSource,
@@ -1079,6 +1122,39 @@ assert.match(
 );
 
 const scenarioSource = readScenarioSourceTree();
+const canonicalMapLocations = [
+  { id: 'school-gate', label: '교문', routeId: 'hyeongyeom', region: { x: 10, y: 72, w: 16, h: 12 } },
+  { id: 'library', label: '도서관', routeId: 'ukhyun', region: { x: 66, y: 18, w: 18, h: 12 } },
+  { id: 'broadcast-room', label: '방송실', routeId: 'jaeseong', region: { x: 42, y: 28, w: 16, h: 12 } },
+  { id: 'student-council-room', label: '학생회실', routeId: 'sangwon', region: { x: 18, y: 30, w: 18, h: 12 } },
+  { id: 'gym', label: '체육관', routeId: 'sanguk', region: { x: 66, y: 62, w: 18, h: 12 } },
+  { id: 'route-board', label: '동선 게시판', routeId: 'junhyeok', region: { x: 40, y: 52, w: 20, h: 12 } },
+  { id: 'cafeteria', label: '매점', routeId: 'dohun', region: { x: 16, y: 58, w: 16, h: 12 } },
+  { id: 'music-room', label: '음악실', routeId: 'haeum', region: { x: 68, y: 38, w: 16, h: 12 } },
+  { id: 'rooftop', label: '옥상', routeId: 'yunho', region: { x: 42, y: 10, w: 16, h: 12 } }
+];
+const canonicalMapLabels = ['교문', '도서관', '방송실', '학생회실', '체육관', '동선 게시판', '매점', '음악실', '옥상'];
+const routeSeedFlagSet = new Set(
+  Object.values(routeConfigData.routeSeedFlags || {}).flatMap((flags) => flags || [])
+);
+const legacyRouteAliasPattern = /^(hyeongyeom|ukhyun|jaeseong|sangwon|sanguk|junhyeok|dohun|haeum|yunho)_route$/;
+
+assert.deepEqual(mapLocations, canonicalMapLocations, 'mapChoice canonical locations should match the approved Day1-3 map contract exactly.');
+assert.deepEqual(mapChoiceLabels, canonicalMapLabels, 'mapChoice choices should derive from canonical place labels only.');
+assert.deepEqual(
+  mapChoiceLocationIds,
+  canonicalMapLocations.map((location) => location.id),
+  'mapChoice location ids should stay ordered and unique.'
+);
+assert.equal(new Set(mapChoiceLocationIds).size, 9, 'mapChoice location ids should be unique.');
+const configuredAffectionTargets = new Set(routeConfigData.affectionTargets.map((target) => target.id));
+for (const location of mapLocations) {
+  assert.ok(configuredAffectionTargets.has(location.routeId), `${location.id} routeId should exist in routeConfig.affectionTargets.`);
+  for (const key of ['x', 'y', 'w', 'h']) {
+    assert.equal(typeof location.region?.[key], 'number', `${location.id} region.${key} should be numeric.`);
+    assert.ok(Number.isFinite(location.region[key]), `${location.id} region.${key} should be finite.`);
+  }
+}
 
 function collectResolvedPngRefs(value, refs = new Set()) {
   if (typeof value === 'string') {
@@ -1285,6 +1361,16 @@ assert.match(
 );
 assert.match(
   readSource('docs/scenario-authoring.md'),
+  /mapChoice[\s\S]*9개[\s\S]*mapLocations[\s\S]*교문[\s\S]*옥상[\s\S]*10개[\s\S]*81/,
+  'Scenario authoring guide should document mapChoice schema, canonical 9-location map, 10 static records/day, and 81 ordered pair entries.'
+);
+assert.match(
+  readSource('docs/scenario-authoring.md'),
+  /mapChoice[\s\S]*(?:paginated|페이지)[\s\S]*(?:dynamic pair resolver|동적 pair resolver)[\s\S]*금지/,
+  'Scenario authoring guide should reject paginated and dynamic-pair fallbacks for the Day1-3 map contract.'
+);
+assert.match(
+  readSource('docs/scenario-authoring.md'),
   /17금[\s\S]*직접적인 성행위[\s\S]*폭력, 강제, 명시적 성적 강압/,
   'Scenario authoring guide should preserve the non-explicit 17금 romance boundary.'
 );
@@ -1297,6 +1383,11 @@ assert.match(
   readSource('docs/development-guide.md'),
   /voiceRules[\s\S]*choices\[\][\s\S]*replies\[\][\s\S]*messages\[\]\.text[\s\S]*variants\[\]\.text/,
   'Development guide should route full voice rewrites through datingSimProfiles and expanded story-lint surfaces.'
+);
+assert.match(
+  readSource('docs/development-guide.md'),
+  /mapChoice[\s\S]*MapChoiceScene[\s\S]*scenarioValidator[\s\S]*replay[\s\S]*save\/log[\s\S]*accessibility/,
+  'Development guide should list mapChoice engine/UI/validator/replay/save-log/accessibility touchpoints.'
 );
 
 assert.match(
@@ -1965,8 +2056,11 @@ function enumerateScenarioPathsUntil(startId, targetId, maxSteps = 640) {
       continue;
     }
     let targets = [];
-    if ((item.type === 'choice' || (item.type === 'phone' && (item.replies || []).length > 0)) && (item.next || item.choiceNext)) {
+    if ((item.type === 'choice' || item.type === 'mapChoice' || (item.type === 'phone' && (item.replies || []).length > 0)) && (item.next || item.choiceNext)) {
       targets = item.next || item.choiceNext;
+      if (item.type === 'mapChoice') {
+        targets = [...new Set([targets[0], targets[Math.floor(targets.length / 2)], targets[targets.length - 1]].filter(Boolean))];
+      }
     } else if (item.nextId) {
       targets = [item.nextId];
     } else if (index + 1 < scenario.length) {
@@ -2348,6 +2442,72 @@ for (const item of runtimeChoices) {
 const runtimeReplyPhones = scenario.filter((item) => item.type === 'phone' && !item.previewOnly && (item.replies || []).length > 0);
 for (const item of runtimeReplyPhones) {
   assert.ok((item.replies || []).length <= 3, `${item.id} should not exceed the current 3-reply phone layout contract.`);
+}
+const forbiddenMapLabelFragments = [
+  '현겸', '욱현', '재성', '상원', '상욱', '상국', '준혁', '도훈', '하음', '윤호',
+  'hyeongyeom', 'ukhyun', 'jaeseong', 'sangwon', 'sanguk', 'junhyeok', 'dohun', 'haeum', 'yunho',
+  '+10', '호감도', '기억됨', '기록됨'
+];
+for (const item of scenario.filter((entry) => entry.type === 'mapChoice')) {
+  assert.deepEqual(item.choices, canonicalMapLabels, `${item.id} should expose canonical place labels only.`);
+  assert.deepEqual(item.mapLocations, canonicalMapLocations, `${item.id} should reuse canonical mapLocations exactly.`);
+  for (const label of item.choices || []) {
+    for (const forbidden of forbiddenMapLabelFragments) {
+      assert.ok(!String(label).includes(forbidden), `${item.id} map label should not leak ${forbidden}: ${label}`);
+    }
+  }
+}
+for (const day of [1, 2, 3]) {
+  const prefix = `day${day}`;
+  const dayMapChoices = scenario.filter((item) => item.id?.startsWith(prefix) && item.type === 'mapChoice');
+  assert.equal(dayMapChoices.length, 10, `Day ${day} should contain 10 static mapChoice records: 1 after-school plus 9 contextual sunset maps.`);
+  const afterSchoolMap = scenario.find((item) => item.id === `${prefix}-map-after-school`);
+  assert.equal(afterSchoolMap?.type, 'mapChoice', `Day ${day} should start its place loop with ${prefix}-map-after-school.`);
+  assert.deepEqual(afterSchoolMap?.next?.length, 9, `Day ${day} after-school map should route to 9 first-location branches.`);
+  const sunsetMaps = dayMapChoices.filter((item) => item.id?.startsWith(`${prefix}-map-sunset-after-`));
+  assert.equal(sunsetMaps.length, 9, `Day ${day} should have one contextual sunset map for each first location.`);
+  const sunsetFirstIds = new Set(sunsetMaps.map((item) => item.id.replace(`${prefix}-map-sunset-after-`, '')));
+  assert.deepEqual([...sunsetFirstIds].sort(), [...mapChoiceLocationIds].sort(), `Day ${day} contextual sunset maps should cover every first location.`);
+  const orderedPairs = new Set();
+  for (const sunsetMap of sunsetMaps) {
+    const firstLocationId = sunsetMap.id.replace(`${prefix}-map-sunset-after-`, '');
+    assert.deepEqual(sunsetMap.choices, canonicalMapLabels, `${sunsetMap.id} should expose all canonical second locations.`);
+    assert.equal(sunsetMap.next?.length, 9, `${sunsetMap.id} should have 9 static second-choice targets.`);
+    for (const [secondIndex, targetId] of sunsetMap.next.entries()) {
+      const secondLocationId = mapChoiceLocationIds[secondIndex];
+      orderedPairs.add(`${firstLocationId}->${secondLocationId}`);
+      assert.ok(
+        String(targetId).includes(firstLocationId) && String(targetId).includes(secondLocationId),
+        `${sunsetMap.id} next[${secondIndex}] should target an authored branch for ${firstLocationId}->${secondLocationId}.`
+      );
+    }
+  }
+  assert.equal(orderedPairs.size, 81, `Day ${day} sunset maps should encode all 81 ordered location pairs through static next arrays.`);
+  const dayMapRewards = dayMapChoices.flatMap((item) => item.rewards || []);
+  for (const reward of dayMapRewards) {
+    const flags = reward.flags || [];
+    assert.ok(!flags.some((flag) => String(flag).startsWith('route_lock_')), `Day ${day} map rewards should not write route locks.`);
+    assert.ok(!flags.some((flag) => routeSeedFlagSet.has(flag)), `Day ${day} map rewards should not write configured routeSeedFlags.`);
+    assert.ok(!flags.some((flag) => legacyRouteAliasPattern.test(String(flag))), `Day ${day} map rewards should not write legacy *_route aliases.`);
+  }
+}
+for (const [locationIndex, location] of mapLocations.entries()) {
+  let openingOnlyState = createInitialGameState();
+  for (const day of [1, 2, 3]) {
+    const firstMap = scenario.find((item) => item.id === `day${day}-map-after-school`);
+    const sunsetMap = scenario.find((item) => item.id === `day${day}-map-sunset-after-${location.id}`);
+    openingOnlyState = applyRouteRewards(openingOnlyState, firstMap, locationIndex, routeConfigData);
+    openingOnlyState = applyRouteRewards(openingOnlyState, sunsetMap, locationIndex, routeConfigData);
+  }
+  assert.ok(
+    Number(openingOnlyState.affection?.[location.routeId] || 0) < routeConfigData.routeLockThreshold,
+    `${location.routeId} opening-only map affection should stay below route lock threshold.`
+  );
+  assert.equal(
+    resolveRouteLock(openingOnlyState, routeConfigData, { threshold: 0 }).id,
+    'common',
+    `${location.routeId} opening-only map state should not force a route lock because no seed/lock flags are written.`
+  );
 }
 
 assert.match(
@@ -2804,6 +2964,122 @@ for (const endingItem of scenario.filter((item) => item.terminal)) {
     `${endingItem.id} should leave enough afterglow before the terminal state instead of ending abruptly.`
   );
 }
+
+function makeMinimalMapChoiceScenario(overrides = {}) {
+  const mapId = overrides.id || 'map-choice-contract';
+  const next = overrides.next || mapLocations.map((location) => `end-${location.id}`);
+  const rewards = overrides.rewards || mapLocations.map((location) => ({
+    affection: { [location.routeId]: 1 },
+    flags: [`map_contract_${location.id}`]
+  }));
+  return [
+    { id: 'start', type: 'dialogue', text: 'start', nextId: mapId },
+    {
+      id: mapId,
+      type: 'mapChoice',
+      choices: mapChoiceLabels,
+      mapLocations,
+      rewards,
+      next,
+      ...overrides
+    },
+    ...mapLocations.map((location) => ({
+      id: `end-${location.id}`,
+      type: 'dialogue',
+      text: `${location.label} end`,
+      terminal: true
+    }))
+  ];
+}
+
+function mapChoiceValidationErrors(overrides) {
+  return validateScenario(makeMinimalMapChoiceScenario(overrides), routeConfigData).errors;
+}
+
+const minimalMapChoiceValidation = validateScenario(makeMinimalMapChoiceScenario(), routeConfigData);
+assert.deepEqual(
+  minimalMapChoiceValidation.errors,
+  [],
+  'Scenario validator should accept a reachable canonical 9-location mapChoice and mark all 9 next targets reachable.'
+);
+assert.deepEqual(
+  findReplayPath(
+    makeMinimalMapChoiceScenario(),
+    2,
+    0,
+    createInitialGameState(),
+    { routeConfig: routeConfigData }
+  ),
+  [0, 1, 2],
+  'Replay should traverse mapChoice branches through selected-index next targets.'
+);
+const minimalMapChoiceItem = makeMinimalMapChoiceScenario()[1];
+const mapChoiceRewardState = applyRouteRewards(createInitialGameState(), minimalMapChoiceItem, 1, routeConfigData);
+assert.equal(
+  mapChoiceRewardState.choices.at(-1)?.text,
+  '도서관',
+  'mapChoice reward history should store the selected place label.'
+);
+const mapChoiceSaveSummary = buildSaveSummary({
+  item: minimalMapChoiceItem,
+  gameState: mapChoiceRewardState,
+  routeConfig: routeConfigData
+});
+assert.equal(mapChoiceSaveSummary.linePreview, '도서관', 'Save summary should preview the selected map place label.');
+assert.ok(
+  !/ukhyun|욱현|호감도|\+10|기억됨|기록됨/.test(mapChoiceSaveSummary.linePreview),
+  'Save summary line preview for mapChoice should not expose route IDs, character hints, or immediate feedback text.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ choices: mapChoiceLabels.slice(0, 8) })
+    .some((error) => error.includes('mapChoice choices length 8 must equal 9')),
+  'Scenario validator should reject mapChoice with fewer than 9 choices.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ choices: [...mapChoiceLabels, '운동장'] })
+    .some((error) => error.includes('mapChoice choices length 10 must equal 9')),
+  'Scenario validator should reject mapChoice with more than 9 choices.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ mapLocations: undefined })
+    .some((error) => error.includes('mapChoice mapLocations are required')),
+  'Scenario validator should reject missing mapLocations.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ mapLocations: [mapLocations[1], mapLocations[0], ...mapLocations.slice(2)] })
+    .some((error) => error.includes('mapChoice mapLocations must match canonical location order')),
+  'Scenario validator should reject reordered mapLocations.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ choices: ['정문', ...mapChoiceLabels.slice(1)] })
+    .some((error) => error.includes('mapChoice choices must match mapLocations labels')),
+  'Scenario validator should reject mapChoice choices that differ from mapLocations labels.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ mapLocations: [{ ...mapLocations[0], routeId: 'missing' }, ...mapLocations.slice(1)] })
+    .some((error) => error.includes('mapChoice unknown routeId: missing')),
+  'Scenario validator should reject mapChoice routeIds missing from routeConfig.affectionTargets.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ mapLocations: [{ ...mapLocations[0], region: { x: 1, y: 2, w: 3 } }, ...mapLocations.slice(1)] })
+    .some((error) => error.includes('mapChoice region must include finite x/y/w/h numbers')),
+  'Scenario validator should reject malformed mapChoice region objects.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ options: mapChoiceLabels })
+    .some((error) => error.includes('mapChoice options field is invalid')),
+  'Scenario validator should reject options on mapChoice scenes.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ rewards: mapLocations.slice(0, 8).map(() => ({})) })
+    .some((error) => error.includes('mapChoice rewards length 8 must equal 9')),
+  'Scenario validator should reject mapChoice reward length mismatches.'
+);
+assert.ok(
+  mapChoiceValidationErrors({ next: mapLocations.slice(0, 8).map((location) => `end-${location.id}`) })
+    .some((error) => error.includes('mapChoice next length 8 must equal 9')),
+  'Scenario validator should reject mapChoice next length mismatches.'
+);
 
 const validation = validateScenario(scenario, routeConfigData);
 assert.deepEqual(validation.errors, [], `scenario validator errors: ${validation.errors.join('\n')}`);
