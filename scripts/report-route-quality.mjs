@@ -4,6 +4,15 @@ import path from 'node:path';
 import { episodeInfo, scenario } from '../src/data/scenario.js';
 import { routeConfig } from '../src/data/routeConfig.js';
 import { routeDateBatch3Routes } from '../src/data/scenario/batch3RouteDates/index.js';
+import {
+  calendarEventCards,
+  calendarPlannerCoverage,
+  calendarPlannerDayConfigs,
+  calendarScenarioScenes,
+  routeDepthBatchAdapterStatus,
+  routePlannerEventCards
+} from '../src/data/scenario/calendar/index.js';
+import { loadCalendarScenarioScenes } from '../src/data/scenario/calendar/loadCalendarScenario.js';
 import { resolveEndingRoute } from '../src/engine/vnEngine.js';
 import { resolveRouteLock } from '../src/utils/routeResolution.js';
 import { applyRouteRewards, createInitialGameState } from '../src/utils/vnState.js';
@@ -35,6 +44,102 @@ function readMemoryFixture() {
   const fixturePath = 'tests/fixtures/day4-14-memory-flags.json';
   if (!existsSync(fixturePath)) return { version: null, flags: [] };
   return JSON.parse(readFileSync(fixturePath, 'utf8'));
+}
+
+function countBy(values = []) {
+  return values.reduce((counts, value) => {
+    const key = String(value || 'unknown');
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function rewardMemoryEntries(card) {
+  return (card.scenes || []).flatMap((scene) => (scene.rewards || []).flatMap((reward) => {
+    const memories = [reward.memory, ...(Array.isArray(reward.memories) ? reward.memories : [])].filter(Boolean);
+    return memories.map((memory) => ({
+      eventId: reward.calendar?.eventId || reward.planVisit?.eventId || card.id,
+      routeId: memory.routeId || reward.calendar?.routeId || card.routeId,
+      kind: memory.kind || reward.calendar?.outcome || '',
+      label: memory.label || reward.calendar?.label || ''
+    }));
+  }));
+}
+
+function rewardCalendarEntries(card) {
+  return (card.scenes || []).flatMap((scene) => (scene.rewards || [])
+    .filter((reward) => reward.calendar || reward.planVisit || reward.invitation)
+    .map((reward) => ({
+      eventId: reward.calendar?.eventId || reward.planVisit?.eventId || reward.invitation?.eventId || card.id,
+      routeId: reward.calendar?.routeId || reward.planVisit?.routeId || reward.invitation?.routeId || card.routeId,
+      day: reward.calendar?.day || reward.planVisit?.day || card.dayRange?.[0],
+      slot: reward.calendar?.slot || reward.planVisit?.slot || card.slot,
+      location: reward.calendar?.location || reward.planVisit?.locationId || card.location,
+      outcome: reward.calendar?.outcome || reward.invitation?.status || 'planned'
+    })));
+}
+
+function routeMemoryReadAudit(routeId) {
+  const memoryFlags = new Set(
+    routePlannerEventCards
+      .filter((card) => card.routeId === routeId)
+      .flatMap((card) => (card.scenes || []).flatMap((scene) => (scene.rewards || []).flatMap((reward) => reward.flags || [])))
+      .filter((flag) => flag.startsWith(`${routeId}_date_`) || flag.startsWith(`${routeId}_phone_`) || flag.startsWith(`memory_payoff_${routeId}_`))
+  );
+  const consumers = scenario.filter((item) => (item.variants || []).some((variant) => (
+    variant.requiredFlags || variant.flags || []
+  ).some((flag) => memoryFlags.has(flag))));
+  return {
+    routeId,
+    memoryFlagCount: memoryFlags.size,
+    consumerSceneCount: consumers.length,
+    consumerSceneIds: consumers.map((item) => item.id).slice(0, 20)
+  };
+}
+
+function buildSyncLazyParity(lazyScenes) {
+  let mismatchIndex = -1;
+  for (let index = 0; index < Math.max(calendarScenarioScenes.length, lazyScenes.length); index += 1) {
+    if (calendarScenarioScenes[index]?.id !== lazyScenes[index]?.id || calendarScenarioScenes[index]?.nextId !== lazyScenes[index]?.nextId) {
+      mismatchIndex = index;
+      break;
+    }
+  }
+  return {
+    syncCount: calendarScenarioScenes.length,
+    lazyCount: lazyScenes.length,
+    mismatchIndex,
+    matches: mismatchIndex === -1 && calendarScenarioScenes.length === lazyScenes.length
+  };
+}
+
+function buildCalendarObservability(lazyScenes) {
+  const plannerCards = routePlannerEventCards;
+  const memoryWrites = plannerCards.flatMap(rewardMemoryEntries);
+  const calendarWrites = plannerCards.flatMap(rewardCalendarEntries);
+  return {
+    eventCardCount: calendarEventCards.length,
+    plannerDayCount: calendarPlannerDayConfigs.length,
+    routePlannerEventCount: plannerCards.length,
+    slotCoverage: countBy(calendarEventCards.map((card) => card.slot)),
+    locationCoverage: countBy(calendarEventCards.map((card) => card.location)),
+    qualityTagCoverage: countBy(calendarEventCards.flatMap((card) => card.qualityTags || [])),
+    routePlannerCoverage: calendarPlannerCoverage,
+    memoryWriteAudit: {
+      calendarWriteCount: calendarWrites.length,
+      relationshipMemoryWriteCount: memoryWrites.length,
+      routes: Object.fromEntries(routeIds.map((routeId) => [
+        routeId,
+        {
+          calendarWrites: calendarWrites.filter((entry) => entry.routeId === routeId).length,
+          relationshipMemoryWrites: memoryWrites.filter((entry) => entry.routeId === routeId).length
+        }
+      ]))
+    },
+    memoryReadAudit: routeIds.map(routeMemoryReadAudit),
+    adapterSunsetStatus: routeDepthBatchAdapterStatus,
+    syncLazyParity: buildSyncLazyParity(lazyScenes)
+  };
 }
 
 function sceneIdLooksLate(sceneId = '') {
@@ -264,9 +369,11 @@ const explicitRouteLockRewardScenes = allExplicitRouteLockRewardScenes(routeIds)
 const routeSpecificTerminalRules = (episodeInfo.endingRules || []).filter((rule) => routeIds.includes(rule.id) && !rule.default);
 const routeScorecards = routeIds.map((routeId) => routeScorecard(routeId, fixtureRowsByRoute[routeId] || []));
 const hyeongyeom = routeScorecards.find((route) => route.routeId === 'hyeongyeom');
+const lazyCalendarScenarioScenes = await loadCalendarScenarioScenes();
+const calendarObservability = buildCalendarObservability(lazyCalendarScenarioScenes);
 
 const structuralChecks = {
-  saveVersionStable: SAVE_VERSION === 2,
+  saveVersionStable: SAVE_VERSION >= 3,
   routeIdsDerivedFromAffectionTargets: routeIds.length === routeConfig.affectionTargets.length && routeIds.every(Boolean),
   fixtureStillDay4Day5Bridge: fixture.version === 1 && (fixture.flags || []).length === routeIds.length * 2,
   allRoutesHaveTerminalRule: routeIds.every((routeId) => routeSpecificTerminalRules.some((rule) => rule.id === routeId)),
@@ -279,7 +386,20 @@ const structuralChecks = {
     && hyeongyeom.dialogue.ratio >= HYEONGYEOM_BASELINE_DIALOGUE_RATIO
     && hyeongyeom.replay.affection >= 85
     && hyeongyeom.replay.hasLockFlag
-    && hyeongyeom.replay.endingRoute.id === 'hyeongyeom'
+    && hyeongyeom.replay.endingRoute.id === 'hyeongyeom',
+  calendarEventCardsPresent: calendarObservability.eventCardCount >= 125,
+  allPlannerRoutesHaveCoverage: calendarObservability.routePlannerCoverage.every((entry) => (
+    entry.eventCount >= 11
+    && entry.days.length === 11
+    && entry.hasLowMidHighVariants
+    && entry.hasMemoryPayoff
+    && entry.hasDateInvitationReaction
+  )),
+  calendarMemoryWritesPresent: Object.values(calendarObservability.memoryWriteAudit.routes).every((entry) => (
+    entry.calendarWrites >= 11 && entry.relationshipMemoryWrites >= 11
+  )),
+  routeDepthAdaptersCanonical: calendarObservability.adapterSunsetStatus.every((entry) => entry.canonical && entry.adapterId),
+  calendarSyncLazyParity: calendarObservability.syncLazyParity.matches
 };
 
 const report = {
@@ -293,6 +413,7 @@ const report = {
   },
   structuralChecks,
   explicitRouteLockRewardScenes,
+  calendarObservability,
   routeScorecards,
   incompleteRoutes: routeScorecards.filter((route) => !route.complete).map((route) => route.routeId)
 };
@@ -315,5 +436,10 @@ console.log(JSON.stringify({
   enforce: ENFORCE,
   structuralChecks,
   completeRoutes: routeScorecards.filter((route) => route.complete).map((route) => route.routeId),
+  calendarObservability: {
+    eventCardCount: calendarObservability.eventCardCount,
+    routePlannerEventCount: calendarObservability.routePlannerEventCount,
+    syncLazyParity: calendarObservability.syncLazyParity
+  },
   incompleteRoutes: report.incompleteRoutes
 }, null, 2));

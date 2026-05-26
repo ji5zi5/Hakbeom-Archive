@@ -12,7 +12,8 @@
     "test:build-size": "node scripts/check-build-size.mjs",
     "test:route-quality": "node scripts/report-route-quality.mjs",
     "test:story-lines": "node scripts/check-scenario-line-count.mjs",
-    "qa:vn": "node scripts/qa-vn-flow.mjs"
+    "qa:vn": "node scripts/qa-vn-flow.mjs",
+    "test:calendar-registry": "node scripts/report-calendar-registry.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.0.2",

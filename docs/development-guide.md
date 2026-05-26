@@ -24,6 +24,7 @@ npm audit --audit-level=moderate
 ```bash
 npm run test:route-quality
 ROUTE_QUALITY_ENFORCE=1 npm run test:route-quality  # final all-route gate
+npm run test:calendar-registry                       # EventCard/adaptor ownership gate
 ```
 
 시각 레이아웃을 건드렸다면 dev server를 켠 뒤 `scripts/capture-*.mjs` 계열 스크립트로 스크린샷을 확인한다. Playwright는 devDependency로 설치되어 있으므로, 새 환경에서는 `npm install` 후 필요하면 `npx playwright install chromium`으로 브라우저 바이너리를 준비한다. Linux에서 브라우저 런타임 라이브러리가 없으면 `npx playwright install-deps chromium`을 실행해야 하며, 이 명령은 시스템 패키지 설치 권한이 필요할 수 있다.
@@ -62,7 +63,7 @@ public/assets/                   런타임 asset
 | --- | --- | --- |
 | 대사/선택지/엔딩/phone/chapter 추가 | `src/data/scenario.js` | `docs/scenario-authoring.md`, `tests/ui-contract.test.mjs` |
 | Day 1-3 지도 선택/mapChoice 수정 | `src/data/scenario/mapChoiceConfig.js`, `src/data/scenario/day1.js`, `src/data/scenario/day2.js`, `src/data/scenario/day3.js`, `src/components/BAVisualNovel.jsx`, `src/engine/vnEngine.js`, `src/engine/scenarioValidator.js` | `MapChoiceScene`, replay, save/log summary, accessibility, visual capture |
-| Day 4-14 미연시 루프 강화 | `src/data/scenario/day4.js`–`day14.js`, `src/data/scenario/episodeInfo.js`, 필요 시 `src/utils/routeResolution.js`, `src/engine/vnEngine.js` | tracked flag matrix, routeGate/episodeInfo explicit lock, SAVE_VERSION/no save schema change, `tests/ui-contract.test.mjs` |
+| Day 4-14 미연시 루프 강화 | `src/data/scenario/calendar/index.js`, 임시 wrapper `src/data/scenario/day4.js`–`day14.js`, `src/data/scenario/episodeInfo.js`, 필요 시 `src/utils/routeResolution.js`, `src/engine/vnEngine.js` | EventCard schema, tracked flag matrix, routeGate/episodeInfo explicit lock, SAVE_VERSION 3 calendar migration, `tests/ui-contract.test.mjs` |
 | route date loop / phone follow-up 추가 | `src/data/scenario/batch3RouteDates/`, `src/data/scenario/routeDepthExpansionRegistry.js` | route-date ownership audit, memory consumer audit, deterministic replay tests |
 | route별 말투/미연시 기억 라벨 변경 | `src/data/routeConfig.js`의 `datingSimProfiles`, `src/data/scenario/batch3RouteDates/` | save summary latest memory tests, route-date dialogue ratio tests |
 | 보이스 리라이트/story-lint 변경 | `src/data/routeConfig.js`, `src/data/characterProfiles.js`, `tests/ui-contract.test.mjs` | `docs/scenario-authoring.md`의 story-lint surface, baseline/pilot report |
@@ -99,7 +100,7 @@ public/assets/                   런타임 asset
 - 새 히로인을 추가할 때는 `routeConfig.affectionTargets`, `characterProfiles`, scenario reward/endingRules, terminal ending, contract test를 함께 갱신한다.
 - 미연시 route voice는 `routeConfig.datingSimProfiles`가 원본이다. route date matrix의 `profileId`/`memoryLabel`은 이 profile과 맞춰서 저장 슬롯/상태 화면에 보여도 자연스러운 짧은 기억 문장으로 유지한다.
 - 전면 보이스 리라이트의 `voiceRules`, `tensionMarkers`, `tabooPhrases`, `sampleLine`도 `datingSimProfiles`가 원본이다. 선택지/답장/phone까지 검사해야 하므로 story-lint는 `item.text`뿐 아니라 `choices[]`, `replies[]`, `messages[].text`, `variants[].text`, 변경된 label을 수집한다.
-- STATUS의 date log는 별도 저장 스키마가 아니다. `gameState.flags`, `routeConfig.affectionTargets`, `routeConfig.datingSimProfiles`, `resolveLatestRouteMemory()`로만 현재 루트/최근 기억을 파생한다. calendar state, reward toast, date-log 전용 save field는 추가하지 않는다.
+- STATUS의 date log UI는 여전히 passive 표시다. 하지만 Calendar Event Registry PRD 이후 저장 스키마는 `SAVE_VERSION = 3`이며 `gameState.calendar`와 `gameState.relationshipMemory`를 persisted planner state로 허용한다. date-log 전용 popup state나 reward toast 전용 save field는 만들지 않고, STATUS 표시는 flags/profile/relationshipMemory에서 파생한다.
 
 ### scenario는 데이터, validator는 계약이다
 
@@ -113,23 +114,24 @@ public/assets/                   런타임 asset
 - React 렌더링은 별도 `MapChoiceScene`으로 분리하고 `ChoiceScene`의 3줄 버튼 UI를 재사용하지 않는다.
 - 엔진/검증 touchpoint: `getItemChoices`, `choose`, `goNextRaw`, auto pause, `scenarioValidator`, `vnEngine` replay, save/log summary, keyboard/accessibility.
 - save/log에는 플레이어가 고른 장소 라벨만 남긴다. route ID, 캐릭터명, `+10`, `호감도`, `기억됨`, `기록됨` 같은 즉시 피드백 문구를 map flow에 노출하지 않는다.
-- save schema를 새로 늘리지 않는다. 새 persisted field가 필요해지면 먼저 PRD/test spec에 migration/defaulting 요구사항을 추가한다.
+- mapChoice 자체는 save schema를 새로 늘리지 않는다. Day4-14 calendar planner persisted field는 별도 PRD/test spec에 따라 `SAVE_VERSION = 3`에서만 추가한다.
 
 ### routeConfig는 해금/호감도의 원본이다
 
 갤러리/회상 ID를 scenario reward에 직접 새로 쓰기 전에 `routeConfig.js`에 먼저 등록한다. validator가 없는 ID를 에러로 잡아야 정상이다.
-호감도는 100점 만점이 기본 계약이다. `routeLockThreshold`는 의미 있는 루트 투자선(현재 70), 엔딩 조건은 normal 60+, good/캐릭터 85+를 기준으로 맞춘다. 플레이 중 보상 토스트를 띄우기보다 `variants`와 STATUS 모달/save summary가 관계 변화를 보여줘야 한다. 0~10 스케일을 쓰던 저장 데이터는 `SAVE_VERSION = 2`에서 100점 스케일로 마이그레이션한다.
+호감도는 100점 만점이 기본 계약이다. `routeLockThreshold`는 의미 있는 루트 투자선(현재 70), 엔딩 조건은 normal 60+, good/캐릭터 85+를 기준으로 맞춘다. 플레이 중 보상 토스트를 띄우기보다 `variants`와 STATUS 모달/save summary가 관계 변화를 보여줘야 한다. 0~10 스케일을 쓰던 저장 데이터는 `SAVE_VERSION = 2`에서 100점 스케일로 마이그레이션되었고, `SAVE_VERSION = 3`에서도 legacy save 정규화가 이 계약을 유지한다.
 
 ### Day4-14 미연시 루프 변경 경계
 
 Day4-14를 수정할 때는 먼저 tracked memory flag matrix를 갱신한다. CI에서 `.omx/` 파일을 직접 읽지 않도록 `docs/day4-14-flag-consumption-matrix.md`, `tests/fixtures/day4-14-memory-flags.json`, 또는 `tests/ui-contract.test.mjs`의 명시적 allowlist를 원본으로 둔다.
 
+- Day4-14 planner loop는 `src/data/scenario/calendar/routePlannerEvents.js`에서 생성한다. chapter card의 원래 `nextId`는 `calendarPlannerOriginalNextId`로 보존하고, planner phone reply가 기존 day 본문으로 복귀해야 한다.
 - Day4-5는 route 선택/답장 agency와 `<routeId>_date_day<day>_<motif>` memory를 만든다.
 - 답장형 phone은 `buildPhoneReplyFlag(routeId, day, tone)` 형식의 `<routeId>_phone_day<day>_<direct|gentle|tease>_reply`를 쓴다.
 - display/payoff 전용 flag는 `memory_payoff_<routeId>_...`로 두고 route prefix tie-break에 섞지 않는다.
 - Day4-9는 `route_lock_<id>`를 쓰지 않는다. Day10 선택만 명시적 route lock을 쓴다.
 - Day11-14 `routeGate`와 `episodeInfo.endingRules`의 route별 terminal rule은 명시적 `route_lock_<id>`를 요구해야 한다.
-- 새 persisted calendar/date-log/reward-toast field를 만들지 않는다. `SAVE_VERSION` 변경이 필요해 보이면 구현을 멈추고 별도 migration PRD/test-spec을 만든다.
+- Calendar Event Registry 작업에서는 `SAVE_VERSION = 3`의 `gameState.calendar`/`relationshipMemory`만 persisted planner state로 허용한다. PLAN 모달은 이 persisted `dateHistory`/`relationshipMemory`를 읽어 최근 약속을 표시하고, STATUS date log는 계속 파생 UI로 둔다. date-log 전용 save field나 reward-toast field는 만들지 않는다. 추가 save field가 필요하면 다시 PRD/test-spec을 갱신한다.
 - story-lint 범위는 새로 추가/수정한 Day4-14 line과 touched payoff/ending variants로 한정한다.
 
 ### 저장 데이터는 신뢰하지 않는다

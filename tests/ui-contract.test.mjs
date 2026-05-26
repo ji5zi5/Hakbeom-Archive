@@ -21,6 +21,22 @@ import {
   routeDepthExpansionBatches
 } from '../src/data/scenario/routeDepthExpansionRegistry.js';
 import {
+  calendarEventCards,
+  calendarEventIds,
+  calendarPlannerCoverage,
+  calendarPlannerDayConfigs,
+  calendarPlannerEntries,
+  calendarSourceAdapters,
+  routeDepthBatchAdapterStatus,
+  routePlannerEventCards,
+  calendarScenarioByDay,
+  calendarScenarioScenes,
+  getCalendarScenarioDaySlice,
+  compareCalendarEventCards,
+  compileCalendarScenario,
+  validateCalendarEventCards
+} from '../src/data/scenario/calendar/index.js';
+import {
   CORE_ROUTE_DATE_BATCH_ID,
   coreRouteDateCommittedScripts,
   coreRouteDateMatrix,
@@ -36,7 +52,7 @@ import {
 import { getChapterInfo, shouldShowChapterCard } from '../src/engine/chapterEngine.js';
 import { applyDirectorItem, getMoodOverlay } from '../src/engine/directorEngine.js';
 import { normalizePhoneMessages, normalizePhoneReplies } from '../src/engine/phoneEngine.js';
-import { SAVE_VERSION, normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCodec.js';
+import { SAVE_VERSION, collectCalendarEventIdsFromScenario, normalizeSavePayload, normalizeSaveSummary } from '../src/engine/saveCodec.js';
 import { buildSaveSummary } from '../src/engine/saveSummary.js';
 import { validateScenario } from '../src/engine/scenarioValidator.js';
 import { findReplayPath, replayDirectorState, resolveEndingRoute, resolveNextIndex } from '../src/engine/vnEngine.js';
@@ -111,6 +127,16 @@ assert.match(
   'All-route expansion should expose a route-quality scorecard script.'
 );
 assert.match(
+  packageJson,
+  /"test:calendar-registry":\s*"node scripts\/report-calendar-registry\.mjs"/,
+  'Calendar registry migration should expose an adapter/source ownership report script.'
+);
+assert.match(
+  readSource('scripts/report-calendar-registry.mjs'),
+  /adapterSunsetStatus[\s\S]*calendarPlannerCoverage[\s\S]*routeDepthBatchAdapterStatus[\s\S]*Calendar registry validation/,
+  'Calendar registry report should cover adapter sunset status and route-depth batch adapter ownership.'
+);
+assert.match(
   regressionCapture,
   /LOCAL_PLAYWRIGHT_LIB_DIR[\s\S]*LD_LIBRARY_PATH/,
   'VN capture should load repo-local Playwright browser libraries when system packages are unavailable.'
@@ -127,8 +153,8 @@ assert.match(
 );
 assert.match(
   readSource('scripts/report-route-quality.mjs'),
-  /ROUTE_QUALITY_ENFORCE[\s\S]*affectionTargets\.map\(\(target\) => target\.id\)[\s\S]*hyeongyeomBaselineDialogueRatio[\s\S]*incompleteRoutes/,
-  'Route-quality scorecard should derive route IDs from routeConfig targets, preserve a Hyeongyeom baseline gate, and support explicit final enforcement.'
+  /ROUTE_QUALITY_ENFORCE[\s\S]*affectionTargets\.map\(\(target\) => target\.id\)[\s\S]*calendarObservability[\s\S]*memoryWriteAudit[\s\S]*syncLazyParity[\s\S]*hyeongyeomBaselineDialogueRatio[\s\S]*incompleteRoutes/,
+  'Route-quality scorecard should derive route IDs, include calendar observability/memory/parity audits, preserve a Hyeongyeom baseline gate, and support explicit final enforcement.'
 );
 
 function readPngSize(path) {
@@ -240,9 +266,167 @@ assert.doesNotMatch(
 );
 assert.match(
   scenarioLoader,
-  /import\('\.\/scenario\/day1\.js'\)[\s\S]*import\('\.\/scenario\/endings\.js'\)[\s\S]*integrateRouteDepthExpansions\(sceneGroups\.flat\(\)\)/,
-  'Scenario loader should code-split day/ending modules and integrate route-depth expansions after loading.'
+  /import\('\.\/scenario\/day1\.js'\)[\s\S]*import\('\.\/scenario\/calendar\/loadCalendarScenario\.js'\)[\s\S]*loadCalendarScenarioScenes[\s\S]*import\('\.\/scenario\/endings\.js'\)[\s\S]*scenario:\s*sceneGroups\.flat\(\)/,
+  'Scenario loader should code-split Day1-3, active Day4-14 calendar registry, and endings without active-loading individual Day4-14 modules.'
 );
+assert.doesNotMatch(
+  scenarioLoader,
+  /import\('\.\/scenario\/day4\.js'\)[\s\S]*import\('\.\/scenario\/day14\.js'\)/,
+  'Scenario loader should not active-load individual Day4-14 modules after the calendar registry switch.'
+);
+assert.match(
+  scenarioIndex,
+  /import \{ calendarScenarioScenes \} from '\.\/calendar\/index\.js';[\s\S]*export const scenario = \[[\s\S]*\.\.\.day1Scenes[\s\S]*\.\.\.day3Scenes[\s\S]*\.\.\.calendarScenarioScenes[\s\S]*\.\.\.endingScenes/,
+  'Synchronous scenario composition should route active Day4-14/post-lock content through the calendar registry.'
+);
+assert.doesNotMatch(
+  scenarioIndex,
+  /import \{ day4Scenes \}[\s\S]*import \{ day14Scenes \}/,
+  'Synchronous scenario composition should not import individual Day4-14 modules after the calendar registry switch.'
+);
+
+const calendarEventCardFixture = {
+  id: 'ukhyun-day6-library-close',
+  title: '네가 접은 페이지',
+  routeId: 'ukhyun',
+  character: { id: 'ukhyun', name: '욱현' },
+  dayRange: [6, 6],
+  slot: 'after-school',
+  location: 'library',
+  requirements: {
+    affection: { ukhyun: { min: 40 } },
+    flags: ['ukhyun_day4_book_memory'],
+    routeLock: null,
+    once: true
+  },
+  rewards: {
+    affection: { ukhyun: 10 },
+    flags: ['ukhyun_date_day6_library'],
+    memory: { routeId: 'ukhyun', kind: 'date', label: '도서관에서 비워 둔 옆자리' }
+  },
+  priority: 80,
+  fallbackGroup: 'ukhyun-day6-library',
+  qualityTags: ['same-scene-tier-variant', 'memory-payoff', 'date-invitation-reacts'],
+  scenes: [
+    {
+      id: 'ukhyun-day6-library-close-entry',
+      type: 'dialogue',
+      name: '욱현',
+      text: '접지 않은 페이지부터 볼래?'
+    }
+  ]
+};
+const lowerPriorityCalendarEventCard = {
+  ...calendarEventCardFixture,
+  id: 'ukhyun-day6-library-lower',
+  priority: 10,
+  requirements: { flags: [] },
+  scenes: [{ id: 'ukhyun-day6-library-lower-entry', type: 'dialogue', text: '낮은 우선순위' }]
+};
+const compiledCalendarFixture = compileCalendarScenario([
+  lowerPriorityCalendarEventCard,
+  calendarEventCardFixture
+]);
+assert.deepEqual(
+  Object.keys({
+    calendarEventCards,
+    calendarScenarioScenes,
+    calendarScenarioByDay,
+    calendarPlannerEntries,
+    calendarEventIds
+  }),
+  ['calendarEventCards', 'calendarScenarioScenes', 'calendarScenarioByDay', 'calendarPlannerEntries', 'calendarEventIds'],
+  'Calendar registry should expose the canonical EventCard compiler surface.'
+);
+assert.deepEqual(validateCalendarEventCards([calendarEventCardFixture]), []);
+assert.ok(
+  validateCalendarEventCards([{ ...calendarEventCardFixture, dayRange: undefined, scenes: undefined }]).some((error) => /dayRange|scenes or createScenes/.test(error)),
+  'Calendar EventCard schema should reject missing dayRange and scenes/createScenes.'
+);
+assert.equal(
+  [lowerPriorityCalendarEventCard, calendarEventCardFixture].sort(compareCalendarEventCards)[0].id,
+  calendarEventCardFixture.id,
+  'Calendar EventCard ordering should prefer higher priority after day/slot/location/route tie-breaks.'
+);
+assert.equal(compiledCalendarFixture.calendarEventIds[0], calendarEventCardFixture.id);
+assert.equal(compiledCalendarFixture.calendarPlannerEntries[0].nextId, 'ukhyun-day6-library-close-entry');
+assert.equal(compiledCalendarFixture.calendarScenarioScenes[0].calendarEventId, calendarEventCardFixture.id);
+assert.ok(
+  compiledCalendarFixture.calendarScenarioByDay['6'].some((item) => item.id === 'ukhyun-day6-library-close-entry'),
+  'Compiled calendar scenario should expose by-day slices for planner and wrapper use.'
+);
+assert.ok(
+  routeDepthExpansionBatches.every((batch) => routeDepthBatchAdapterStatus.some((entry) => entry.batchId === batch.id && entry.canonical && entry.sceneCount === batch.sceneCount)),
+  'Calendar registry should track every route-depth expansion batch through one-release source adapter metadata.'
+);
+for (const adapterId of ['legacy-route-depth-batch1-adapter', 'legacy-route-depth-batch2-adapter', 'legacy-route-depth-batch3-adapter']) {
+  assert.ok(
+    calendarEventIds.includes(adapterId) && calendarSourceAdapters.some((adapter) => adapter.id === adapterId),
+    `${adapterId} should be a canonical EventCard source adapter.`
+  );
+}
+assert.match(
+  readSource('src/data/scenario/longformDatingExpansion.js'),
+  /getCalendarSourceAdapterSlice\('legacy-longform-adapter'\)/,
+  'Longform scenario module should be a compiled calendar-registry adapter wrapper.'
+);
+assert.match(
+  readSource('src/data/scenario/day4.js'),
+  /getCalendarScenarioDaySlice\(4\)/,
+  'Day4 module should be a compiled calendar-registry slice wrapper.'
+);
+assert.match(
+  readSource('src/data/scenario/day14.js'),
+  /getCalendarScenarioDaySlice\(14\)/,
+  'Day14 module should be a compiled calendar-registry slice wrapper.'
+);
+assert.equal(
+  getCalendarScenarioDaySlice(4)[0]?.id,
+  'season1-bridge-after-promise',
+  'Calendar day-slice wrappers should preserve legacy Day4 ordering through the registry.'
+);
+
+
+assert.equal(calendarPlannerDayConfigs.length, 11, 'Calendar planner should define one player-facing day plan for Day4-14.');
+assert.equal(routePlannerEventCards.length, routeConfigData.affectionTargets.length * 11, 'Every route should get a Day4-14 route planner EventCard.');
+assert.equal(calendarPlannerCoverage.length, routeConfigData.affectionTargets.length, 'Planner coverage should report all configured dating routes.');
+for (const coverage of calendarPlannerCoverage) {
+  assert.deepEqual(coverage.days, [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], `${coverage.routeId} should have Day4-14 planner coverage.`);
+  assert.ok(coverage.slots.includes('after-school') && coverage.slots.includes('post-lock'), `${coverage.routeId} should cover pre-lock and post-lock slots.`);
+  assert.ok(coverage.hasLowMidHighVariants, `${coverage.routeId} should expose low/mid/high affection variants.`);
+  assert.ok(coverage.hasMemoryPayoff, `${coverage.routeId} should expose memory payoff metadata.`);
+  assert.ok(coverage.hasDateInvitationReaction, `${coverage.routeId} should expose date/invitation reaction metadata.`);
+}
+for (const dayConfig of calendarPlannerDayConfigs) {
+  const mapScene = scenario.find((item) => item.id === dayConfig.mapSceneId);
+  assert.equal(mapScene?.type, 'mapChoice', `${dayConfig.mapSceneId} should be a reachable mapChoice planner scene.`);
+  assert.deepEqual(mapScene.choices, mapChoiceLabels, `${dayConfig.mapSceneId} should preserve the canonical 9-location map choices.`);
+  assert.equal(mapScene.next.length, mapChoiceLabels.length, `${dayConfig.mapSceneId} should route every map location.`);
+  assert.equal(mapScene.rewards.length, mapChoiceLabels.length, `${dayConfig.mapSceneId} should reward every map location.`);
+  for (const [index, location] of mapLocations.entries()) {
+    assert.equal(mapScene.next[index], `calendar-day${dayConfig.day}-${location.routeId}-invite`, `${dayConfig.mapSceneId} should send ${location.label} to ${location.routeId}'s planner scene.`);
+    assert.equal(mapScene.rewards[index].planVisit?.eventId, `calendar-day${dayConfig.day}-${location.routeId}-date`, `${dayConfig.mapSceneId} should record a calendar event id for ${location.routeId}.`);
+  }
+  assert.equal(
+    scenario.find((item) => item.id === `day${dayConfig.day}-chapter-card`)?.nextId,
+    dayConfig.mapSceneId,
+    `Day ${dayConfig.day} chapter card should hand off to the dating planner before legacy day content.`
+  );
+}
+for (const target of routeConfigData.affectionTargets) {
+  const sampleEvent = routePlannerEventCards.find((card) => card.routeId === target.id && card.dayRange[0] === 8);
+  assert.ok(sampleEvent, `${target.id} should have a Day8 route planner EventCard.`);
+  assert.ok(['same-scene-tier-variant', 'memory-payoff', 'date-invitation-reacts'].every((tag) => sampleEvent.qualityTags.includes(tag)), `${target.id} planner card should carry dating-sim quality tags.`);
+  const inviteScene = scenario.find((item) => item.id === `calendar-day8-${target.id}-invite`);
+  assert.equal(inviteScene?.type, 'dialogue', `${target.id} Day8 planner invite should be a dialogue scene.`);
+  const variantConditions = inviteScene.variants.map((variant) => variant.affection?.[target.id] || {});
+  assert.ok(variantConditions.some((condition) => condition.max === 39), `${target.id} invite should include a low affection variant.`);
+  assert.ok(variantConditions.some((condition) => condition.min === 40 && condition.max === 84), `${target.id} invite should include a mid affection variant.`);
+  assert.ok(variantConditions.some((condition) => condition.min === 85), `${target.id} invite should include a high affection variant.`);
+  const phoneScene = scenario.find((item) => item.id === `calendar-day8-${target.id}-phone`);
+  assert.equal(phoneScene?.type, 'phone', `${target.id} Day8 planner should close with a phone reply.`);
+  assert.equal(phoneScene.next.every((nextId) => nextId === 'day8-opening'), true, `${target.id} Day8 planner phone should return to legacy Day8 story content.`);
+}
 
 function readScenarioSourceTree() {
   const parts = [readSource('src/data/scenario.js')];
@@ -993,8 +1177,18 @@ assert.match(
 );
 assert.match(
   component,
-  /function PlanModal\([\s\S]*?DATING PLAN[\s\S]*?최근 장소[\s\S]*?관심 신호/,
-  'PlanModal should show a date-plan overview with recent places and route-interest suggestions.'
+  /function PlanModal\([\s\S]*?DATING PLAN[\s\S]*?최근 장소[\s\S]*?기록된 약속[\s\S]*?관심 신호/,
+  'PlanModal should show a date-plan overview with recent places, persisted memory, and route-interest suggestions.'
+);
+assert.match(
+  component,
+  /function resolvePlannerMemoryEntries\([\s\S]*?relationshipMemory[\s\S]*?calendar\?\.dateHistory[\s\S]*?resolvePlannerSlotLabel/,
+  'PlanModal should derive recorded promises from persisted save-v3 calendar history and relationship memory.'
+);
+assert.match(
+  styles,
+  /\.plan-memory-list li\s*\{/,
+  'PlanModal memory rows should have a dedicated layout class.'
 );
 assert.doesNotMatch(
   gameButtonsMatch[0],
@@ -1105,8 +1299,13 @@ assert.match(
 
 assert.match(
   visualNovelSource,
-  /const loadGame = useCallback[\s\S]*?normalizeSavePayload\(payload,\s*\{ scenario,\s*fallbackIndex:\s*initialIndex,\s*routeConfig \}\)[\s\S]*?setDirectorState\(safePayload\.directorState \|\| replayDirectorState\(scenario,\s*safeIndex,\s*directorDefaults\)\)[\s\S]*?setIndex\(safeIndex\)/,
-  'Visual novel should restore saved director state or replay director state when loading.'
+  /const loadGame = useCallback[\s\S]*?normalizeSavePayload\(payload,\s*\{[\s\S]*?scenario,[\s\S]*?fallbackIndex:\s*initialIndex,[\s\S]*?routeConfig,[\s\S]*?calendarEventIds:\s*collectCalendarEventIdsFromScenario\(scenario\)[\s\S]*?\}\)[\s\S]*?setDirectorState\(safePayload\.directorState \|\| replayDirectorState\(scenario,\s*safeIndex,\s*directorDefaults\)\)[\s\S]*?setIndex\(safeIndex\)/,
+  'Visual novel should restore saved director state and pass known calendar IDs into save normalization.'
+);
+assert.match(
+  visualNovelSource,
+  /buildSavePayload\(\{[\s\S]*?scenario[\s\S]*?\}\)/,
+  'Visual novel save call sites should pass scenario metadata into save payload creation for calendar ID filtering.'
 );
 
 assert.match(
@@ -1659,9 +1858,9 @@ assert.ok(
   'Route depth expansion registry should preserve the completed batch1 integration before batch2 work is added.'
 );
 assert.match(
-  scenarioIndex,
-  /integrateRouteDepthExpansions\(baseScenario\)/,
-  'Scenario wiring should use the coordinator-owned route-depth expansion registry so future batch2 modules do not rewrite completed batch1 artifacts.'
+  readSource('src/data/scenario/calendar/index.js'),
+  /integrateRouteDepthExpansions\(legacyDay4To14Scenes\)[\s\S]*routeDepthExpansionBatches/,
+  'Calendar registry should own the temporary route-depth expansion adapter instead of scenario/index.js directly integrating hidden Day4-14 sources.'
 );
 for (const cohortModule of ['coreRoutes', 'clubRoutes', 'afterSchoolRoutes']) {
   assert.ok(
@@ -3242,6 +3441,24 @@ assert.equal(
   '도서관',
   'mapChoice reward history should store the selected place label.'
 );
+
+const calendarRewardFixture = {
+  id: 'calendar-fixture-choice',
+  type: 'choice',
+  choices: ['도서관에서 답한다.'],
+  rewards: [{
+    affection: { ukhyun: 5 },
+    flags: ['calendar_fixture_reply'],
+    calendar: { eventId: 'calendar-day6-ukhyun-date', routeId: 'ukhyun', day: 6, slot: 'after-school', location: 'library', outcome: 'date-reply', label: '도서관' },
+    memory: { routeId: 'ukhyun', kind: 'date', label: '도서관에서 비워 둔 옆자리' },
+    invitation: { eventId: 'calendar-day6-ukhyun-date', routeId: 'ukhyun', status: 'accepted', tone: 'direct' }
+  }]
+};
+const calendarRewardState = applyRouteRewards(createInitialGameState(), calendarRewardFixture, 0, routeConfigData);
+assert.deepEqual(calendarRewardState.calendar.completedEventIds, ['calendar-day6-ukhyun-date'], 'Route rewards should persist completed calendar event ids.');
+assert.equal(calendarRewardState.calendar.dateHistory[0]?.location, 'library', 'Route rewards should append calendar date history.');
+assert.equal(calendarRewardState.calendar.invitations['calendar-day6-ukhyun-date']?.tone, 'direct', 'Route rewards should persist invitation tone.');
+assert.equal(calendarRewardState.relationshipMemory[0]?.label, '도서관에서 비워 둔 옆자리', 'Route rewards should append relationship memory payoff records.');
 const mapChoiceSaveSummary = buildSaveSummary({
   item: minimalMapChoiceItem,
   gameState: mapChoiceRewardState,
@@ -4029,6 +4246,58 @@ const currentScaleSave = normalizeSavePayload(
 );
 assert.equal(currentScaleSave.gameState.affection.hyeongyeom, 70, 'Current 100-point saves should not be scaled again.');
 
+const calendarScenarioMetadataFixture = [
+  { id: 'calendar-scene-one', type: 'dialogue', calendarEventId: 'known-calendar-event' }
+];
+assert.deepEqual(
+  collectCalendarEventIdsFromScenario(calendarScenarioMetadataFixture),
+  ['known-calendar-event'],
+  'Save codec should derive known calendar event IDs from scenario metadata without importing registry data.'
+);
+const calendarMigratedSave = normalizeSavePayload(
+  {
+    version: 2,
+    index: 0,
+    itemId: scenario[0].id,
+    gameState: {
+      calendar: {
+        currentDay: 99,
+        usedEventIds: ['known-calendar-event', 'known-calendar-event', 'stale-calendar-event'],
+        availableEventIds: ['known-calendar-event', 'missing-calendar-event'],
+        completedEventIds: ['stale-calendar-event'],
+        dateHistory: [
+          { eventId: 'known-calendar-event', routeId: 'ukhyun', day: 6, slot: 'after-school', location: 'library', outcome: 'accepted', label: '도서관' },
+          { eventId: 'stale-calendar-event', routeId: 'ukhyun', day: 6 }
+        ],
+        invitations: {
+          'known-calendar-event': { routeId: 'ukhyun', status: 'accepted', tone: 'direct' },
+          'stale-calendar-event': { routeId: 'ukhyun', status: 'accepted' }
+        }
+      },
+      relationshipMemory: [
+        { eventId: 'known-calendar-event', routeId: 'ukhyun', kind: 'date', label: '도서관에서 비워 둔 옆자리' },
+        { eventId: 'stale-calendar-event', routeId: 'ukhyun', kind: 'date', label: '삭제될 기억' }
+      ]
+    },
+    settings: {},
+    directorState: null,
+    log: []
+  },
+  { scenario, fallbackIndex: 0, routeConfig: routeConfigData, calendarEventIds: ['known-calendar-event'] }
+);
+assert.equal(calendarMigratedSave.version, 3);
+assert.equal(calendarMigratedSave.gameState.calendar.currentDay, 14);
+assert.deepEqual(calendarMigratedSave.gameState.calendar.usedEventIds, ['known-calendar-event']);
+assert.deepEqual(calendarMigratedSave.gameState.calendar.availableEventIds, ['known-calendar-event']);
+assert.deepEqual(calendarMigratedSave.gameState.calendar.completedEventIds, []);
+assert.equal(calendarMigratedSave.gameState.calendar.dateHistory.length, 1);
+assert.deepEqual(Object.keys(calendarMigratedSave.gameState.calendar.invitations), ['known-calendar-event']);
+assert.deepEqual(
+  calendarMigratedSave.gameState.relationshipMemory.map((memory) => memory.eventId),
+  ['known-calendar-event'],
+  'Save v3 should drop unknown calendar event IDs from relationship memory during normalization.'
+);
+
 const normalizedSummarySave = normalizeSavePayload(
   {
     version: 1,
@@ -4537,13 +4806,16 @@ assert.deepEqual(
   'Phone reply normalization should expose at most three replies in UI order.'
 );
 
-assert.equal(SAVE_VERSION, 2, 'Save version should advance when migrating legacy 0-10 affection saves.');
-assert.match(saveCodec, /export const SAVE_VERSION = 2/);
+assert.equal(SAVE_VERSION, 3, 'Save version should advance for persisted calendar planner state.');
+assert.match(saveCodec, /export const SAVE_VERSION = 3/);
+assert.match(saveCodec, /calendar:[\s\S]*normalizeCalendarState[\s\S]*relationshipMemory:[\s\S]*normalizeRelationshipMemory/);
+assert.match(saveCodec, /calendarEventIds[\s\S]*collectCalendarEventIdsFromScenario/);
 assert.doesNotMatch(
   saveCodec,
-  /calendarState|dateLogState|rewardToastState/,
-  'Day4-14 dating-sim loop should not add new persisted calendar/date-log/reward-toast save fields.'
+  /from ['"].*scenario\/calendar/,
+  'Save codec should stay registry-agnostic and receive known calendar IDs from callers or scenario metadata.'
 );
+assert.doesNotMatch(saveCodec, /calendarState|dateLogState|rewardToastState/);
 assert.match(scenarioValidator, /export function validateScenario/);
 assert.match(scenarioValidator, /messages[\s\S]*phone message text is required/);
 assert.match(component, /function playAudio\(src, volume = 0\.65\)/);

@@ -194,7 +194,7 @@ Route date 보상/기억 규칙:
 
 ### STATUS date log 표시 규칙
 
-STATUS의 date log는 저장 구조를 늘리지 않는 passive UI다. `gameState.flags`에 남은 date/phone flag, `routeConfig.affectionTargets`, `datingSimProfiles`, `resolveLatestRouteMemory()`만으로 “현재 루트”, “최근 기억”, 최근 date/phone 칩을 계산한다. 새 calendar state, reward toast, date-log 전용 save field를 만들지 않는다.
+STATUS의 date log는 플레이 중 보상 토스트나 별도 팝업이 아니라 passive UI다. Calendar Event Registry 이후에는 `SAVE_VERSION = 3`의 `gameState.calendar`와 `gameState.relationshipMemory`가 persisted planner state로 존재할 수 있다. PLAN 모달은 `gameState.calendar.dateHistory`와 `gameState.relationshipMemory`를 읽어 최근 약속을 보여 주고, STATUS 표시는 `gameState.flags`, `gameState.relationshipMemory`, `routeConfig.affectionTargets`, `datingSimProfiles`, `resolveLatestRouteMemory()`를 조합해 “현재 루트”, “최근 기억”, 최근 date/phone 칩을 파생한다. 단, date-log 전용 save field나 reward-toast 전용 save field는 만들지 않는다.
 
 ## 초반 자유행동 / 장소 선택 규칙
 
@@ -226,8 +226,9 @@ STATUS의 date log는 저장 구조를 늘리지 않는 passive UI다. `gameStat
 
 ## Day4-14 미연시 루프 규칙
 
-Day4-14는 보고서형 요약이 아니라 “초대 → 학범의 말투/거리 선택 → 상대 반응 → 후반 기억”으로 이어지는 미연시 루프를 따른다. 새로 추가하거나 수정하는 Day4-14 라인과 payoff/ending variant만 story-lint 대상이다. 기존 전체 문장을 무작정 다시 쓰는 범위가 아니다.
+Day4-14는 보고서형 요약이 아니라 “초대 → 학범의 말투/거리 선택 → 상대 반응 → 후반 기억”으로 이어지는 미연시 루프를 따른다. Calendar Event Registry 작업부터 canonical authoring source는 `src/data/scenario/calendar/index.js`의 EventCard이며, `day4.js`–`day14.js`는 한 release 동안 compiled slice wrapper로만 남긴다. 새로 추가하거나 수정하는 Day4-14 라인과 payoff/ending variant만 story-lint 대상이다. 기존 전체 문장을 무작정 다시 쓰는 범위가 아니다.
 
+- Day4-14 각 날짜의 chapter card는 먼저 `calendar-day<day>-planner-map`으로 진입한다. 이 `mapChoice`는 9개 장소만 표시하고, 각 장소는 `calendar-day<day>-<routeId>-invite`로 이어져 초대/선택/반응/phone reply를 거친 뒤 기존 day 본문으로 돌아간다.
 - Day4-5는 route별 선택 또는 답장형 `phone`으로 플레이어 agency를 만든다.
 - 답장형 `phone`은 `replies`/`rewards`/`next` 길이를 맞추고 `nextId`와 섞지 않는다.
 - Day4-9 보상은 `route_lock_<id>`를 쓰지 않는다. 명시적 route lock은 Day10 선택만 소유한다.

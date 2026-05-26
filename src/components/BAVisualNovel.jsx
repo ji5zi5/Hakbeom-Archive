@@ -3,7 +3,7 @@ import { resolveCharacterAsset } from '../data/characterProfiles.js';
 import { routeConfig } from '../data/routeConfig.js';
 import { getChapterInfo } from '../engine/chapterEngine.js';
 import { applyDirectorItem, resolveSoundCue, safeClassName } from '../engine/directorEngine.js';
-import { createSavePayload, normalizeSavePayload, normalizeSaveSummary } from '../engine/saveCodec.js';
+import { collectCalendarEventIdsFromScenario, createSavePayload, normalizeSavePayload, normalizeSaveSummary } from '../engine/saveCodec.js';
 import { buildSaveSummary } from '../engine/saveSummary.js';
 import { normalizePhoneMessages, normalizePhoneReplies } from '../engine/phoneEngine.js';
 import {
@@ -261,7 +261,8 @@ function persistSaveSlot(slot, payload) {
   return nextSlots[slot];
 }
 
-function buildSavePayload({ index, item, gameState, ending, settings, directorState, log }) {
+function buildSavePayload({ index, item, gameState, ending, settings, directorState, log, scenario }) {
+  const calendarEventIds = collectCalendarEventIdsFromScenario(scenario);
   return createSavePayload({
     index,
     itemId: item?.id || '',
@@ -278,7 +279,10 @@ function buildSavePayload({ index, item, gameState, ending, settings, directorSt
     ending,
     settings,
     directorState,
-    log
+    log,
+    routeConfig,
+    scenario,
+    calendarEventIds
   });
 }
 
@@ -440,17 +444,23 @@ export function BAVisualNovel({
       ending,
       settings,
       directorState,
-      log
+      log,
+      scenario
     }));
     setSaveSlots(readSaveSlots());
     return saved;
-  }, [directorState, ending, gameState, index, item, log, settings]);
+  }, [directorState, ending, gameState, index, item, log, scenario, settings]);
 
   const loadGame = useCallback((payloadOrSlot) => {
     const slots = readSaveSlots();
     const payload = typeof payloadOrSlot === 'string' ? slots[payloadOrSlot] : payloadOrSlot;
     if (!payload) return false;
-    const safePayload = normalizeSavePayload(payload, { scenario, fallbackIndex: initialIndex, routeConfig });
+    const safePayload = normalizeSavePayload(payload, {
+      scenario,
+      fallbackIndex: initialIndex,
+      routeConfig,
+      calendarEventIds: collectCalendarEventIdsFromScenario(scenario)
+    });
     const safeIndex = safePayload.index;
     const safeGameState = { ...createInitialGameState(), ...safePayload.gameState };
     setGameState(safeGameState);
@@ -1892,6 +1902,17 @@ function resolveStatusDateLog(flags = [], targets = [], profiles = {}) {
   return entries;
 }
 
+function resolvePlannerSlotLabel(slot) {
+  return ({
+    first: '방과 후',
+    second: '해질녘',
+    'after-school': '방과 후',
+    evening: '해질녘',
+    'post-lock': '확정 후',
+    terminal: '마지막 약속'
+  })[slot] || '일정';
+}
+
 function resolvePlannerEntries(gameState = {}) {
   const choices = Array.isArray(gameState?.choices) ? gameState.choices : [];
   return choices
@@ -1901,7 +1922,7 @@ function resolvePlannerEntries(gameState = {}) {
         return {
           id: `${choice.id}:${choice.choiceIndex}`,
           day: `Day ${planVisit.day}`,
-          slot: planVisit.slot === 'first' ? '방과 후' : '해질녘',
+          slot: resolvePlannerSlotLabel(planVisit.slot),
           place: safeText(planVisit.label || choice.text || '장소 미정')
         };
       }
@@ -1934,9 +1955,46 @@ function resolvePlannerSuggestions(gameState = {}, targets = routeConfig.affecti
     .slice(0, 3);
 }
 
+function resolvePlannerMemoryEntries(gameState = {}) {
+  const memories = Array.isArray(gameState?.relationshipMemory) ? gameState.relationshipMemory : [];
+  const history = Array.isArray(gameState?.calendar?.dateHistory) ? gameState.calendar.dateHistory : [];
+  const byRouteName = (routeId) => routeConfig.affectionTargets.find((target) => target.id === routeId)?.name || routeId || '기록';
+  const entries = [];
+
+  for (const item of history.slice(-6)) {
+    entries.push({
+      id: `history:${item.eventId}:${item.outcome}:${item.label}`,
+      routeName: byRouteName(item.routeId),
+      kind: resolvePlannerSlotLabel(item.slot),
+      label: safeText(item.label || item.location || item.outcome || '장소 기록')
+    });
+  }
+
+  for (const memory of memories.slice(-6)) {
+    entries.push({
+      id: `memory:${memory.eventId}:${memory.kind}:${memory.label}`,
+      routeName: byRouteName(memory.routeId),
+      kind: safeText(memory.kind || 'memory'),
+      label: safeText(memory.label || '관계 기억')
+    });
+  }
+
+  const seen = new Set();
+  return entries
+    .reverse()
+    .filter((entry) => {
+      const key = `${entry.routeName}|${entry.kind}|${entry.label}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 6);
+}
+
 function PlanModal({ open, gameState, chapterInfo, onClose }) {
   const entries = resolvePlannerEntries(gameState);
   const suggestions = resolvePlannerSuggestions(gameState);
+  const memoryEntries = resolvePlannerMemoryEntries(gameState);
   const currentTitle = chapterInfo?.title || chapterInfo?.chapterTitle || chapterInfo?.sectionTitle || '현재 일정';
 
   return (
@@ -1963,6 +2021,22 @@ function PlanModal({ open, gameState, chapterInfo, onClose }) {
                     <b>{entry.day}</b>
                     <em>{entry.slot}</em>
                     <strong>{entry.place}</strong>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+          <section className="plan-section">
+            <span>기록된 약속</span>
+            {memoryEntries.length === 0 ? (
+              <p className="plan-empty">아직 저장된 데이트 기억이 없습니다. 장소 선택과 답장이 쌓이면 여기에 남습니다.</p>
+            ) : (
+              <ol className="plan-entry-list plan-memory-list">
+                {memoryEntries.map((entry) => (
+                  <li key={entry.id}>
+                    <b>{entry.routeName}</b>
+                    <em>{entry.kind}</em>
+                    <strong>{entry.label}</strong>
                   </li>
                 ))}
               </ol>

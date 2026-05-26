@@ -2149,6 +2149,10 @@ button {
   grid-template-columns: 82px 1fr 70px;
 }
 
+.plan-memory-list li {
+  grid-template-columns: 82px 92px 1fr;
+}
+
 .plan-empty {
   color: rgba(220, 238, 247, .68);
 }
